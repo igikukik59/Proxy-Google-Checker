@@ -730,10 +730,25 @@ jobs:
             if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
             const timestamp = Date.now();
 
+            // yt-dlp fallback for blob URLs
             if (type === 'direct' && url.startsWith('blob:')) {
               const outPath = path.join(dir, `video_${timestamp}_page.mp4`);
               try {
-                execSync(`yt-dlp --proxy socks5://127.0.0.1:10808 -o "${outPath}" "${pageUrl}"`, { stdio: 'inherit', timeout: 600000 });
+                execSync(`yt-dlp --no-playlist --proxy socks5://127.0.0.1:10808 -o "${outPath}" "${pageUrl}"`, { stdio: 'inherit', timeout: 600000 });
+                return { ok: true, path: outPath };
+              } catch(e) { err('yt-dlp blob failed:', e.message); return { ok: false }; }
+            }
+
+          async function downloadVideo(url, type, referer, platform, pageUrl) {
+            const dir = '/tmp/downloaded_videos';
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+            const timestamp = Date.now();
+
+            // yt-dlp fallback for blob URLs
+            if (type === 'direct' && url.startsWith('blob:')) {
+              const outPath = path.join(dir, `video_${timestamp}_page.mp4`);
+              try {
+                execSync(`yt-dlp --no-playlist --proxy socks5://127.0.0.1:10808 -o "${outPath}" "${pageUrl}"`, { stdio: 'inherit', timeout: 600000 });
                 return { ok: true, path: outPath };
               } catch(e) { err('yt-dlp blob failed:', e.message); return { ok: false }; }
             }
@@ -747,19 +762,20 @@ jobs:
                 log('دانلود مستقیم شکست، تلاش با yt-dlp...');
                 const fallbackPath = path.join(dir, `video_${timestamp}_page.mp4`);
                 try {
-                  execSync(`yt-dlp --proxy socks5://127.0.0.1:10808 -o "${fallbackPath}" "${pageUrl}"`, { stdio: 'inherit', timeout: 600000 });
+                  execSync(`yt-dlp --no-playlist --proxy socks5://127.0.0.1:10808 -o "${fallbackPath}" "${pageUrl}"`, { stdio: 'inherit', timeout: 600000 });
                   return { ok: true, path: fallbackPath };
                 } catch(e2) { err('yt-dlp نیز شکست:', e2.message); return { ok: false }; }
               }
             } else if (type === 'embed') {
               const outPath = path.join(dir, `video_${timestamp}_${platform || 'embed'}.mp4`);
               try {
-                execSync(`yt-dlp --proxy socks5://127.0.0.1:10808 -o "${outPath}" "${url}"`, { stdio: 'inherit', timeout: 600000 });
+                execSync(`yt-dlp --no-playlist --proxy socks5://127.0.0.1:10808 -o "${outPath}" "${url}"`, { stdio: 'inherit', timeout: 600000 });
                 return { ok: true, path: outPath };
               } catch(e) { err('yt-dlp embed شکست:', e.message); return { ok: false }; }
             }
             return { ok: false };
           }
+
 
           // ======================== Full Page Screenshot & PDF ========================
           async function takeFullPageScreenshot(page, chatId, keypad) {
