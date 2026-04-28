@@ -1,4 +1,4 @@
-name: 🌐 مرورگر راه دور (نسخه نهایی با قابلیت‌های جدید)
+name: 🌐 مرورگر راه دور (نسخه نهایی با پاکسازی خودکار)
 
 on:
   workflow_dispatch:
@@ -24,7 +24,13 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای ربات (نسخه نهایی)
+      - name: 🧹 پاکسازی حافظه رانر (قبل از شروع)
+        run: |
+          echo "پاکسازی فایل‌های موقت..."
+          rm -rf /tmp/downloaded_videos /tmp/downloaded_images /tmp/downloaded_files /tmp/video_chunks_* /tmp/xray_*.json /tmp/shot_* /tmp/sel_* /tmp/vid_* /tmp/img_* /tmp/scroll_* /tmp/fullshot_* /tmp/page_* 2>/dev/null
+          df -h /tmp
+
+      - name: 🤖 اجرای ربات (نسخه نهایی با تمام قابلیت‌ها)
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           RUBIKA_OWNER_CHAT_ID: ${{ secrets.RUBIKA_OWNER_CHAT_ID }}
@@ -38,7 +44,7 @@ jobs:
           puppeteer.use(StealthPlugin());
 
           const PROXY_FILE = 'کانفیگ های خوب.txt';
-          const TARGET_URL = 'https://duckduckgo.com';
+          const TARGET_URL = 'https://console.groq.com/playground';
 
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
           function log(...args) { console.log(`[${ts()}]`, ...args); }
@@ -331,7 +337,7 @@ jobs:
             };
           }
 
-          // ======================== انتخاب هوشمند (بدون تغییر) ========================
+          // ======================== انتخاب هوشمند با شماره (Shadow DOM و iframe) ========================
           async function highlightClickableElements(page) {
             return await page.evaluate(() => {
               document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
@@ -429,7 +435,7 @@ jobs:
             } catch(e) { log('⚠️ مدیریت ناوبری کلیک'); await sleep(2000); return true; }
           }
 
-          // ======================== اسکرول هوشمند ========================
+          // ======================== اسکرول هوشمند چندناحیه‌ای ========================
           async function highlightScrollableAreas(page) {
             return await page.evaluate(() => {
               document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
@@ -511,13 +517,13 @@ jobs:
               const results = [];
               document.querySelectorAll('video').forEach(v => {
                 const src = v.currentSrc || v.querySelector('source')?.src || '';
-                if (src) results.push({ src, type: 'direct', element: v });
+                if (src) results.push({ src, type: 'direct' });
               });
               document.querySelectorAll('a').forEach(a => {
                 const href = a.href;
                 const ext = href.split('.').pop().split('?')[0].toLowerCase();
                 if (['mp4','webm','ogg','mov','mkv','avi','flv'].includes(ext)) {
-                  results.push({ src: href, type: 'direct', element: a });
+                  results.push({ src: href, type: 'direct' });
                 }
               });
               const embedPatterns = [
@@ -531,7 +537,7 @@ jobs:
                 if (!src) return;
                 for (const {pattern, platform} of embedPatterns) {
                   if (src.match(pattern)) {
-                    results.push({ src, type: 'embed', platform, element: iframe });
+                    results.push({ src, type: 'embed', platform });
                     break;
                   }
                 }
@@ -547,13 +553,11 @@ jobs:
               return unique.map(r => ({ src: r.src, type: r.type, platform: r.platform || null }));
             });
 
-            // نشانه‌گذاری روی صفحه (با استفاده از عناصر پیدا شده)
+            // نشانه‌گذاری روی صفحه
             await page.evaluate((list) => {
               document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
               document.querySelectorAll('[data-rubika-video-id]').forEach(el => el.removeAttribute('data-rubika-video-id'));
 
-              const elementMap = new Map();
-              // دوباره عناصر را پیدا کنیم
               list.forEach((item, idx) => {
                 let el = null;
                 if (item.type === 'direct') {
@@ -562,10 +566,7 @@ jobs:
                 } else {
                   el = document.querySelector(`iframe[src="${item.src}"]`);
                 }
-                if (el) elementMap.set(idx, el);
-              });
-
-              elementMap.forEach((el, idx) => {
+                if (!el) return;
                 const num = idx + 1;
                 el.setAttribute('data-rubika-video-id', num);
                 const rect = el.getBoundingClientRect();
@@ -589,7 +590,7 @@ jobs:
             });
           }
 
-          // ======================== تصاویر ========================
+          // ======================== تصاویر صفحه ========================
           async function highlightImages(page) {
             const pageUrl = page.url();
             const imageData = await page.evaluate(() => {
@@ -635,10 +636,10 @@ jobs:
                 const href = a.href;
                 const ext = href.split('.').pop().split('?')[0].toLowerCase();
                 if (fileExts.includes(ext)) {
-                  results.push({ src: href, element: a });
+                  results.push({ src: href });
                 }
               });
-              return results.map(r => ({ src: r.src }));
+              return results;
             });
 
             await page.evaluate((list) => {
@@ -670,7 +671,7 @@ jobs:
             });
           }
 
-          // ======================== متن قابل مشاهده ========================
+          // ======================== استخراج متن قابل مشاهده با فرمت مارک‌داون ========================
           async function extractVisibleText(page) {
             return await page.evaluate(() => {
               const walker = document.createTreeWalker(
@@ -682,7 +683,7 @@ jobs:
               const lines = [];
               let node;
               while (node = walker.nextNode()) {
-                const text = node.textContent.trim();
+                let text = node.textContent.trim();
                 if (!text) continue;
                 const parent = node.parentElement;
                 if (!parent) continue;
@@ -739,20 +740,6 @@ jobs:
               } catch(e) { err('yt-dlp blob failed:', e.message); return { ok: false }; }
             }
 
-          async function downloadVideo(url, type, referer, platform, pageUrl) {
-            const dir = '/tmp/downloaded_videos';
-            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-            const timestamp = Date.now();
-
-            // yt-dlp fallback for blob URLs
-            if (type === 'direct' && url.startsWith('blob:')) {
-              const outPath = path.join(dir, `video_${timestamp}_page.mp4`);
-              try {
-                execSync(`yt-dlp --no-playlist --proxy socks5://127.0.0.1:10808 -o "${outPath}" "${pageUrl}"`, { stdio: 'inherit', timeout: 600000 });
-                return { ok: true, path: outPath };
-              } catch(e) { err('yt-dlp blob failed:', e.message); return { ok: false }; }
-            }
-
             if (type === 'direct') {
               const outPath = path.join(dir, `video_${timestamp}_${path.basename(new URL(url).pathname) || 'video.mp4'}`);
               try {
@@ -775,7 +762,6 @@ jobs:
             }
             return { ok: false };
           }
-
 
           // ======================== Full Page Screenshot & PDF ========================
           async function takeFullPageScreenshot(page, chatId, keypad) {
@@ -877,7 +863,6 @@ jobs:
           // ======================== پردازش دکمه‌ها ========================
           async function handleButton(page, chatId, buttonId, browserManager) {
             const state = getState(chatId);
-            // ریست حالت‌های موقت (بجز مواردی که ممکن است بخواهیم حفظ شوند، اما اینجا همه ریست می‌شوند)
             const keypad = buildControlKeypad();
             resetAllStates(state);
 
@@ -1051,7 +1036,6 @@ jobs:
                 return;
             }
 
-            // برای دکمه‌هایی که نیاز به اسکرین‌شات خودکار ندارند، بروزرسانی می‌کنیم
             if (!['SCROLL_UP', 'SCROLL_DOWN', 'TYPE', 'GO_URL', 'SELECT', 'VIDEOS', 'IMAGES', 'FILES', 'CHANGE_PROXY', 'FULL_SCREENSHOT', 'SAVE_PDF'].includes(buttonId)) {
               await updateScreenshot(page, chatId);
             }
@@ -1316,6 +1300,13 @@ jobs:
 
               if (OWNER) await updateScreenshot(page, OWNER);
 
+              // تنظیم یک اینتروال برای پاکسازی فایل‌های موقت هر ۳۰ دقیقه
+              const cleanupInterval = setInterval(() => {
+                log('🧹 پاکسازی فایل‌های موقت...');
+                execSync('rm -rf /tmp/downloaded_* /tmp/video_chunks_* /tmp/xray_*.json /tmp/shot_* /tmp/sel_* /tmp/vid_* /tmp/img_* /tmp/scroll_* /tmp/fullshot_* /tmp/page_* 2>/dev/null');
+                execSync('rm -rf /tmp/.org.chromium.Chromium.* /tmp/.X11-unix 2>/dev/null');
+              }, 30 * 60 * 1000);
+
               let consecutiveErrors = 0;
               const END_TIME = Date.now() + 17380 * 1000;
 
@@ -1371,6 +1362,7 @@ jobs:
               }
 
               log('⏰ خاموشی خودکار.');
+              clearInterval(cleanupInterval);
               await browserManager.browser.close();
               browserManager.xrayProc.kill();
               if (OWNER) await sendMessage(OWNER, '⏹️ ربات خاموش شد.');
