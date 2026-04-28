@@ -228,15 +228,14 @@ jobs:
             }
           }
 
-          // ======================== پیشرفته: انتخاب هوشمند عناصر (شامل shadow DOM و کوکی و Cloudflare) ========================
+          // ======================== نشانه‌گذاری پیشرفته با تشخیص Cloudflare ========================
           async function highlightClickableElements(page) {
             return await safeEvaluate(page, () => {
-              // پاک‌سازی قبلی
+              // پاک‌سازی
               document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
               document.querySelectorAll('[data-rubika-sel-id]').forEach(el => el.removeAttribute('data-rubika-sel-id'));
-              document.querySelectorAll('[data-rubika-is-iframe]').forEach(el => el.removeAttribute('data-rubika-is-iframe'));
+              document.querySelectorAll('[data-rubika-is-cf]').forEach(el => el.removeAttribute('data-rubika-is-cf'));
 
-              // selectors گسترده‌تر + تشخیص Cloudflare Turnstile
               const selectors = [
                 'a', 'button', 'input', 'select', 'textarea', 'summary', 'details', 'label',
                 'iframe', '[onclick]',
@@ -251,22 +250,18 @@ jobs:
                 '[id*="cookie"]', '[class*="cookie"]', '[id*="consent"]', '[class*="consent"]',
                 '[id*="notice"]', '[class*="notice"]',
                 'div[role]', 'span[role]', 'li[role]',
-                // Cloudflare Turnstile و چالش‌های مشابه
-                '.cf-turnstile', 'div[class*="challenge"]', 'iframe[src*="challenges.cloudflare"]',
-                'iframe[src*="turnstile"]', 'iframe[src*="cloudflare"]', 'iframe[src*="captcha"]',
-                'div[id*="turnstile"]', 'div[id*="cloudflare"]', 'div[class*="spacer"]' // بعضی پوسته‌ها
+                '.cf-turnstile', 'div[class*="challenge"]',
+                'iframe[src*="challenges.cloudflare"]', 'iframe[src*="turnstile"]',
+                'iframe[src*="cloudflare"]', 'iframe[src*="captcha"]',
+                'div[id*="turnstile"]', 'div[id*="cloudflare"]'
               ];
 
-              // پیمایش کامل Shadow DOM (بازگشتی)
+              // جستجوی بازگشتی در shadow DOM
               function getElementsRecursive(root) {
                 let results = [];
-                // انتخاب از root
                 for (const sel of selectors) {
-                  try {
-                    results.push(...root.querySelectorAll(sel));
-                  } catch(e) {}
+                  try { results.push(...root.querySelectorAll(sel)); } catch(e) {}
                 }
-                // ورود به shadowRoot فرزندان
                 const allNodes = root.querySelectorAll('*');
                 for (const node of allNodes) {
                   if (node.shadowRoot) {
@@ -277,41 +272,26 @@ jobs:
               }
 
               let allElements = getElementsRecursive(document);
-              // گاهی خود document.documentElement هم shadowRoot دارد
               if (document.documentElement && document.documentElement.shadowRoot) {
                 allElements = allElements.concat(getElementsRecursive(document.documentElement.shadowRoot));
               }
-
-              // حذف تکراری‌ها
               allElements = [...new Set(allElements)];
 
-              // اولویت‌بندی: اگر cf-turnstile پیدا شد، iframe داخل آن را هدف قرار می‌دهیم
-              const processed = [];
-              const iframeMap = new Map(); // از div به iframe
-
+              // شناسایی و جایگزینی div.cf-turnstile با iframe داخلی (اگر وجود داشت)
+              const finalElements = [];
               for (const el of allElements) {
                 if (el.matches && el.matches('.cf-turnstile, [class*="turnstile"], [id*="turnstile"]')) {
                   const innerIframe = el.querySelector('iframe');
                   if (innerIframe && allElements.includes(innerIframe)) {
-                    iframeMap.set(el, innerIframe);
-                    continue; // فقط iframe را نشانه می‌گذاریم
+                    // از خود iframe استفاده می‌کنیم
+                    finalElements.push(innerIframe);
+                    continue;
                   }
-                }
-                processed.push(el);
-              }
-
-              // iframe های داخل turnstile را جایگزین div مربوطه می‌کنیم
-              const finalElements = [];
-              const replaced = new Set();
-              for (const el of processed) {
-                if (iframeMap.has(el)) {
-                  finalElements.push(iframeMap.get(el));
-                  continue;
                 }
                 finalElements.push(el);
               }
 
-              // فیلتر: فقط المنت‌هایی که در viewport قابل مشاهده‌اند
+              // فیلتر قابل مشاهده‌ها
               const visible = [];
               for (const el of finalElements) {
                 const rect = el.getBoundingClientRect();
@@ -322,7 +302,6 @@ jobs:
                 }
               }
 
-              // مرتب‌سازی: بالا->پایین، چپ->راست
               visible.sort((a, b) => {
                 const ra = a.getBoundingClientRect();
                 const rb = b.getBoundingClientRect();
@@ -330,14 +309,18 @@ jobs:
                 return ra.top - rb.top;
               });
 
-              // نشانه‌گذاری
               visible.forEach((el, idx) => {
                 const num = idx + 1;
                 el.setAttribute('data-rubika-sel-id', num);
-                const isIframe = el.tagName === 'IFRAME' ? '1' : '0';
-                el.setAttribute('data-rubika-is-iframe', isIframe);
+                const isCF = (el.tagName === 'IFRAME' &&
+                  (el.src.includes('cloudflare') || el.src.includes('turnstile'))) ? '1' : '0';
+                el.setAttribute('data-rubika-is-cf', isCF);
 
                 const rect = el.getBoundingClientRect();
+                const overlayColor = isCF === '1' ? 'rgba(128,0,128,0.2)' : // بنفش برای Cloudflare
+                                    (el.tagName === 'IFRAME' ? 'rgba(0,255,0,0.15)' : 'rgba(255,0,0,0.1)');
+                const borderColor = isCF === '1' ? 'purple' : (el.tagName === 'IFRAME' ? '#0f0' : '#f00');
+
                 const overlay = document.createElement('div');
                 overlay.className = 'rubika-hl-overlay';
                 overlay.style.position = 'fixed';
@@ -345,8 +328,8 @@ jobs:
                 overlay.style.left = Math.max(0, rect.left) + 'px';
                 overlay.style.width = Math.min(rect.width, window.innerWidth - rect.left) + 'px';
                 overlay.style.height = Math.min(rect.height, window.innerHeight - rect.top) + 'px';
-                overlay.style.background = isIframe === '1' ? 'rgba(0,255,0,0.15)' : 'rgba(255,0,0,0.1)';
-                overlay.style.border = '2px dashed ' + (isIframe === '1' ? '#0f0' : '#f00');
+                overlay.style.background = overlayColor;
+                overlay.style.border = '2px dashed ' + borderColor;
                 overlay.style.zIndex = '999996';
                 overlay.style.pointerEvents = 'none';
                 document.body.appendChild(overlay);
@@ -356,7 +339,7 @@ jobs:
                 badge.style.position = 'fixed';
                 badge.style.top = Math.max(2, rect.top - 6) + 'px';
                 badge.style.left = Math.max(2, rect.left - 6) + 'px';
-                badge.style.background = 'black';
+                badge.style.background = isCF === '1' ? 'purple' : 'black';
                 badge.style.color = 'white';
                 badge.style.borderRadius = '50%';
                 badge.style.width = '20px';
@@ -379,7 +362,7 @@ jobs:
             await safeEvaluate(page, () => {
               document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
               document.querySelectorAll('[data-rubika-sel-id]').forEach(el => el.removeAttribute('data-rubika-sel-id'));
-              document.querySelectorAll('[data-rubika-is-iframe]').forEach(el => el.removeAttribute('data-rubika-is-iframe'));
+              document.querySelectorAll('[data-rubika-is-cf]').forEach(el => el.removeAttribute('data-rubika-is-cf'));
             });
           }
 
@@ -393,26 +376,48 @@ jobs:
                 const rect = el.getBoundingClientRect();
                 return {
                   tag: el.tagName,
-                  isIframe: el.getAttribute('data-rubika-is-iframe') === '1',
+                  isCF: el.getAttribute('data-rubika-is-cf') === '1',
                   x: rect.x + rect.width / 2,
-                  y: rect.y + rect.height / 2
+                  y: rect.y + rect.height / 2,
+                  width: rect.width,
+                  height: rect.height,
+                  top: rect.top,
+                  left: rect.left
                 };
               }, number);
               if (!info) return false;
 
-              const navPromise = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 5000 }).catch(() => null);
-              if (info.tag === 'IFRAME' || info.isIframe) {
-                log(`🖱️ کلیک موس روی iframe شماره ${number} در (${info.x.toFixed(0)},${info.y.toFixed(0)})`);
-                await page.mouse.click(info.x, info.y);
+              if (info.isCF) {
+                // کلیک‌های هوشمند روی iframe کلادفلر
+                log(`🛡️ کلیک روی چالش Cloudflare (iframe) با شماره ${number}`);
+                const points = [
+                  { x: info.x, y: info.y, desc: 'مرکز' },
+                  { x: info.left + info.width * 0.3, y: info.top + info.height * 0.5, desc: '۳۰٪ چپ، وسط' },
+                  { x: info.left + info.width * 0.25, y: info.top + info.height * 0.4, desc: '۲۵٪ چپ، ۴۰٪ بالا' }
+                ];
+                for (const pt of points) {
+                  log(`   📍 کلیک در (${pt.x.toFixed(1)}, ${pt.y.toFixed(1)}) - ${pt.desc}`);
+                  await page.mouse.click(pt.x, pt.y);
+                  await sleep(400);
+                }
+                // همچنین ارسال کلید Space پس از فوکوس
+                await page.keyboard.press('Space');
+                await sleep(600);
+                return true;
               } else {
-                await safeEvaluate(page, (num) => {
-                  const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
-                  if (el) el.click();
-                }, number);
+                const navPromise = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 5000 }).catch(() => null);
+                if (info.tag === 'IFRAME') {
+                  await page.mouse.click(info.x, info.y);
+                } else {
+                  await safeEvaluate(page, (num) => {
+                    const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
+                    if (el) el.click();
+                  }, number);
+                }
+                await navPromise;
+                await sleep(800);
+                return true;
               }
-              await navPromise;
-              await sleep(800);
-              return true;
             } catch(e) {
               log('⚠️ مدیریت ناوبری پس از کلیک');
               await sleep(2000);
@@ -420,7 +425,7 @@ jobs:
             }
           }
 
-          // ======================== کی‌پد با دکمه‌های جدید ========================
+          // ======================== کی‌پد ========================
           function buildControlKeypad() {
             return {
               rows: [
@@ -475,7 +480,7 @@ jobs:
             try { fs.unlinkSync(shotPath); } catch(e) {}
           }
 
-          // ======================== اجرای اصلی با تعویض هوشمند پروکسی ========================
+          // ======================== اجرای اصلی ========================
           (async () => {
             try {
               const me = await api('getMe');
@@ -499,7 +504,6 @@ jobs:
               let currentProxyIndex = -1;
               let proxyFound = false;
 
-              // تابع کمکی برای راه‌اندازی مرورگر با یک پروکسی خاص
               async function startBrowserWithProxy(index) {
                 if (xrayProc) { xrayProc.kill(); await sleep(500); }
                 if (browser) { try { await browser.close(); } catch(_) {} }
@@ -524,14 +528,14 @@ jobs:
                 await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
               }
 
-              // پیدا کردن اولین پروکسی سالم
+              // پیدا کردن پروکسی سالم
               for (let i = 0; i < proxies.length; i++) {
                 try {
                   await startBrowserWithProxy(i);
                   await page.goto(TARGET_URL, { waitUntil: 'networkidle2', timeout: 30000 });
                   await sleep(2000);
                   if (await isPageBlocked(page)) {
-                    log('⛔ این پروکسی پیام بلاک دارد. امتحان بعدی.');
+                    log('⛔ پروکسی بلاک دارد. بعدی.');
                     continue;
                   }
                   proxyFound = true;
@@ -553,7 +557,6 @@ jobs:
               if (OWNER) await sendMessage(OWNER, '🟢 ربات روی Groq با پروکسی سالم آماده شد.');
               else log('⚠️ OWNER_CHAT_ID ندارد.');
 
-              // پاک‌سازی تاریخچه روبیکا
               let offset = null;
               while (true) {
                 const params = { limit: 10 };
@@ -566,7 +569,6 @@ jobs:
                 else break;
               }
 
-              // اسکرین‌شات اولیه
               if (OWNER) await updateScreenshot(page, OWNER);
 
               let consecutiveErrors = 0;
@@ -615,7 +617,7 @@ jobs:
                                 continue;
                               }
                               await updateScreenshot(page, chatId);
-                              const sMsg = await sendMessage(chatId, `🔢 ${count} عنصر (شامل کوکی، پاپ‌آپ و Cloudflare) نشانه‌گذاری شد. شماره را بفرستید.`);
+                              const sMsg = await sendMessage(chatId, `🔢 ${count} عنصر نشانه‌گذاری شد. عدد را ارسال کنید.\n(رنگ بنفش = iframe کلادفلر، کلیک هوشمند انجام می‌شود)`);
                               if (sMsg?.data?.message_id) state.tempMessageIds.push(sMsg.data.message_id);
                               break;
 
@@ -647,7 +649,6 @@ jobs:
                               break;
 
                             case 'CHANGE_PROXY':
-                              // تغییر به پروکسی بعدی
                               let newIdx = (currentProxyIndex + 1) % proxies.length;
                               let switched = false;
                               for (let attempts = 0; attempts < proxies.length; attempts++) {
@@ -656,7 +657,7 @@ jobs:
                                   await page.goto(TARGET_URL, { waitUntil: 'networkidle2', timeout: 30000 });
                                   await sleep(2000);
                                   if (await isPageBlocked(page)) {
-                                    log('پروکسی جدید همچنان بلاک دارد، تلاش بعدی...');
+                                    log('پروکسی جدید بلاک دارد، بعدی...');
                                     newIdx = (newIdx + 1) % proxies.length;
                                     continue;
                                   }
@@ -664,7 +665,7 @@ jobs:
                                   currentProxyIndex = newIdx;
                                   break;
                                 } catch(e) {
-                                  log('خطا با این پروکسی:', e.message);
+                                  log('خطا با پروکسی:', e.message);
                                   newIdx = (newIdx + 1) % proxies.length;
                                 }
                               }
@@ -682,7 +683,7 @@ jobs:
                           await updateScreenshot(page, chatId);
                         }
                       }
-                      // پردازش ورودی متنی
+                      // ورودی متنی
                       else if (state.selectionMode && text) {
                         const num = parseInt(text);
                         if (isNaN(num) || num <= 0) {
@@ -694,6 +695,13 @@ jobs:
                         if (!clicked) {
                           const em = await sendMessage(chatId, `❌ عنصر ${num} پیدا نشد.`);
                           if (em?.data?.message_id) state.tempMessageIds.push(em.data.message_id);
+                        } else {
+                          // در صورت کلیک روی کلادفلر، پیام مناسبی بده
+                          // (اطلاعات داخل تابع مشخص می‌شود)
+                          if (clicked === true) {
+                            const doneMsg = await sendMessage(chatId, '✅ عملیات کلیک انجام شد و در صورت کلادفلر، چند نقطه بررسی شد.');
+                            if (doneMsg?.data?.message_id) state.tempMessageIds.push(doneMsg.data.message_id);
+                          }
                         }
                         await removeHighlights(page);
                         state.selectionMode = false;
