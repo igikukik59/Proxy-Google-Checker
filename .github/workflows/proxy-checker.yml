@@ -1,4 +1,4 @@
-name: 🌐 مرورگر Groq هوشمند (ضد بلاک + تعویض خودکار پروکسی)
+name: 🌐 Groq Remote Browser (Ultra‑Smart Pro)
 
 on:
   workflow_dispatch:
@@ -12,10 +12,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: 📥 دریافت کد
+      - name: 📥 Checkout repo
         uses: actions/checkout@v4
 
-      - name: 🧰 نصب ابزارها
+      - name: 🧰 Install tools
         run: |
           sudo apt-get update -qq && sudo apt-get install -y curl unzip
           wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
@@ -23,7 +23,7 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای ربات مقاوم با تعویض هوشمند پروکسی
+      - name: 🤖 Run ultra‑smart bot
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           RUBIKA_OWNER_CHAT_ID: ${{ secrets.RUBIKA_OWNER_CHAT_ID }}
@@ -39,16 +39,10 @@ jobs:
           const PROXY_FILE = 'کانفیگ های خوب.txt';
           const TARGET_URL = 'https://console.groq.com/playground';
           const BLOCKED_PATTERNS = [
-            'access denied',
-            'please check your network settings',
-            'you have been blocked',
-            'request blocked',
-            'cloudflare',
-            'attention required',
-            'i am not a robot',
-            'recaptcha',
-            'sorry, you have been blocked',
-            'just a moment'
+            'access denied', 'please check your network settings',
+            'you have been blocked', 'request blocked', 'cloudflare',
+            'attention required', 'i am not a robot', 'recaptcha',
+            'sorry, you have been blocked', 'just a moment'
           ];
 
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
@@ -57,577 +51,439 @@ jobs:
 
           const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-          // ======================== Xray Helpers ========================
-          function parseURI(uri) {
-            try {
-              const u = new URL(uri);
-              return {
-                protocol: u.protocol.replace(':',''),
-                uuid: u.username,
-                address: u.hostname,
-                port: u.port,
-                params: Object.fromEntries(u.searchParams.entries())
-              };
-            } catch(e) { return null; }
-          }
+          // ------------------ Xray Helpers ------------------
+          function parseURI(uri) { try { const u = new URL(uri); return { protocol: u.protocol.replace(':',''), uuid: u.username, address: u.hostname, port: u.port, params: Object.fromEntries(u.searchParams.entries()) }; } catch(e) { return null; } }
 
           function generateXrayConfig(uri) {
             const p = parseURI(uri);
             if (!p) return null;
             const inbound = { port: 10808, protocol: 'socks', settings: { auth: 'noauth', udp: true } };
-            let outbound = {
-              protocol: p.protocol,
-              settings: p.protocol === 'trojan' ? {
-                servers: [{ address: p.address, port: parseInt(p.port), password: p.uuid }]
-              } : {
-                vnext: [{ address: p.address, port: parseInt(p.port), users: [{ id: p.uuid, encryption: p.params.encryption || 'none', flow: p.params.flow || '' }] }]
-              },
-              streamSettings: { network: p.params.type || 'tcp' }
-            };
-            const network = p.params.type || 'tcp';
-            outbound.streamSettings.network = network;
-            if (network === 'ws') {
-              outbound.streamSettings.wsSettings = {
-                path: p.params.path || '/',
-                headers: p.params.host ? { Host: p.params.host } : {}
-              };
-            }
+            let outbound = { protocol: p.protocol, settings: p.protocol === 'trojan' ? { servers: [{ address: p.address, port: parseInt(p.port), password: p.uuid }] } : { vnext: [{ address: p.address, port: parseInt(p.port), users: [{ id: p.uuid, encryption: p.params.encryption || 'none', flow: p.params.flow || '' }] }] }, streamSettings: { network: p.params.type || 'tcp' } };
+            const network = p.params.type || 'tcp'; outbound.streamSettings.network = network;
+            if (network === 'ws') outbound.streamSettings.wsSettings = { path: p.params.path || '/', headers: p.params.host ? { Host: p.params.host } : {} };
             const security = p.params.security || 'none';
             if (security === 'tls' || security === 'reality') {
               outbound.streamSettings.security = security;
               const tls = { serverName: p.params.sni || p.address };
-              if (security === 'reality') {
-                tls.fingerprint = p.params.fp || 'chrome';
-                tls.publicKey = p.params.pbk || '';
-                tls.shortId = p.params.sid || '';
-                tls.spiderX = '';
-              }
+              if (security === 'reality') { tls.fingerprint = p.params.fp || 'chrome'; tls.publicKey = p.params.pbk || ''; tls.shortId = p.params.sid || ''; tls.spiderX = ''; }
               if (p.params.allowInsecure === '1') tls.allowInsecure = true;
               if (p.params.alpn) tls.alpn = p.params.alpn.split(',');
               outbound.streamSettings.tlsSettings = tls;
-            } else {
-              outbound.streamSettings.security = 'none';
-            }
+            } else outbound.streamSettings.security = 'none';
             return { inbounds: [inbound], outbounds: [outbound] };
           }
 
           async function startXray(uri, idx) {
-            const config = generateXrayConfig(uri);
-            if (!config) return null;
+            const cfg = generateXrayConfig(uri); if (!cfg) return null;
             const cfgPath = `/tmp/xray_${idx}.json`;
-            fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
+            fs.writeFileSync(cfgPath, JSON.stringify(cfg, null, 2));
             const xray = spawn(path.join(process.cwd(), 'xray', 'xray'), ['run', '-config', cfgPath], { stdio: 'pipe' });
             await new Promise(r => setTimeout(r, 4000));
             return xray;
           }
 
-          function testCurl(port) {
-            try {
-              require('child_process').execSync(`curl --socks5 127.0.0.1:${port} --max-time 5 -s http://ip-api.com/json`, { encoding: 'utf8' });
-              return true;
-            } catch(e) { return false; }
-          }
+          function testCurl(port) { try { require('child_process').execSync(`curl --socks5 127.0.0.1:${port} --max-time 5 -s http://ip-api.com/json`, { encoding: 'utf8' }); return true; } catch(e) { return false; } }
 
-          // ======================== Rubika API ========================
+          // ------------------ Rubika API ------------------
           const TOKEN = process.env.RUBIKA_BOT_TOKEN;
           const OWNER = process.env.RUBIKA_OWNER_CHAT_ID || '';
           const BASE = `https://botapi.rubika.ir/v3/${TOKEN}`;
 
           async function api(method, body = {}) {
-            const url = `${BASE}/${method}`;
             try {
-              const res = await fetch(url, {
-                method: 'POST',
-                headers: {'Content-Type':'application/json'},
-                body: JSON.stringify(body)
-              });
+              const res = await fetch(`${BASE}/${method}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
               const text = await res.text();
-              let data;
-              try { data = JSON.parse(text); } catch(e) {
-                err(`⚠️ پاسخ ${method} JSON نیست:`, text.substring(0, 300));
-                return { error: true, raw: text };
-              }
-              return data;
-            } catch(e) {
-              err(`🚨 خطای شبکه در ${method}:`, e.message);
-              return { error: true, message: e.message };
-            }
+              try { return JSON.parse(text); } catch(e) { err('API raw:', text.substring(0,200)); return { error:true, raw:text }; }
+            } catch(e) { return { error:true, message:e.message }; }
           }
 
-          async function sendMessage(chatId, text, extra = {}) {
-            return await api('sendMessage', { chat_id: chatId, text, ...extra });
-          }
+          async function sendMessage(chatId, text, extra={}) { return await api('sendMessage', { chat_id:chatId, text, ...extra }); }
+          async function deleteMessage(chatId, msgId) { if (msgId) await api('deleteMessage', { chat_id:chatId, message_id:msgId }); }
 
-          async function deleteMessage(chatId, messageId) {
-            if (!messageId) return;
-            return await api('deleteMessage', { chat_id: chatId, message_id: messageId });
-          }
-
-          async function uploadAndSendFile(chatId, filePath, fileType, keypad = null) {
-            const reqRes = await api('requestSendFile', { type: fileType });
-            const uploadUrl = reqRes?.data?.upload_url;
-            if (!uploadUrl) { err('upload_url دریافت نشد'); return null; }
+          async function uploadAndSendFile(chatId, filePath, fileType, keypad=null) {
+            const req = await api('requestSendFile', { type:fileType });
+            const uploadUrl = req?.data?.upload_url; if (!uploadUrl) return null;
             const buf = fs.readFileSync(filePath);
             const form = new FormData();
-            form.append('file', new Blob([buf], { type: 'application/octet-stream' }), path.basename(filePath));
-            const upRes = await fetch(uploadUrl, { method: 'POST', body: form });
-            const upText = await upRes.text();
-            let upJson = {};
-            try { upJson = JSON.parse(upText); } catch(e) {}
-            const fileId = upJson?.file_id || upJson?.data?.file_id;
-            if (!fileId) { err('file_id یافت نشد'); return null; }
-            const sendBody = { chat_id: chatId, file_id: fileId, text: '' };
-            if (keypad) {
-              sendBody.chat_keypad = keypad;
-              sendBody.chat_keypad_type = 'New';
-            }
-            const sendRes = await api('sendFile', sendBody);
-            return sendRes?.data?.message_id || null;
+            form.append('file', new Blob([buf], { type:'application/octet-stream' }), path.basename(filePath));
+            const upRes = await fetch(uploadUrl, { method:'POST', body:form });
+            const upJson = await upRes.json();
+            const fileId = upJson?.file_id || upJson?.data?.file_id; if (!fileId) return null;
+            const sendBody = { chat_id:chatId, file_id:fileId };
+            if (keypad) { sendBody.chat_keypad = keypad; sendBody.chat_keypad_type = 'New'; }
+            const sres = await api('sendFile', sendBody);
+            return sres?.data?.message_id || null;
           }
 
-          // ======================== Safe Evaluate ========================
+          // ------------------ Safe Evaluate ------------------
           async function safeEvaluate(page, fn, ...args) {
-            const maxRetries = 4;
-            let lastError;
-            for (let i = 0; i < maxRetries; i++) {
-              try {
-                return await page.evaluate(fn, ...args);
-              } catch (e) {
-                lastError = e;
-                if (e.message.includes('Execution context was destroyed') ||
-                    e.message.includes('detached Frame') ||
-                    e.message.includes('Target closed')) {
-                  log(`🔄 تلاش مجدد evaluate (${i+1}/${maxRetries})...`);
-                  await sleep(2000);
-                  try { await page.waitForSelector('body', { timeout: 5000 }); } catch(_) {}
+            for (let i=0; i<4; i++) {
+              try { return await page.evaluate(fn, ...args); } catch(e) {
+                if (e.message.includes('Execution context was destroyed') || e.message.includes('detached Frame') || e.message.includes('Target closed')) {
+                  log(`🔄 Retry evaluate (${i+1}/4)`); await sleep(2000);
+                  try { await page.waitForSelector('body',{timeout:5000}); } catch(_){}
                   continue;
                 }
                 throw e;
               }
             }
-            throw lastError;
+            throw new Error('Safe evaluate failed');
           }
 
-          // ======================== تشخیص بلاک ========================
-          async function checkPageBlocked(page) {
+          // ------------------ Block detection ------------------
+          async function isPageBlocked(page) {
             try {
-              const result = await safeEvaluate(page, (patterns) => {
-                const bodyText = document.body.innerText.toLowerCase();
+              return await safeEvaluate(page, (patterns) => {
+                const txt = document.body.innerText.toLowerCase();
                 const title = document.title.toLowerCase();
-                // چک می‌کنیم آیا الگوهای بلاک وجود دارند
-                for (const p of patterns) {
-                  if (bodyText.includes(p) || title.includes(p)) return true;
-                }
+                for (const p of patterns) if (txt.includes(p) || title.includes(p)) return true;
                 return false;
               }, BLOCKED_PATTERNS);
-              return result;
-            } catch(e) {
-              log('⚠️ بررسی بلاک با خطا مواجه شد:', e.message);
-              return false; // در صورت خطا، صفحه را مسدود در نظر نمی‌گیریم
-            }
+            } catch(e) { return false; }
           }
 
-          // ======================== انتخاب پیشرفته ========================
+          // ------------------ Ultra‑smart element highlighter ------------------
           async function highlightClickableElements(page) {
             return await safeEvaluate(page, () => {
-              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
-              document.querySelectorAll('[data-rubika-sel-id]').forEach(el => el.removeAttribute('data-rubika-sel-id'));
+              // Clean previous
+              document.querySelectorAll('.rubika-hl-badge,.rubika-hl-overlay').forEach(e=>e.remove());
+              document.querySelectorAll('[data-rubika-sel-id]').forEach(e=>e.removeAttribute('data-rubika-sel-id'));
 
-              const selectors = [
-                'a', 'button', 'input', 'select', 'textarea', 'summary', 'details', 'label',
-                'iframe', '[onclick]',
-                '[role="button"]', '[role="menuitem"]', '[role="option"]', '[role="tab"]',
-                '[role="link"]', '[role="listbox"]', '[role="combobox"]', '[role="menu"]',
-                '[role="menubar"]', '[role="treeitem"]', '[role="gridcell"]', '[role="row"]',
-                '[role="switch"]', '[role="checkbox"]', '[role="radio"]', '[role="textbox"]',
-                '[role="searchbox"]', '[role="spinbutton"]', '[role="slider"]', '[role="separator"]',
-                '[role="dialog"]', '[role="alertdialog"]',
-                '[tabindex]:not([tabindex="-1"])', '[contenteditable="true"]',
-                '.modal', '.popup', '.overlay', '.dialog', '[aria-modal="true"]',
-                'div[role]', 'span[role]', 'li[role]'
-              ];
+              // Collect all relevant elements (including inside shadow DOMs if any)
+              function getElements(root) {
+                const selectors = 'a,button,input,select,textarea,summary,details,label,iframe,[onclick],'+
+                  '[role="button"],[role="menuitem"],[role="option"],[role="tab"],[role="link"],'+
+                  '[role="listbox"],[role="combobox"],[role="menu"],[role="menubar"],[role="treeitem"],'+
+                  '[role="gridcell"],[role="row"],[role="switch"],[role="checkbox"],[role="radio"],[role="textbox"],'+
+                  '[role="searchbox"],[role="spinbutton"],[role="slider"],[role="separator"],'+
+                  '[role="dialog"],[role="alertdialog"],[aria-modal="true"],'+
+                  '[tabindex]:not([tabindex="-1"]),[contenteditable="true"],'+
+                  '.modal,.popup,.overlay,.dialog,.cookie-banner,[id*="cookie"],[class*="cookie"],'+
+                  '[id*="consent"],[class*="consent"],[id*="notice"],[class*="notice"],'+
+                  'div[role],span[role],li[role]';
+                return Array.from(root.querySelectorAll(selectors));
+              }
 
-              const all = document.querySelectorAll(selectors.join(','));
-              const visible = [];
-              all.forEach(el => {
-                const rect = el.getBoundingClientRect();
-                if (rect.width > 0 && rect.height > 0 &&
-                    rect.bottom > 0 && rect.top < window.innerHeight &&
-                    rect.right > 0 && rect.left < window.innerWidth) {
-                  visible.push(el);
+              let all = getElements(document);
+              // Also search inside open shadow roots
+              document.querySelectorAll('*').forEach(el => {
+                if (el.shadowRoot) {
+                  const inside = getElements(el.shadowRoot);
+                  all = all.concat(inside);
                 }
               });
-
-              visible.sort((a, b) => {
-                const ra = a.getBoundingClientRect();
-                const rb = b.getBoundingClientRect();
-                if (Math.abs(ra.top - rb.top) < 5) return ra.left - rb.left;
-                return ra.top - rb.top;
-              });
-
-              visible.forEach((el, idx) => {
-                const num = idx + 1;
-                el.setAttribute('data-rubika-sel-id', num);
-                el.setAttribute('data-rubika-is-iframe', el.tagName === 'IFRAME' ? '1' : '0');
-
+              // Filter visible
+              const visible = all.filter(el => {
                 const rect = el.getBoundingClientRect();
-                const overlay = document.createElement('div');
-                overlay.className = 'rubika-hl-overlay';
-                overlay.style.position = 'fixed';
-                overlay.style.top = Math.max(0, rect.top) + 'px';
-                overlay.style.left = Math.max(0, rect.left) + 'px';
-                overlay.style.width = Math.min(rect.width, window.innerWidth - rect.left) + 'px';
-                overlay.style.height = Math.min(rect.height, window.innerHeight - rect.top) + 'px';
-                overlay.style.background = el.tagName === 'IFRAME' ? 'rgba(0,255,0,0.15)' : 'rgba(255,0,0,0.1)';
-                overlay.style.border = '2px dashed ' + (el.tagName === 'IFRAME' ? '#0f0' : '#f00');
-                overlay.style.zIndex = '999996';
-                overlay.style.pointerEvents = 'none';
+                return rect.width>0 && rect.height>0 && rect.bottom>0 && rect.top<window.innerHeight && rect.right>0 && rect.left<window.innerWidth;
+              });
+              // Sort
+              visible.sort((a,b)=>{
+                const ra=a.getBoundingClientRect(), rb=b.getBoundingClientRect();
+                if (Math.abs(ra.top-rb.top)<5) return ra.left-rb.left;
+                return ra.top-rb.top;
+              });
+              // Label
+              visible.forEach((el,idx)=>{
+                const num=idx+1;
+                el.setAttribute('data-rubika-sel-id', num);
+                el.setAttribute('data-rubika-is-iframe', el.tagName==='IFRAME'?'1':'0');
+                const rect=el.getBoundingClientRect();
+                const overlay=document.createElement('div');
+                overlay.className='rubika-hl-overlay';
+                overlay.style.cssText=`position:fixed;top:${Math.max(0,rect.top)}px;left:${Math.max(0,rect.left)}px;width:${Math.min(rect.width,window.innerWidth-rect.left)}px;height:${Math.min(rect.height,window.innerHeight-rect.top)}px;background:${el.tagName==='IFRAME'?'rgba(0,255,0,0.15)':'rgba(255,0,0,0.1)'};border:2px dashed ${el.tagName==='IFRAME'?'#0f0':'#f00'};z-index:999996;pointer-events:none;`;
                 document.body.appendChild(overlay);
-
-                const badge = document.createElement('div');
-                badge.className = 'rubika-hl-badge';
-                badge.style.position = 'fixed';
-                badge.style.top = Math.max(2, rect.top - 6) + 'px';
-                badge.style.left = Math.max(2, rect.left - 6) + 'px';
-                badge.style.background = 'black';
-                badge.style.color = 'white';
-                badge.style.borderRadius = '50%';
-                badge.style.width = '20px';
-                badge.style.height = '20px';
-                badge.style.fontSize = '11px';
-                badge.style.lineHeight = '20px';
-                badge.style.textAlign = 'center';
-                badge.style.fontWeight = 'bold';
-                badge.style.zIndex = '999999';
-                badge.style.pointerEvents = 'none';
-                badge.textContent = num;
+                const badge=document.createElement('div');
+                badge.className='rubika-hl-badge';
+                badge.style.cssText=`position:fixed;top:${Math.max(2,rect.top-6)}px;left:${Math.max(2,rect.left-6)}px;background:black;color:white;border-radius:50%;width:20px;height:20px;font-size:11px;line-height:20px;text-align:center;font-weight:bold;z-index:999999;pointer-events:none;`;
+                badge.textContent=num;
                 document.body.appendChild(badge);
               });
-
               return visible.length;
             });
           }
 
           async function removeHighlights(page) {
-            await safeEvaluate(page, () => {
-              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
-              document.querySelectorAll('[data-rubika-sel-id]').forEach(el => el.removeAttribute('data-rubika-sel-id'));
-              document.querySelectorAll('[data-rubika-is-iframe]').forEach(el => el.removeAttribute('data-rubika-is-iframe'));
+            await safeEvaluate(page, ()=>{
+              document.querySelectorAll('.rubika-hl-badge,.rubika-hl-overlay').forEach(e=>e.remove());
+              document.querySelectorAll('[data-rubika-sel-id]').forEach(e=>e.removeAttribute('data-rubika-sel-id'));
+              document.querySelectorAll('[data-rubika-is-iframe]').forEach(e=>e.removeAttribute('data-rubika-is-iframe'));
             });
           }
 
-          async function clickByNumber(page, number) {
+          async function clickByNumber(page, num) {
             try {
-              const info = await safeEvaluate(page, (num) => {
-                const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
+              const info = await safeEvaluate(page, (n)=>{
+                const el = document.querySelector(`[data-rubika-sel-id="${n}"]`);
                 if (!el) return null;
-                el.scrollIntoView({ block: 'center', inline: 'center' });
-                el.focus({ preventScroll: true });
+                el.scrollIntoView({block:'center',inline:'center'});
+                el.focus({preventScroll:true});
                 const rect = el.getBoundingClientRect();
-                return {
-                  tag: el.tagName,
-                  isIframe: el.getAttribute('data-rubika-is-iframe') === '1',
-                  x: rect.x + rect.width / 2,
-                  y: rect.y + rect.height / 2,
-                };
-              }, number);
+                return { tag:el.tagName, iframe:el.getAttribute('data-rubika-is-iframe')==='1', x:rect.x+rect.width/2, y:rect.y+rect.height/2 };
+              }, num);
               if (!info) return false;
-
-              const navPromise = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 5000 }).catch(() => null);
-              if (info.tag === 'IFRAME' || info.isIframe) {
-                log(`🖱️ کلیک موس روی iframe شماره ${number} در (${info.x.toFixed(0)},${info.y.toFixed(0)})`);
+              const navP = page.waitForNavigation({waitUntil:'networkidle2',timeout:5000}).catch(()=>null);
+              if (info.tag==='IFRAME' || info.iframe) {
                 await page.mouse.click(info.x, info.y);
               } else {
-                await safeEvaluate(page, (num) => {
-                  const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
-                  if (el) el.click();
-                }, number);
+                await safeEvaluate(page, (n)=>{ const el=document.querySelector(`[data-rubika-sel-id="${n}"]`); if(el) el.click(); }, num);
               }
-              await navPromise;
+              await navP;
               await sleep(800);
               return true;
-            } catch(e) {
-              log('⚠️ مدیریت ناوبری پس از کلیک');
-              await sleep(2000);
-              return true;
-            }
+            } catch(e) { await sleep(1500); return true; }
           }
 
-          // ======================== کی‌پد ========================
-          function buildControlKeypad() {
+          // ------------------ Keypad ------------------
+          function buildKeypad() {
             return {
               rows: [
-                { buttons: [{ id: "SELECT",    type: "Simple", button_text: "🔍 انتخاب با شماره" }] },
-                { buttons: [{ id: "TYPE",      type: "Simple", button_text: "⌨️ تایپ" }] },
-                { buttons: [{ id: "ENTER",     type: "Simple", button_text: "↵ Enter" }] },
-                { buttons: [{ id: "SCREENSHOT", type: "Simple", button_text: "📸 اسکرین‌شات" }] }
+                [{ id:"SELECT", type:"Simple", button_text:"🔍 انتخاب شماره‌ها" }],
+                [{ id:"TYPE", type:"Simple", button_text:"⌨️ تایپ" }],
+                [{ id:"ENTER", type:"Simple", button_text:"↵ Enter" }],
+                [{ id:"SCREENSHOT", type:"Simple", button_text:"📸 اسکرین‌شات" }],
+                [{ id:"REFRESH", type:"Simple", button_text:"🔄 رفرش صفحه" }],
+                [{ id:"CHANGE_PROXY", type:"Simple", button_text:"🔁 عوض کردن پروکسی" }]
               ],
-              resize_keyboard: true,
-              one_time_keyboard: false
+              resize_keyboard: true, one_time_keyboard: false
             };
           }
 
-          // ======================== مدیریت حالت ========================
+          // ------------------ State ------------------
           const chatStates = new Map();
           function getState(chatId) {
-            if (!chatStates.has(chatId)) {
-              chatStates.set(chatId, {
-                typingMode: false,
-                selectionMode: false,
-                lastScreenshotMsgId: null,
-                tempMessageIds: []
-              });
-            }
+            if (!chatStates.has(chatId)) chatStates.set(chatId, { typing:false, selecting:false, lastShotId:null, tempMsgs:[] });
             return chatStates.get(chatId);
           }
-
           async function deleteTempMessages(chatId) {
-            const state = getState(chatId);
-            for (const msgId of state.tempMessageIds) {
-              try { await deleteMessage(chatId, msgId); } catch(e) {}
-            }
-            state.tempMessageIds = [];
+            const st = getState(chatId);
+            for (const id of st.tempMsgs) try { await deleteMessage(chatId, id); } catch(e){}
+            st.tempMsgs = [];
           }
 
           async function updateScreenshot(page, chatId) {
-            const state = getState(chatId);
+            const st = getState(chatId);
             const shotPath = `/tmp/shot_${chatId}_${Date.now()}.png`;
-            await page.screenshot({ path: shotPath, fullPage: false });
-
-            if (state.lastScreenshotMsgId) {
-              try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
-            }
-
-            const keypad = buildControlKeypad();
-            const newMsgId = await uploadAndSendFile(chatId, shotPath, 'Image', keypad);
-            if (newMsgId) {
-              state.lastScreenshotMsgId = newMsgId;
-            }
-            try { fs.unlinkSync(shotPath); } catch(e) {}
+            await page.screenshot({ path:shotPath, fullPage:false });
+            if (st.lastShotId) try { await deleteMessage(chatId, st.lastShotId); } catch(e){}
+            const keypad = buildKeypad();
+            const newId = await uploadAndSendFile(chatId, shotPath, 'Image', keypad);
+            if (newId) st.lastShotId = newId;
+            try { fs.unlinkSync(shotPath); } catch(e){}
           }
 
-          // ======================== اجرای اصلی با تعویض هوشمند پروکسی ========================
-          (async () => {
+          // ------------------ Main flow ------------------
+          (async ()=>{
             try {
+              // Validate bot
               const me = await api('getMe');
-              const bot = me?.data?.bot;
-              if (!bot?.username) { err('توکن نامعتبر'); process.exit(1); }
-              log('✅ ربات:', bot.username);
+              if (!me?.data?.bot?.username) { err('Invalid token'); process.exit(1); }
+              log('✅ Bot:', me.data.bot.username);
 
-              if (!fs.existsSync(PROXY_FILE)) {
-                err(`فایل ${PROXY_FILE} یافت نشد.`);
-                process.exit(1);
-              }
+              // Load proxies
+              if (!fs.existsSync(PROXY_FILE)) { err('No proxy file'); process.exit(1); }
+              const proxies = fs.readFileSync(PROXY_FILE,'utf8').split('\n').map(l=>l.trim()).filter(l=>/^(vless|trojan|ss|vmess):\/\//.test(l));
+              if (proxies.length===0) { err('Zero proxies'); process.exit(1); }
+              log(`${proxies.length} good proxies loaded.`);
 
-              const proxies = fs.readFileSync(PROXY_FILE, 'utf8')
-                .split('\n').map(l => l.trim())
-                .filter(l => /^(vless|trojan|ss|vmess):\/\//.test(l));
-              log(`${proxies.length} کانفیگ خوب برای تست.`);
-
-              let browser = null;
-              let page = null;
-              let xrayProc = null;
+              let browser=null, page=null, xrayProc=null;
+              let curProxyIdx = -1;                     // index in proxies array
               let proxyFound = false;
 
-              // حلقه تست پروکسی‌ها تا پیدا شدن یک پروکسی بدون بلاک
-              for (let i = 0; i < proxies.length; i++) {
-                const uri = proxies[i];
-                log(`\n🔌 تست پروکسی ${i+1}/${proxies.length}: ${uri.substring(0, 60)}...`);
-
-                // بستن پردازه‌های قبلی اگر وجود داشته باشند
+              // ---------- Helper to start browser with proxy at given index ----------
+              async function startBrowserWithProxy(idx) {
+                // Kill previous
                 if (xrayProc) { xrayProc.kill(); await sleep(500); }
-                if (browser) { try { await browser.close(); } catch(_) {} }
+                if (browser) { try { await browser.close(); } catch(e){} }
 
-                // راه‌اندازی Xray
-                xrayProc = await startXray(uri, i);
-                if (!xrayProc) continue;
-                if (!testCurl(10808)) {
-                  err('تست curl ناموفق. سراغ بعدی.');
-                  continue;
-                }
+                const uri = proxies[idx];
+                log(`🔌 Trying proxy #${idx+1}: ${uri.substring(0,60)}...`);
+                xrayProc = await startXray(uri, idx);
+                if (!xrayProc) throw new Error('Xray start failed');
+                if (!testCurl(10808)) throw new Error('Curl failed');
 
-                // باز کردن مرورگر
+                browser = await puppeteer.launch({
+                  headless:'new',
+                  args: ['--no-sandbox','--disable-setuid-sandbox','--proxy-server=socks5://127.0.0.1:10808','--disable-dev-shm-usage','--window-size=1280,720'],
+                  defaultViewport:null
+                });
+                page = await browser.newPage();
+                await page.setViewport({width:1280,height:720,deviceScaleFactor:1});
+                await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
+              }
+
+              // Find first working proxy
+              for (let i=0; i<proxies.length; i++) {
                 try {
-                  browser = await puppeteer.launch({
-                    headless: 'new',
-                    args: [
-                      '--no-sandbox','--disable-setuid-sandbox',
-                      '--proxy-server=socks5://127.0.0.1:10808',
-                      '--disable-dev-shm-usage','--window-size=1280,720'
-                    ],
-                    defaultViewport: null
-                  });
-                  page = await browser.newPage();
-                  await page.setViewport({ width: 1280, height: 720, deviceScaleFactor: 1 });
-                  await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
-
-                  await page.goto(TARGET_URL, { waitUntil: 'networkidle2', timeout: 30000 });
+                  await startBrowserWithProxy(i);
+                  await page.goto(TARGET_URL, {waitUntil:'networkidle2',timeout:30000});
                   await sleep(2000);
-
-                  // بررسی بلاک
-                  const blocked = await checkPageBlocked(page);
-                  if (blocked) {
-                    log('⛔ پیغام بلاک/اکسس دینید شناسایی شد. امتحان پروکسی بعدی...');
+                  if (await isPageBlocked(page)) {
+                    log('⛔ Block page detected for this proxy.');
                     continue;
                   }
-
-                  log('✅ پروکسی سالم و بدون بلاک. اتصال نهایی شد.');
                   proxyFound = true;
+                  curProxyIdx = i;
+                  log('✅ Connected with working proxy.');
                   break;
                 } catch(e) {
-                  err('خطا در بارگذاری صفحه با این پروکسی:', e.message);
-                  continue;
+                  err('Failed trying this proxy:', e.message);
                 }
               }
+              if (!proxyFound) { err('No working proxy found'); process.exit(1); }
 
-              if (!proxyFound || !browser || !page) {
-                err('❌ هیچ پروکسی سالمی یافت نشد.');
-                if (browser) { try { await browser.close(); } catch(_) {} }
-                if (xrayProc) { xrayProc.kill(); }
-                process.exit(1);
+              // Notify owner
+              if (OWNER) await sendMessage(OWNER, '🟢 Bot ready on Groq with good proxy.');
+              else log('⚠️ No owner chat id.');
+
+              // Purge old updates
+              let offset=null;
+              while(true){
+                const r = await api('getUpdates', offset?{limit:10,offset_id:offset}:{limit:10});
+                if (r.error) break;
+                const ups = r?.data?.updates;
+                if (!ups||ups.length===0) break;
+                if (r.data?.next_offset_id) offset=r.data.next_offset_id; else break;
               }
-
-              // ربات آماده به کار
-              if (OWNER) await sendMessage(OWNER, '🟢 ربات Groq با پروکسی سالم آماده شد.');
-              else log('⚠️ OWNER_CHAT_ID ندارد.');
-
-              // پاک‌سازی تاریخچه
-              let offset = null;
-              while (true) {
-                const params = { limit: 10 };
-                if (offset !== null) params.offset_id = offset;
-                const upRes = await api('getUpdates', params);
-                if (upRes.error) break;
-                const updates = upRes?.data?.updates;
-                if (!updates || updates.length === 0) break;
-                if (upRes.data?.next_offset_id) offset = upRes.data.next_offset_id;
-                else break;
-              }
-
-              // اسکرین‌شات اولیه
               if (OWNER) await updateScreenshot(page, OWNER);
 
-              let consecutiveErrors = 0;
-              const END_TIME = Date.now() + 17380 * 1000;
+              let consecutiveErrors=0;
+              const END_TIME = Date.now() + 17380*1000;
 
-              while (Date.now() < END_TIME) {
+              while (Date.now()<END_TIME) {
                 try {
-                  const params = { limit: 10 };
-                  if (offset !== null) params.offset_id = offset;
+                  const params = { limit:10 };
+                  if (offset!==null) params.offset_id = offset;
                   const upRes = await api('getUpdates', params);
                   if (upRes.error) {
                     consecutiveErrors++;
-                    if (consecutiveErrors >= 3) { offset = null; consecutiveErrors = 0; }
+                    if (consecutiveErrors>=3) { offset=null; consecutiveErrors=0; }
                     await sleep(5000);
                     continue;
                   }
-                  consecutiveErrors = 0;
+                  consecutiveErrors=0;
                   const updates = upRes?.data?.updates;
 
                   if (updates?.length) {
                     for (const upd of updates) {
-                      if (upd.type !== 'NewMessage') continue;
+                      if (upd.type!=='NewMessage') continue;
                       const chatId = upd.chat_id;
                       const msg = upd.new_message;
                       if (!msg) continue;
 
                       const state = getState(chatId);
-                      const buttonId = msg.aux_data?.button_id;
-                      const text = (msg.text || '').trim();
+                      const btnId = msg.aux_data?.button_id;
+                      const text = (msg.text||'').trim();
 
                       await deleteTempMessages(chatId);
 
-                      if (buttonId) {
-                        log(`🔘 دکمه ${buttonId} از ${chatId}`);
-                        state.typingMode = false;
-                        state.selectionMode = false;
+                      if (btnId) {
+                        log(`🔘 ${btnId} from ${chatId}`);
+                        state.typing=false; state.selecting=false;
 
-                        try {
-                          switch(buttonId) {
-                            case 'SELECT':
-                              state.selectionMode = true;
-                              const count = await highlightClickableElements(page);
-                              if (count === 0) {
-                                await sendMessage(chatId, '⚠️ هیچ عنصری یافت نشد.');
-                                state.selectionMode = false;
-                                continue;
+                        switch(btnId) {
+                          case 'SELECT':
+                            state.selecting=true;
+                            const cnt = await highlightClickableElements(page);
+                            if (cnt===0) { await sendMessage(chatId,'⚠️ No elements found.'); state.selecting=false; continue; }
+                            await updateScreenshot(page, chatId);
+                            const m = await sendMessage(chatId, `🔢 ${cnt} elements (including popups/cookies) tagged. Send number.`);
+                            if (m?.data?.message_id) state.tempMsgs.push(m.data.message_id);
+                            break;
+                          case 'TYPE':
+                            state.typing=true;
+                            const tm = await sendMessage(chatId, '⌨️ Send text:');
+                            if (tm?.data?.message_id) state.tempMsgs.push(tm.data.message_id);
+                            break;
+                          case 'ENTER':
+                            await page.keyboard.press('Enter');
+                            await page.waitForNavigation({waitUntil:'networkidle2',timeout:3000}).catch(()=>{});
+                            await sleep(800);
+                            await updateScreenshot(page, chatId);
+                            break;
+                          case 'SCREENSHOT':
+                            await updateScreenshot(page, chatId);
+                            break;
+                          case 'REFRESH':
+                            await page.reload({waitUntil:'networkidle2',timeout:30000});
+                            await sleep(1000);
+                            // check if blocked after refresh
+                            if (await isPageBlocked(page)) {
+                              await sendMessage(chatId, '⚠️ Page blocked after refresh. Try changing proxy.');
+                            }
+                            await updateScreenshot(page, chatId);
+                            break;
+                          case 'CHANGE_PROXY':
+                            // switch to next proxy
+                            curProxyIdx = (curProxyIdx+1) % proxies.length;
+                            let success = false;
+                            for (let attempts=0; attempts<proxies.length; attempts++) {
+                              try {
+                                await startBrowserWithProxy(curProxyIdx);
+                                await page.goto(TARGET_URL, {waitUntil:'networkidle2',timeout:30000});
+                                await sleep(2000);
+                                if (await isPageBlocked(page)) {
+                                  log('Proxy still blocked, trying next...');
+                                  curProxyIdx = (curProxyIdx+1) % proxies.length;
+                                  continue;
+                                }
+                                success = true;
+                                break;
+                              } catch(e) {
+                                log('Error with proxy, next...');
+                                curProxyIdx = (curProxyIdx+1) % proxies.length;
                               }
+                            }
+                            if (success) {
+                              await sendMessage(chatId, `🔁 Switched to proxy #${curProxyIdx+1}`);
                               await updateScreenshot(page, chatId);
-                              const sMsg = await sendMessage(chatId, `🔢 ${count} عنصر (iframe/مدال). شماره را بفرستید.`);
-                              if (sMsg?.data?.message_id) state.tempMessageIds.push(sMsg.data.message_id);
-                              break;
-
-                            case 'TYPE':
-                              state.typingMode = true;
-                              const tMsg = await sendMessage(chatId, '⌨️ متن را ارسال کنید:');
-                              if (tMsg?.data?.message_id) state.tempMessageIds.push(tMsg.data.message_id);
-                              break;
-
-                            case 'ENTER':
-                              const navPromise = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 3000 }).catch(() => null);
-                              await page.keyboard.press('Enter');
-                              await navPromise;
-                              await sleep(800);
-                              await updateScreenshot(page, chatId);
-                              break;
-
-                            case 'SCREENSHOT':
-                              await updateScreenshot(page, chatId);
-                              break;
-                          }
-                        } catch(e) {
-                          err('خطا در اجرای دکمه:', e.message);
-                          await updateScreenshot(page, chatId);
+                            } else {
+                              await sendMessage(chatId, '❌ No working proxy found.');
+                              process.exit(1);
+                            }
+                            break;
                         }
                       }
-                      // ورودی متنی
-                      else if (state.selectionMode && text) {
+                      // Text inputs
+                      else if (state.selecting && text) {
                         const num = parseInt(text);
-                        if (isNaN(num) || num <= 0) {
-                          const em = await sendMessage(chatId, '❌ عدد معتبر وارد کنید.');
-                          if (em?.data?.message_id) state.tempMessageIds.push(em.data.message_id);
+                        if (isNaN(num)||num<=0) {
+                          const em=await sendMessage(chatId,'❌ Invalid number.');
+                          if (em?.data?.message_id) state.tempMsgs.push(em.data.message_id);
                           continue;
                         }
-                        const clicked = await clickByNumber(page, num);
-                        if (!clicked) {
-                          const em = await sendMessage(chatId, `❌ عنصر ${num} پیدا نشد.`);
-                          if (em?.data?.message_id) state.tempMessageIds.push(em.data.message_id);
-                        }
+                        await clickByNumber(page, num);
                         await removeHighlights(page);
-                        state.selectionMode = false;
+                        state.selecting=false;
                         await sleep(300);
                         await updateScreenshot(page, chatId);
                       }
-                      else if (state.typingMode && text) {
-                        state.typingMode = false;
-                        log(`⌨️ تایپ "${text}"`);
-                        await page.keyboard.type(text, { delay: 50 });
+                      else if (state.typing && text) {
+                        state.typing=false;
+                        await page.keyboard.type(text, {delay:50});
                         await sleep(300);
                         await updateScreenshot(page, chatId);
                       }
-                      else if (text === '/start') {
-                        await sendMessage(chatId, '🟢 ربات Groq آماده.');
-                        if (!state.lastScreenshotMsgId) {
-                          await updateScreenshot(page, chatId);
-                        }
+                      else if (text==='/start') {
+                        await sendMessage(chatId, '🟢 Groq bot ready.');
+                        if (!state.lastShotId) await updateScreenshot(page, chatId);
                       }
                     }
                     if (upRes.data?.next_offset_id) offset = upRes.data.next_offset_id;
                   }
                 } catch(e) {
-                  err('خطای حلقه اصلی:', e.message);
+                  err('Main loop error:', e.message);
                   await sleep(5000);
                 }
                 await sleep(4000);
               }
 
-              log('⏰ خاموشی خودکار.');
-              await browser.close();
-              xrayProc.kill();
-              if (OWNER) await sendMessage(OWNER, '⏹️ ربات خاموش شد.');
-            } catch(fatalError) {
-              err('🚨 خطای مرگبار:', fatalError.message);
-              console.error(fatalError);
+              log('⏰ Auto shutdown.');
+              if (browser) await browser.close();
+              if (xrayProc) xrayProc.kill();
+              if (OWNER) await sendMessage(OWNER, '⏹️ Bot stopped.');
+            } catch(fatal) {
+              err('FATAL:', fatal.message);
               process.exit(1);
             }
           })();
