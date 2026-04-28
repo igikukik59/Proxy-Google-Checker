@@ -1,4 +1,4 @@
-name: 🌐 Groq Ultimate Smart Browser (Challenge Solver)
+name: 🌐 Groq Force Click – Popup Solver
 
 on:
   workflow_dispatch:
@@ -23,7 +23,7 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای ربات نهایی
+      - name: 🤖 اجرای ربات با کلیک تضمینی
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           RUBIKA_OWNER_CHAT_ID: ${{ secrets.RUBIKA_OWNER_CHAT_ID }}
@@ -220,77 +220,57 @@ jobs:
             } catch(e) { return false; }
           }
 
-          // ======================== کلیک طبیعی انسانی ========================
-          async function humanClick(page, x, y) {
-            const steps = 10;
-            const startX = Math.random() * 200;
-            const startY = Math.random() * 200;
+          // ======================== کلیک تضمینی (Force Click) ========================
+          async function forceClickOnElement(page, number) {
+            // گرفتن مختصات مرکز المان
+            const info = await safeEvaluate(page, (num) => {
+              const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
+              if (!el) return null;
+              el.scrollIntoView({ block: 'center', inline: 'center' });
+              const rect = el.getBoundingClientRect();
+              return {
+                tag: el.tagName,
+                x: rect.x + rect.width/2,
+                y: rect.y + rect.height/2,
+                visible: rect.width > 0 && rect.height > 0
+              };
+            }, number);
+            if (!info || !info.visible) return false;
+
+            // اول تلاش با کلیک جاوااسکریپتی (ممکنه بعضی دکمه‌ها رو فعال کنه)
+            await safeEvaluate(page, (num) => {
+              const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
+              if (el) {
+                el.click();
+                el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+              }
+            }, number);
+            await sleep(400);
+
+            // حالا کلیک فیزیکی ماوس (حرکت شبیه‌سازی شده)
+            const steps = 12;
+            const startX = Math.random() * 300;
+            const startY = Math.random() * 300;
             await page.mouse.move(startX, startY);
-            await sleep(100);
+            await sleep(80);
             for (let i = 1; i <= steps; i++) {
-              const curX = startX + (x - startX) * (i / steps) + (Math.random() - 0.5) * 4;
-              const curY = startY + (y - startY) * (i / steps) + (Math.random() - 0.5) * 4;
+              const curX = startX + (info.x - startX) * (i / steps) + (Math.random() - 0.5) * 6;
+              const curY = startY + (info.y - startY) * (i / steps) + (Math.random() - 0.5) * 6;
               await page.mouse.move(curX, curY);
-              await sleep(20 + Math.random() * 10);
+              await sleep(15 + Math.random() * 15);
             }
-            await page.mouse.move(x, y);
-            await sleep(150 + Math.random() * 100);
-            await page.mouse.click(x, y);
-            await sleep(300 + Math.random() * 200);
-          }
+            await page.mouse.move(info.x, info.y);
+            await sleep(100 + Math.random() * 50);
+            await page.mouse.click(info.x, info.y);
+            await sleep(300);
 
-          // ======================== حل چالش کلاودفلر ========================
-          async function solveChallengeAction(page) {
-            log('🔍 جستجوی چالش کلاودفلر...');
-            // ابتدا چک کنیم آی فریم چالش وجود دارد
-            const challengeInfo = await safeEvaluate(page, () => {
-              // انواع مختلف آی فریم چالش
-              const iframes = Array.from(document.querySelectorAll('iframe'));
-              for (const iframe of iframes) {
-                const src = iframe.src.toLowerCase();
-                if (src.includes('challenge') || src.includes('cloudflare') || src.includes('recaptcha') || src.includes('cf-')) {
-                  const rect = iframe.getBoundingClientRect();
-                  if (rect.width > 0 && rect.height > 0) {
-                    return { type: 'iframe', x: rect.x + rect.width/2, y: rect.y + rect.height/2 };
-                  }
-                }
-              }
-              // اگر آی فریم پیدا نشد، بررسی المان‌های چالش
-              const checkDivs = document.querySelectorAll('div[class*="challenge"], div[id*="challenge"], input[type="checkbox"]');
-              for (const el of checkDivs) {
-                if (el.offsetParent !== null) {
-                  const rect = el.getBoundingClientRect();
-                  if (rect.width > 0 && rect.height > 0) {
-                    return { type: 'element', x: rect.x + rect.width/2, y: rect.y + rect.height/2 };
-                  }
-                }
-              }
-              return null;
-            });
-
-            if (!challengeInfo) {
-              return { success: false, message: 'چالشی پیدا نشد' };
+            // اگر المان iframe بود، یک کلیک کمکی هم میزنیم
+            if (info.tag === 'IFRAME') {
+              await page.mouse.click(info.x, info.y + 4);
+              await sleep(200);
             }
 
-            log(`🎯 چالش یافت شد در (${challengeInfo.x.toFixed(0)}, ${challengeInfo.y.toFixed(0)})`);
-            // کلیک انسانی روی نقطه مرکز
-            await humanClick(page, challengeInfo.x, challengeInfo.y);
-            await sleep(2000);
-
-            // اگر هنوز مسدود است، کلیک دوم با جابجایی کم
-            if (await isPageBlocked(page)) {
-              log('🔄 کلیک دوم در محل کمی پایین‌تر...');
-              await page.mouse.click(challengeInfo.x, challengeInfo.y + 5);
-              await sleep(2000);
-            }
-
-            // بررسی نهایی
-            const blocked = await isPageBlocked(page);
-            if (!blocked) {
-              return { success: true, message: 'چالش با موفقیت حل شد' };
-            } else {
-              return { success: false, message: 'چالش هنوز باقی است' };
-            }
+            return true;
           }
 
           // ======================== انتخاب هوشمند عناصر ========================
@@ -395,49 +375,47 @@ jobs:
             });
           }
 
-          async function clickByNumber(page, number) {
-            try {
-              const info = await safeEvaluate(page, (num) => {
-                const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
-                if (!el) return null;
-                el.scrollIntoView({ block: 'center', inline: 'center' });
-                const rect = el.getBoundingClientRect();
-                return {
-                  tag: el.tagName,
-                  isIframe: el.getAttribute('data-rubika-is-iframe') === '1',
-                  x: rect.x + rect.width/2,
-                  y: rect.y + rect.height/2
-                };
-              }, number);
-              if (!info) return false;
-
-              const navPromise = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 5000 }).catch(() => null);
-
-              if (info.tag === 'IFRAME' || info.isIframe) {
-                await humanClick(page, info.x, info.y);
-                if (await isPageBlocked(page)) {
-                  await page.mouse.click(info.x, info.y + 5);
-                  await sleep(2000);
+          // ======================== حل چالش کلاودفلر ========================
+          async function solveChallengeAction(page) {
+            log('🔍 جستجوی چالش...');
+            const info = await safeEvaluate(page, () => {
+              const iframes = Array.from(document.querySelectorAll('iframe'));
+              for (const iframe of iframes) {
+                const src = iframe.src.toLowerCase();
+                if (src.includes('challenge') || src.includes('cloudflare') || src.includes('recaptcha') || src.includes('cf-')) {
+                  const rect = iframe.getBoundingClientRect();
+                  if (rect.width > 0 && rect.height > 0) return { type:'iframe', x: rect.x+rect.width/2, y: rect.y+rect.height/2 };
                 }
-              } else {
-                await safeEvaluate(page, (num) => {
-                  const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
-                  if (el) el.click();
-                }, number);
-                await humanClick(page, info.x, info.y); // برای طبیعی‌سازی
               }
+              const els = document.querySelectorAll('div[class*="challenge"], div[id*="challenge"], input[type="checkbox"]');
+              for (const el of els) {
+                if (el.offsetParent) {
+                  const rect = el.getBoundingClientRect();
+                  if (rect.width>0 && rect.height>0) return { type:'element', x: rect.x+rect.width/2, y: rect.y+rect.height/2 };
+                }
+              }
+              return null;
+            });
+            if (!info) return { success:false, message:'چالشی پیدا نشد' };
 
-              await navPromise;
-              await sleep(800);
-              return true;
-            } catch(e) {
-              log('⚠️ مدیریت ناوبری پس از کلیک');
-              await sleep(2000);
-              return true;
+            // حرکت ماوس و کلیک
+            const steps=10, startX=Math.random()*200, startY=Math.random()*200;
+            await page.mouse.move(startX, startY);
+            for (let i=1;i<=steps;i++) {
+              await page.mouse.move(startX+(info.x-startX)*(i/steps)+(Math.random()-0.5)*4, startY+(info.y-startY)*(i/steps)+(Math.random()-0.5)*4);
+              await sleep(15);
             }
+            await page.mouse.click(info.x, info.y);
+            await sleep(1500);
+            if (await isPageBlocked(page)) {
+              await page.mouse.click(info.x, info.y+5);
+              await sleep(1500);
+            }
+            const stillBlocked = await isPageBlocked(page);
+            return { success:!stillBlocked, message: stillBlocked?'چالش هنوز باقی است':'چالش با موفقیت حل شد' };
           }
 
-          // ======================== کی‌پد با دکمه چالش ========================
+          // ======================== کی‌پد با دکمه Force Click ========================
           function buildControlKeypad() {
             return {
               rows: [
@@ -447,7 +425,8 @@ jobs:
                 { buttons: [{ id: "SCREENSHOT",     type: "Simple", button_text: "📸 اسکرین‌شات" }] },
                 { buttons: [{ id: "REFRESH",        type: "Simple", button_text: "🔄 رفرش صفحه" }] },
                 { buttons: [{ id: "CHANGE_PROXY",   type: "Simple", button_text: "🔁 عوض کردن پروکسی" }] },
-                { buttons: [{ id: "SOLVE_CHALLENGE",type: "Simple", button_text: "🧩 حل چالش" }] }
+                { buttons: [{ id: "SOLVE_CHALLENGE",type: "Simple", button_text: "🧩 حل چالش" }] },
+                { buttons: [{ id: "FORCE_CLICK",    type: "Simple", button_text: "🖱️ کلیک قوی (Force)" }] }
               ],
               resize_keyboard: true,
               one_time_keyboard: false
@@ -547,7 +526,7 @@ jobs:
                   await page.goto(TARGET_URL, { waitUntil: 'networkidle2', timeout: 30000 });
                   await sleep(2000);
                   if (await isPageBlocked(page)) {
-                    log('⛔ پیام بلاک دارد.');
+                    log('⛔ بلاک.');
                     continue;
                   }
                   proxyFound = true;
@@ -564,8 +543,8 @@ jobs:
                 process.exit(1);
               }
 
-              if (OWNER) await sendMessage(OWNER, '🟢 ربات روی Groq با پروکسی سالم آماده شد (دکمه حل چالش موجود).');
-              else log('⚠️ OWNER_CHAT_ID ندارد.');
+              if (OWNER) await sendMessage(OWNER, '🟢 ربات Groq با کلیک قوی آماده شد.');
+              else log('⚠️ OWNER_CHAT_ID.');
 
               let offset = null;
               while (true) {
@@ -627,7 +606,7 @@ jobs:
                                 continue;
                               }
                               await updateScreenshot(page, chatId);
-                              const sMsg = await sendMessage(chatId, `🔢 ${count} عنصر (شامل پاپ‌آپ و چالش) نشانه‌گذاری شد. شماره را بفرستید.`);
+                              const sMsg = await sendMessage(chatId, `🔢 ${count} عنصر نشانه‌گذاری شد. شماره را بفرستید یا از Force Click استفاده کنید.`);
                               if (sMsg?.data?.message_id) state.tempMessageIds.push(sMsg.data.message_id);
                               break;
 
@@ -653,7 +632,7 @@ jobs:
                               await page.reload({ waitUntil: 'networkidle2', timeout: 30000 });
                               await sleep(1000);
                               if (await isPageBlocked(page)) {
-                                await sendMessage(chatId, '⚠️ بعد از رفرش صفحه همچنان بلاک است.');
+                                await sendMessage(chatId, '⚠️ بعد از رفرش بلاک ماند.');
                               }
                               await updateScreenshot(page, chatId);
                               break;
@@ -667,36 +646,40 @@ jobs:
                                   await page.goto(TARGET_URL, { waitUntil: 'networkidle2', timeout: 30000 });
                                   await sleep(2000);
                                   if (await isPageBlocked(page)) {
-                                    log('پروکسی جدید بلاک دارد.');
                                     newIdx = (newIdx + 1) % proxies.length;
                                     continue;
                                   }
                                   switched = true;
                                   currentProxyIndex = newIdx;
                                   break;
-                                } catch(e) {
-                                  newIdx = (newIdx + 1) % proxies.length;
-                                }
+                                } catch(e) { newIdx = (newIdx + 1) % proxies.length; }
                               }
                               if (switched) {
-                                await sendMessage(chatId, `🔁 پروکسی به شماره ${currentProxyIndex+1} تغییر کرد.`);
+                                await sendMessage(chatId, `🔁 پروکسی ${currentProxyIndex+1} فعال شد.`);
                                 await updateScreenshot(page, chatId);
                               } else {
-                                await sendMessage(chatId, '❌ هیچ پروکسی سالمی یافت نشد.');
+                                await sendMessage(chatId, '❌ پروکسی سالم پیدا نشد.');
                                 process.exit(1);
                               }
                               break;
 
                             case 'SOLVE_CHALLENGE':
-                              const result = await solveChallengeAction(page);
-                              await sendMessage(chatId, result.message);
-                              if (!result.success) {
-                                // اگر حل نشد، باز هم اسکرین‌شات بگیر تا کاربر ببیند
-                                await updateScreenshot(page, chatId);
-                              } else {
-                                await sleep(1000);
-                                await updateScreenshot(page, chatId);
-                              }
+                              const res = await solveChallengeAction(page);
+                              await sendMessage(chatId, res.message);
+                              await updateScreenshot(page, chatId);
+                              break;
+
+                            case 'FORCE_CLICK':
+                              // اینجا نیاز به شماره دارد؛ چون state.selectionMode را false کردیم، اگر هنوز شماره‌ای نیومده باید درخواست کنیم.
+                              // ولی کاربر ممکن است قبلاً شماره را فرستاده باشد، بنابراین بررسی می‌کنیم که آیا قبلاً شماره‌ای در state ذخیره شده؟
+                              // نه، پس ما از کاربر شماره می‌خواهیم.
+                              await sendMessage(chatId, '🖱️ شماره المان را برای کلیک قوی وارد کنید:');
+                              // اینجا یک حالت جدید forceClickPending اضافه نمی‌کنیم، چون state.selectionMode را false کردیم. 
+                              // در عوض از selectionMode استفاده می‌کنیم ولی نوع کلیک را با یک فلگ تشخیص می‌دهیم.
+                              // راه ساده: یک متغیر در state به نام forceClickPending
+                              if (!chatStates.has(chatId)) getState(chatId);
+                              const stt = chatStates.get(chatId);
+                              stt.forceClickPending = true;
                               break;
                           }
                         } catch(e) {
@@ -705,34 +688,54 @@ jobs:
                         }
                       }
                       // ورودی‌های متنی
-                      else if (state.selectionMode && text) {
-                        const num = parseInt(text);
-                        if (isNaN(num) || num <= 0) {
-                          const em = await sendMessage(chatId, '❌ عدد معتبر وارد کنید.');
-                          if (em?.data?.message_id) state.tempMessageIds.push(em.data.message_id);
+                      else if (text) {
+                        // forceClickPending
+                        if (state.forceClickPending) {
+                          const num = parseInt(text);
+                          if (isNaN(num) || num <= 0) {
+                            await sendMessage(chatId, '❌ عدد نامعتبر.');
+                          } else {
+                            const ok = await forceClickOnElement(page, num);
+                            if (!ok) {
+                              await sendMessage(chatId, '❌ کلیک قوی ناموفق.');
+                            } else {
+                              // موفق
+                              await sendMessage(chatId, '🖱️ کلیک قوی انجام شد.');
+                              await sleep(1000);
+                              // حذف هایلایت‌ها
+                              await removeHighlights(page);
+                              await updateScreenshot(page, chatId);
+                            }
+                          }
+                          state.forceClickPending = false;
                           continue;
                         }
-                        const clicked = await clickByNumber(page, num);
-                        if (!clicked) {
-                          const em = await sendMessage(chatId, `❌ عنصر ${num} پیدا نشد.`);
-                          if (em?.data?.message_id) state.tempMessageIds.push(em.data.message_id);
-                        }
-                        await removeHighlights(page);
-                        state.selectionMode = false;
-                        await sleep(300);
-                        await updateScreenshot(page, chatId);
-                      }
-                      else if (state.typingMode && text) {
-                        state.typingMode = false;
-                        log(`⌨️ تایپ "${text}"`);
-                        await page.keyboard.type(text, { delay: 50 });
-                        await sleep(300);
-                        await updateScreenshot(page, chatId);
-                      }
-                      else if (text === '/start') {
-                        await sendMessage(chatId, '🟢 ربات Groq با دکمه حل چالش آماده.');
-                        if (!state.lastScreenshotMsgId) {
+                        else if (state.selectionMode) {
+                          const num = parseInt(text);
+                          if (isNaN(num) || num <= 0) {
+                            const em = await sendMessage(chatId, '❌ عدد معتبر وارد کنید.');
+                            if (em?.data?.message_id) state.tempMessageIds.push(em.data.message_id);
+                            continue;
+                          }
+                          // کلیک معمولی (DOM)
+                          await safeEvaluate(page, (n) => {
+                            const el = document.querySelector(`[data-rubika-sel-id="${n}"]`);
+                            if (el) el.click();
+                          }, num);
+                          await sleep(500);
+                          await removeHighlights(page);
+                          state.selectionMode = false;
                           await updateScreenshot(page, chatId);
+                        }
+                        else if (state.typingMode) {
+                          state.typingMode = false;
+                          await page.keyboard.type(text, { delay: 50 });
+                          await sleep(300);
+                          await updateScreenshot(page, chatId);
+                        }
+                        else if (text === '/start') {
+                          await sendMessage(chatId, '🟢 ربات آماده با Force Click.');
+                          if (!state.lastScreenshotMsgId) await updateScreenshot(page, chatId);
                         }
                       }
                     }
