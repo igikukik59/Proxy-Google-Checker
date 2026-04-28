@@ -1,4 +1,4 @@
-name: 🌐 مرورگر راه دور (نسخه دائمی با Deno - DuckDuckGo)
+name: 🌐 مرورگر راه دور (نسخه نهایی با تبدیل خودکار ویدیو)
 
 on:
   workflow_dispatch:
@@ -35,7 +35,7 @@ jobs:
           rm -rf /tmp/downloaded_videos /tmp/downloaded_images /tmp/downloaded_files /tmp/video_chunks_* /tmp/xray_*.json /tmp/shot_* /tmp/sel_* /tmp/vid_* /tmp/img_* /tmp/scroll_* /tmp/fullshot_* /tmp/page_* 2>/dev/null
           df -h /tmp
 
-      - name: 🤖 اجرای ربات (نسخه نهایی با Deno)
+      - name: 🤖 اجرای ربات (نسخه نهایی کامل)
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           RUBIKA_OWNER_CHAT_ID: ${{ secrets.RUBIKA_OWNER_CHAT_ID }}
@@ -208,6 +208,32 @@ jobs:
             if (!fileId) return false;
             const msgId = await sendFileToChat(chatId, fileId, caption, keypad);
             return !!msgId;
+          }
+
+          // ======================== تبدیل خودکار ویدیو به h264 + AAC ========================
+          async function ensureCompatibleVideo(inputPath) {
+            // بررسی کدک با ffprobe
+            try {
+              const probe = execSync(`ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 "${inputPath}"`, { encoding: 'utf8' }).trim();
+              if (probe === 'h264') {
+                // در حال حاضر h264 است، بررسی صدا (اختیاری، ولی معمولاً اگر صدا aac نباشد روبیکا رد نمی‌کند)
+                const audioProbe = execSync(`ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of default=noprint_wrappers=1:nokey=1 "${inputPath}"`, { encoding: 'utf8' }).trim();
+                if (audioProbe === 'aac') {
+                  log('ویدیو از قبل h264 + AAC است.');
+                  return inputPath; // سازگار است
+                }
+              }
+            } catch(e) { /* اگر ffprobe خطا داد، تبدیل می‌کنیم */ }
+
+            log('ویدیو نیاز به تبدیل دارد...');
+            const convertedPath = inputPath.replace(/\.\w+$/, '_converted.mp4');
+            try {
+              execSync(`ffmpeg -i "${inputPath}" -c:v libx264 -c:a aac -movflags +faststart "${convertedPath}"`, { stdio: 'inherit', timeout: 600000 });
+              return convertedPath;
+            } catch(e) {
+              err('تبدیل با ffmpeg شکست:', e.message);
+              return null;
+            }
           }
 
           // ======================== تقسیم هوشمند ویدیو ========================
@@ -729,20 +755,18 @@ jobs:
             const dir = '/tmp/downloaded_videos';
             if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
             const timestamp = Date.now();
-          
-            // دستور yt‑dlp با انتخاب فرمت h264+aac برای سازگاری با روبیکا
+
+            // دستور yt‑dlp بدون نگرانی از کدک چون بعداً تبدیل می‌کنیم
             const ytDlpCmd = [
               'yt-dlp',
               '--no-playlist',
               '--merge-output-format', 'mp4',
               '--force-ipv4',
-              '--user-agent', "'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'",
+              "--user-agent", "'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'",
               '--extractor-args', 'youtube:player_client=android_vr',
-              '--proxy', 'socks5://127.0.0.1:10808',
-              '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]'
+              '--proxy', 'socks5://127.0.0.1:10808'
             ].join(' ');
-          
-            // blob URLs
+
             if (type === 'direct' && url.startsWith('blob:')) {
               const outPath = path.join(dir, `video_${timestamp}_page.mp4`);
               try {
@@ -750,8 +774,7 @@ jobs:
                 return { ok: true, path: outPath };
               } catch(e) { err('yt-dlp blob failed:', e.message); return { ok: false }; }
             }
-          
-            // لینک مستقیم
+
             if (type === 'direct') {
               const outPath = path.join(dir, `video_${timestamp}_${path.basename(new URL(url).pathname) || 'video.mp4'}`);
               try {
@@ -765,19 +788,15 @@ jobs:
                   return { ok: true, path: fallbackPath };
                 } catch(e2) { err('yt-dlp نیز شکست:', e2.message); return { ok: false }; }
               }
-            } 
-            // embed (یوتیوب، ویمئو و…)
-            else if (type === 'embed') {
+            } else if (type === 'embed') {
               const outPath = path.join(dir, `video_${timestamp}_${platform || 'embed'}.mp4`);
               try {
                 execSync(`${ytDlpCmd} -o "${outPath}" "${url}"`, { stdio: 'inherit', timeout: 600000 });
                 return { ok: true, path: outPath };
               } catch(e) { err('yt-dlp embed شکست:', e.message); return { ok: false }; }
             }
-            
             return { ok: false };
           }
-
 
           // ======================== اسکرین‌شات کامل و PDF ========================
           async function takeFullPageScreenshot(page, chatId, keypad) {
@@ -1140,10 +1159,22 @@ jobs:
               await sendMessage(chatId, `📥 دانلود ویدیوی شماره ${num} ...`);
               const res = await downloadVideo(sel.src, sel.type, state.pageUrlAtVideo, sel.platform, state.pageUrlAtVideo);
               if (res.ok) {
-                const baseName = path.basename(res.path, path.extname(res.path));
-                const sent = await splitAndSendVideo(chatId, res.path, baseName, keypad);
+                // بررسی و تبدیل کدک
+                const compatiblePath = await ensureCompatibleVideo(res.path);
+                if (!compatiblePath) {
+                  await sendMessage(chatId, '❌ تبدیل ویدیو به فرمت سازگار ممکن نشد.');
+                  await removeVideoHighlights(page);
+                  resetAllStates(state);
+                  return;
+                }
+                const baseName = path.basename(compatiblePath, path.extname(compatiblePath));
+                const sent = await splitAndSendVideo(chatId, compatiblePath, baseName, keypad);
                 if (!sent) await sendMessage(chatId, '❌ ارسال ویدیو ناموفق.');
+                // پاکسازی فایل اصلی و احتمالاً فایل تبدیل‌شده
                 try { fs.unlinkSync(res.path); } catch(e) {}
+                if (compatiblePath !== res.path) {
+                  try { fs.unlinkSync(compatiblePath); } catch(e) {}
+                }
               } else await sendMessage(chatId, '❌ دانلود ویدیو ناموفق.');
               await removeVideoHighlights(page);
               resetAllStates(state);
@@ -1371,7 +1402,7 @@ jobs:
                         await sendMessage(chatId, '⚠️ خطا. حالت‌ها ریست شد.');
                         try { await updateScreenshot(page, chatId); } catch(e) {}
                       }
-                      // به‌روزرسانی page بعد از هر عملیات (مثلاً تعویض پروکسی)
+                      // به‌روزرسانی page بعد از هر عملیات
                       page = browserManager.page;
                     }
                     if (upRes.data?.next_offset_id) offset = upRes.data.next_offset_id;
