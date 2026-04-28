@@ -730,8 +730,17 @@ jobs:
             if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
             const timestamp = Date.now();
           
-            // دستور yt-dlp با client=android_vr (بدون نیاز به JS Runtime)
-            const ytDlpCmd = `yt-dlp --no-playlist --merge-output-format mp4 --force-ipv4 --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36' --extractor-args 'youtube:player_client=android_vr' --proxy socks5://127.0.0.1:10808`;
+            // دستور yt‑dlp با انتخاب فرمت h264+aac برای سازگاری با روبیکا
+            const ytDlpCmd = [
+              'yt-dlp',
+              '--no-playlist',
+              '--merge-output-format', 'mp4',
+              '--force-ipv4',
+              '--user-agent', "'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'",
+              '--extractor-args', 'youtube:player_client=android_vr',
+              '--proxy', 'socks5://127.0.0.1:10808',
+              '-f', 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]'
+            ].join(' ');
           
             // blob URLs
             if (type === 'direct' && url.startsWith('blob:')) {
@@ -757,7 +766,7 @@ jobs:
                 } catch(e2) { err('yt-dlp نیز شکست:', e2.message); return { ok: false }; }
               }
             } 
-            // embed (یوتیوب، ویمئو و...)
+            // embed (یوتیوب، ویمئو و…)
             else if (type === 'embed') {
               const outPath = path.join(dir, `video_${timestamp}_${platform || 'embed'}.mp4`);
               try {
@@ -768,7 +777,6 @@ jobs:
             
             return { ok: false };
           }
-
 
 
           // ======================== اسکرین‌شات کامل و PDF ========================
