@@ -201,70 +201,91 @@ jobs:
             return !!msgId;
           }
 
-          // ======================== تقسیم هوشمند ویدیو با ffmpeg و ارسال قطعات ========================
+          // جایگزین تابع splitAndSendVideo فعلی
           async function splitAndSendVideo(chatId, videoPath, baseName, keypad) {
             const stats = fs.statSync(videoPath);
             const sizeMB = (stats.size / (1024 * 1024)).toFixed(1);
-            log(`🎬 تقسیم ویدیو ${baseName} (${sizeMB}MB) به قطعات 40MB قابل پخش...`);
+            log(`🎬 تقسیم ویدیو ${baseName} (${sizeMB}MB) به قطعات ۲ دقیقه‌ای...`);
 
-            const chunkDir = `/tmp/video_chunks_${Date.now()}`;
-            fs.mkdirSync(chunkDir, { recursive: true });
-            const outputPattern = path.join(chunkDir, 'part_%03d.mp4');
+            let segmentTime = 120; // شروع با قطعات ۲ دقیقه‌ای
+            let success = false;
 
-            try {
-              // ffmpeg: هر قطعه حداکثر 40MB، کپی stream بدون تغییر کدک
-              execSync(
-                `ffmpeg -i "${videoPath}" -c copy -f segment -segment_time 9999 -fs ${CHUNK_SIZE / (1024*1024)}M -reset_timestamps 1 "${outputPattern}"`,
-                { stdio: 'inherit', timeout: 600000 }
-              );
-            } catch(e) {
-              err('تقسیم با ffmpeg شکست:', e.message);
-              fs.rmdirSync(chunkDir, { recursive: true });
-              return false;
-            }
+            while (segmentTime >= 30) { // حداقل ۳۰ ثانیه (احتیاطی)
+              const chunkDir = `/tmp/video_chunks_${Date.now()}`;
+              fs.mkdirSync(chunkDir, { recursive: true });
+              const outputPattern = path.join(chunkDir, 'part_%03d.mp4');
 
-            const chunks = fs.readdirSync(chunkDir)
-              .filter(f => f.endsWith('.mp4'))
-              .sort((a,b) => {
-                const numA = parseInt(a.match(/\d+/)[0]);
-                const numB = parseInt(b.match(/\d+/)[0]);
-                return numA - numB;
-              });
-
-            const total = chunks.length;
-            if (total === 0) {
-              err('هیچ قطعه‌ای تولید نشد.');
-              fs.rmdirSync(chunkDir, { recursive: true });
-              return false;
-            }
-
-            await sendMessage(chatId, `📦 ویدیو به ${total} قطعه mp4 تقسیم و ارسال می‌شود...`);
-
-            for (let i = 0; i < chunks.length; i++) {
-              const chunkPath = path.join(chunkDir, chunks[i]);
-              const chunkName = `${baseName}.part${String(i+1).padStart(2,'0')}.mp4`;
-              const chunkSize = (fs.statSync(chunkPath).size / (1024 * 1024)).toFixed(1);
-              log(`📤 قطعه ${i+1}/${total}: ${chunkName} (${chunkSize}MB)`);
-
-              const finalPath = path.join(chunkDir, chunkName);
-              fs.renameSync(chunkPath, finalPath);
-
-              const fileId = await uploadSingleFile(finalPath, 'Video');
-              if (!fileId) {
-                err(`❌ آپلود قطعه ${i+1} ناموفق`);
-                await sendMessage(chatId, `❌ خطا در ارسال قطعه ${i+1}/${total}`);
-                try { fs.unlinkSync(finalPath); } catch(e) {}
-                continue;
+              try {
+                execSync(
+                  `ffmpeg -i "${videoPath}" -c copy -f segment -segment_time ${segmentTime} -reset_timestamps 1 "${outputPattern}"`,
+                  { stdio: 'inherit', timeout: 600000 }
+                );
+              } catch(e) {
+                err('تقسیم با ffmpeg شکست:', e.message);
+                fs.rmdirSync(chunkDir, { recursive: true });
+                return false;
               }
 
-              const isLast = (i === chunks.length - 1);
-              const caption = isLast ? `🎬 ${baseName} (قطعه آخر)` : `📦 ${chunkName} (${chunkSize}MB)`;
-              await sendFileToChat(chatId, fileId, caption, (isLast ? keypad : null));
-              await sleep(3000);
-              try { fs.unlinkSync(finalPath); } catch(e) {}
+              const chunks = fs.readdirSync(chunkDir)
+                .filter(f => f.endsWith('.mp4'))
+                .sort((a,b) => {
+                  const numA = parseInt(a.match(/\d+/)[0]);
+                  const numB = parseInt(b.match(/\d+/)[0]);
+                  return numA - numB;
+                });
+
+              if (chunks.length === 0) {
+                fs.rmdirSync(chunkDir, { recursive: true });
+                return false;
+              }
+
+              // بررسی حجم همهٔ قطعات
+              const tooLarge = chunks.some(f => fs.statSync(path.join(chunkDir, f)).size > 50 * 1024 * 1024);
+              if (tooLarge) {
+                log(`⚠️ قطعه‌ای بیش از ۵۰MB، کاهش زمان قطعه به ${segmentTime / 2} ثانیه`);
+                fs.rmdirSync(chunkDir, { recursive: true });
+                segmentTime = Math.floor(segmentTime / 2);
+                continue; // دوباره تقسیم کن
+              }
+
+              // همه حجم‌ها مناسب است → ارسال
+              const total = chunks.length;
+              await sendMessage(chatId, `📦 ویدیو به ${total} قطعه mp4 تقسیم و ارسال می‌شود...`);
+
+              for (let i = 0; i < chunks.length; i++) {
+                const chunkPath = path.join(chunkDir, chunks[i]);
+                const chunkName = `${baseName}.part${String(i+1).padStart(2,'0')}.mp4`;
+                const chunkSize = (fs.statSync(chunkPath).size / (1024 * 1024)).toFixed(1);
+                log(`📤 قطعه ${i+1}/${total}: ${chunkName} (${chunkSize}MB)`);
+
+                const finalPath = path.join(chunkDir, chunkName);
+                fs.renameSync(chunkPath, finalPath);
+
+                const fileId = await uploadSingleFile(finalPath, 'Video');
+                if (!fileId) {
+                  err(`❌ آپلود قطعه ${i+1} ناموفق`);
+                  await sendMessage(chatId, `❌ خطا در ارسال قطعه ${i+1}/${total}`);
+                  try { fs.unlinkSync(finalPath); } catch(e) {}
+                  continue;
+                }
+
+                const isLast = (i === chunks.length - 1);
+                const caption = isLast ? `🎬 ${baseName} (قطعه آخر)` : `📦 ${chunkName} (${chunkSize}MB)`;
+                await sendFileToChat(chatId, fileId, caption, (isLast ? keypad : null));
+                await sleep(3000);
+                try { fs.unlinkSync(finalPath); } catch(e) {}
+              }
+
+              fs.rmdirSync(chunkDir, { recursive: true });
+              success = true;
+              break;
             }
 
-            fs.rmdirSync(chunkDir, { recursive: true });
+            if (!success) {
+              err('تقسیم ویدیو به قطعات زیر ۵۰MB ممکن نشد.');
+              await sendMessage(chatId, '❌ حجم ویدیو بیش از حد بالاست، امکان ارسال وجود ندارد.');
+              return false;
+            }
             return true;
           }
 
