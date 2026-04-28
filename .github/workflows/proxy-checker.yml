@@ -724,24 +724,20 @@ jobs:
             const dir = '/tmp/downloaded_videos';
             if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
             const timestamp = Date.now();
-
-            const ytDlpBase = [
-              '--no-playlist',
-              '--merge-output-format', 'mp4',
-              '--force-ipv4',
-              '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
-              '--extractor-args', 'youtube:player_client=web',
-              '--proxy', 'socks5://127.0.0.1:10808'
-            ];
-
+          
+            // دستور yt‑dlp با User‑Agent درون ' ' 
+            const ytDlpCmd = `yt-dlp --no-playlist --merge-output-format mp4 --force-ipv4 --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36' --extractor-args youtube:player_client=web --proxy socks5://127.0.0.1:10808`;
+          
+            // blob URLs
             if (type === 'direct' && url.startsWith('blob:')) {
               const outPath = path.join(dir, `video_${timestamp}_page.mp4`);
               try {
-                execSync(`yt-dlp ${ytDlpBase.join(' ')} -o "${outPath}" "${pageUrl}"`, { stdio: 'inherit', timeout: 600000 });
+                execSync(`${ytDlpCmd} -o "${outPath}" "${pageUrl}"`, { stdio: 'inherit', timeout: 600000 });
                 return { ok: true, path: outPath };
               } catch(e) { err('yt-dlp blob failed:', e.message); return { ok: false }; }
             }
-
+          
+            // لینک مستقیم
             if (type === 'direct') {
               const outPath = path.join(dir, `video_${timestamp}_${path.basename(new URL(url).pathname) || 'video.mp4'}`);
               try {
@@ -751,19 +747,23 @@ jobs:
                 log('دانلود مستقیم شکست، تلاش با yt-dlp...');
                 const fallbackPath = path.join(dir, `video_${timestamp}_page.mp4`);
                 try {
-                  execSync(`yt-dlp ${ytDlpBase.join(' ')} -o "${fallbackPath}" "${pageUrl}"`, { stdio: 'inherit', timeout: 600000 });
+                  execSync(`${ytDlpCmd} -o "${fallbackPath}" "${pageUrl}"`, { stdio: 'inherit', timeout: 600000 });
                   return { ok: true, path: fallbackPath };
                 } catch(e2) { err('yt-dlp نیز شکست:', e2.message); return { ok: false }; }
               }
-            } else if (type === 'embed') {
+            } 
+            // embed (یوتیوب، ویمئو و...)
+            else if (type === 'embed') {
               const outPath = path.join(dir, `video_${timestamp}_${platform || 'embed'}.mp4`);
               try {
-                execSync(`yt-dlp ${ytDlpBase.join(' ')} -o "${outPath}" "${url}"`, { stdio: 'inherit', timeout: 600000 });
+                execSync(`${ytDlpCmd} -o "${outPath}" "${url}"`, { stdio: 'inherit', timeout: 600000 });
                 return { ok: true, path: outPath };
               } catch(e) { err('yt-dlp embed شکست:', e.message); return { ok: false }; }
             }
+            
             return { ok: false };
           }
+
 
           // ======================== اسکرین‌شات کامل و PDF ========================
           async function takeFullPageScreenshot(page, chatId, keypad) {
