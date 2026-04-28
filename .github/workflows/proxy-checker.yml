@@ -1,4 +1,4 @@
-name: 🌐 مرورگر راه دور (ارسال مستقیم به روبیکا)
+name: 🌐 مرورگر راه دور (ارسال مستقیم + کیبورد همیشه فعال)
 
 on:
   workflow_dispatch:
@@ -24,7 +24,7 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای ربات (نسخه نهایی با ارسال مستقیم)
+      - name: 🤖 اجرای ربات (نسخه نهایی)
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           RUBIKA_OWNER_CHAT_ID: ${{ secrets.RUBIKA_OWNER_CHAT_ID }}
@@ -117,7 +117,7 @@ jobs:
             } catch(e) { return false; }
           }
 
-          // ======================== Rubika API (با retry) ========================
+          // ======================== Rubika API (with retry) ========================
           const TOKEN = process.env.RUBIKA_BOT_TOKEN;
           const OWNER = process.env.RUBIKA_OWNER_CHAT_ID || '';
           const BASE = `https://botapi.rubika.ir/v3/${TOKEN}`;
@@ -164,7 +164,7 @@ jobs:
             return await api('deleteMessage', { chat_id: chatId, message_id: messageId });
           }
 
-          // ======================== آپلود و ارسال فایل به روبیکا (تکه‌ای) ========================
+          // ======================== آپلود و ارسال فایل (با کیبورد و کپشن دلخواه) ========================
           async function uploadSingleFile(filePath, fileType) {
             const reqRes = await api('requestSendFile', { type: fileType });
             const uploadUrl = reqRes?.data?.upload_url;
@@ -183,25 +183,28 @@ jobs:
             return fileId;
           }
 
-          async function sendFileToChat(chatId, fileId, text = '') {
+          async function sendFileToChat(chatId, fileId, text = '', keypad = null, keypadType = 'New') {
             const sendBody = { chat_id: chatId, file_id: fileId, text };
+            if (keypad) {
+              sendBody.chat_keypad = keypad;
+              sendBody.chat_keypad_type = keypadType;
+            }
             const sendRes = await api('sendFile', sendBody);
             return sendRes?.data?.message_id || null;
           }
 
-          async function uploadAndSendFileChunked(chatId, filePath, fileType, baseName) {
+          async function uploadAndSendFileChunked(chatId, filePath, fileType, caption = '', keypad = null) {
             const stats = fs.statSync(filePath);
             const sizeMB = (stats.size / (1024 * 1024)).toFixed(1);
-            log(`📤 ارسال فایل ${baseName} (${sizeMB}MB) به روبیکا...`);
+            const baseName = path.basename(filePath);
+            log(`📤 ارسال ${baseName} (${sizeMB}MB) ...`);
 
             if (stats.size <= CHUNK_SIZE) {
-              // ارسال مستقیم
               const fileId = await uploadSingleFile(filePath, fileType);
               if (!fileId) return false;
-              const msgId = await sendFileToChat(chatId, fileId, `📦 ${baseName} (${sizeMB}MB)`);
-              if (!msgId) { err('sendFile ناموفق'); return false; }
-              log(`✅ فایل ${baseName} با موفقیت ارسال شد.`);
-              return true;
+              const finalText = caption || '';
+              const msgId = await sendFileToChat(chatId, fileId, finalText, keypad);
+              return !!msgId;
             }
 
             // تقسیم به تکه‌های ۴۰ مگابایتی
@@ -212,423 +215,32 @@ jobs:
             const chunks = fs.readdirSync(chunkDir).sort();
             const total = chunks.length;
 
-            log(`📦 فایل به ${total} تکه تقسیم شد.`);
-            await sendMessage(chatId, `📦 فایل ${baseName} (${sizeMB}MB) به ${total} تکه ۴۰MB تقسیم و ارسال می‌شود...`);
+            log(`📦 ${total} تکه`);
+            await sendMessage(chatId, `📦 فایل ${baseName} (${sizeMB}MB) به ${total} تکه تقسیم و ارسال می‌شود...`);
 
             for (let i = 0; i < chunks.length; i++) {
               const chunkPath = path.join(chunkDir, chunks[i]);
               const chunkName = `${baseName}.part${String(i+1).padStart(2,'0')}`;
               const chunkSize = (fs.statSync(chunkPath).size / (1024 * 1024)).toFixed(1);
+              log(`📤 تکه ${i+1}/${total}: ${chunkName} (${chunkSize}MB)`);
 
-              log(`📤 ارسال تکه ${i+1}/${total}: ${chunkName} (${chunkSize}MB)`);
               const fileId = await uploadSingleFile(chunkPath, 'File');
               if (!fileId) {
                 err(`❌ آپلود تکه ${i+1} ناموفق`);
                 await sendMessage(chatId, `❌ خطا در ارسال تکه ${i+1}/${total}`);
                 continue;
               }
-              await sendFileToChat(chatId, fileId, `📦 ${chunkName} (تکه ${i+1}/${total} - ${chunkSize}MB)`);
-              await sleep(3000); // وقفه بین ارسال‌ها برای کاهش فشار
-              fs.unlinkSync(chunkPath); // پاکسازی تکه
+              const isLast = (i === chunks.length - 1);
+              const chunkText = `📦 ${chunkName} (تکه ${i+1}/${total} - ${chunkSize}MB)`;
+              const finalText = (isLast && caption) ? caption : chunkText;
+              // فقط تکه آخر کیبورد را دریافت می‌کند (اگر تعیین شده باشد)
+              await sendFileToChat(chatId, fileId, finalText, (isLast ? keypad : null));
+              await sleep(3000);
+              fs.unlinkSync(chunkPath);
             }
 
             fs.rmdirSync(chunkDir, { recursive: true });
-            log(`✅ تمام تکه‌های ${baseName} ارسال شد.`);
             return true;
-          }
-
-          // ======================== انتخاب هوشمند با شماره (Shadow DOM + iframe) ========================
-          async function highlightClickableElements(page) {
-            return await page.evaluate(() => {
-              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
-              document.querySelectorAll('[data-rubika-sel-id]').forEach(el => el.removeAttribute('data-rubika-sel-id'));
-
-              const baseSelectors = [
-                'a', 'button', 'input', 'select', 'textarea', 'area', 'summary', 'details', 'label',
-                '[onclick]',
-                '[role="button"]', '[role="menuitem"]', '[role="option"]', '[role="tab"]',
-                '[role="link"]', '[role="listbox"]', '[role="combobox"]', '[role="menu"]',
-                '[role="menubar"]', '[role="treeitem"]', '[role="gridcell"]', '[role="row"]',
-                '[role="switch"]', '[role="checkbox"]', '[role="radio"]', '[role="textbox"]',
-                '[role="searchbox"]', '[role="spinbutton"]', '[role="slider"]', '[role="separator"]',
-                '[tabindex]:not([tabindex="-1"])', '[contenteditable="true"]',
-                'div[role]', 'span[role]', 'li[role]',
-                '[class*="play"]', '[class*="pause"]', '[class*="control"]',
-                '[class*="forward"]', '[class*="back"]', '[class*="next"]', '[class*="prev"]',
-                '[aria-label*="Play"]', '[aria-label*="Pause"]', '[aria-label*="Mute"]'
-              ];
-
-              const elements = new Set();
-
-              function collect(root) {
-                try {
-                  root.querySelectorAll(baseSelectors.join(',')).forEach(el => elements.add(el));
-                } catch(e) {}
-                root.querySelectorAll('*').forEach(node => {
-                  if (node.shadowRoot) collect(node.shadowRoot);
-                });
-                root.querySelectorAll('iframe').forEach(iframe => {
-                  try {
-                    const doc = iframe.contentDocument || iframe.contentWindow.document;
-                    if (doc) collect(doc);
-                  } catch(e) {}
-                });
-              }
-
-              collect(document);
-
-              const visible = Array.from(elements).filter(el => {
-                const rect = el.getBoundingClientRect();
-                return rect.width > 0 && rect.height > 0 &&
-                       rect.bottom > 0 && rect.top < window.innerHeight &&
-                       rect.right > 0 && rect.left < window.innerWidth;
-              });
-
-              visible.sort((a,b) => {
-                const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
-                if (Math.abs(ra.top - rb.top) < 5) return ra.left - rb.left;
-                return ra.top - rb.top;
-              });
-
-              visible.forEach((el, idx) => {
-                const num = idx + 1;
-                el.setAttribute('data-rubika-sel-id', num);
-                const rect = el.getBoundingClientRect();
-                const overlay = document.createElement('div');
-                overlay.className = 'rubika-hl-overlay';
-                overlay.style.cssText = `position:fixed;top:${Math.max(0,rect.top)}px;left:${Math.max(0,rect.left)}px;width:${Math.min(rect.width,window.innerWidth-rect.left)}px;height:${Math.min(rect.height,window.innerHeight-rect.top)}px;background:rgba(255,0,0,0.1);border:2px dashed red;z-index:999996;pointer-events:none;box-sizing:border-box`;
-                document.body.appendChild(overlay);
-
-                const badge = document.createElement('div');
-                badge.className = 'rubika-hl-badge';
-                badge.style.cssText = `position:fixed;top:${Math.max(2,rect.top-6)}px;left:${Math.max(2,rect.left-6)}px;background:black;color:white;border-radius:50%;width:20px;height:20px;font-size:11px;line-height:20px;text-align:center;font-weight:bold;z-index:999999;pointer-events:none;box-shadow:0 0 4px rgba(0,0,0,0.5)`;
-                badge.textContent = num;
-                document.body.appendChild(badge);
-              });
-
-              return visible.length;
-            });
-          }
-
-          async function removeHighlights(page) {
-            await page.evaluate(() => {
-              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
-              document.querySelectorAll('[data-rubika-sel-id]').forEach(el => el.removeAttribute('data-rubika-sel-id'));
-            });
-          }
-
-          async function clickByNumber(page, number) {
-            try {
-              const found = await page.evaluate((num) => {
-                const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
-                if (!el) return false;
-                el.scrollIntoView({ block: 'center', inline: 'center' });
-                el.focus({ preventScroll: true });
-                return true;
-              }, number);
-              if (!found) return false;
-
-              const navPromise = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 8000 }).catch(() => null);
-              await page.evaluate((num) => {
-                const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
-                if (el) {
-                  if (el.tagName === 'A' && el.target === '_blank') el.target = '_self';
-                  el.click();
-                }
-              }, number);
-              await navPromise;
-              await sleep(1000);
-              return true;
-            } catch(e) {
-              log('⚠️ مدیریت ناوبری پس از کلیک');
-              await sleep(2000);
-              return true;
-            }
-          }
-
-          // ======================== اسکرول هوشمند چندناحیه‌ای ========================
-          async function highlightScrollableAreas(page) {
-            return await page.evaluate(() => {
-              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
-              document.querySelectorAll('[data-rubika-scroll-id]').forEach(el => el.removeAttribute('data-rubika-scroll-id'));
-
-              const areas = [];
-              const docEl = document.documentElement;
-              if (docEl.scrollHeight > window.innerHeight) {
-                areas.push({ type: 'window', rect: { top:0, left:0, width: window.innerWidth, height: window.innerHeight } });
-              }
-
-              const all = document.querySelectorAll('*');
-              all.forEach(el => {
-                const style = window.getComputedStyle(el);
-                const overflowY = style.overflowY;
-                if ((overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight > el.clientHeight) {
-                  const rect = el.getBoundingClientRect();
-                  if (rect.width > 20 && rect.height > 20) {
-                    areas.push({ type: 'element', el });
-                  }
-                }
-              });
-
-              areas.forEach((area, idx) => {
-                const num = idx + 1;
-                if (area.type === 'window') {
-                  const overlay = document.createElement('div');
-                  overlay.className = 'rubika-hl-overlay';
-                  overlay.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,255,0,0.05);border:2px dashed green;z-index:999996;pointer-events:none;box-sizing:border-box`;
-                  document.body.appendChild(overlay);
-                  const badge = document.createElement('div');
-                  badge.className = 'rubika-hl-badge';
-                  badge.style.cssText = `position:fixed;top:5px;left:5px;background:green;color:white;border-radius:50%;width:24px;height:24px;font-size:12px;line-height:24px;text-align:center;font-weight:bold;z-index:999999;pointer-events:none;box-shadow:0 0 4px rgba(0,0,0,0.5)`;
-                  badge.textContent = num;
-                  document.body.appendChild(badge);
-                } else {
-                  const el = area.el;
-                  el.setAttribute('data-rubika-scroll-id', num);
-                  const rect = el.getBoundingClientRect();
-                  const overlay = document.createElement('div');
-                  overlay.className = 'rubika-hl-overlay';
-                  overlay.style.cssText = `position:fixed;top:${Math.max(0,rect.top)}px;left:${Math.max(0,rect.left)}px;width:${Math.min(rect.width,window.innerWidth-rect.left)}px;height:${Math.min(rect.height,window.innerHeight-rect.top)}px;background:rgba(0,255,0,0.1);border:2px dashed green;z-index:999996;pointer-events:none;box-sizing:border-box`;
-                  document.body.appendChild(overlay);
-                  const badge = document.createElement('div');
-                  badge.className = 'rubika-hl-badge';
-                  badge.style.cssText = `position:fixed;top:${Math.max(2,rect.top-6)}px;left:${Math.max(2,rect.left-6)}px;background:green;color:white;border-radius:50%;width:24px;height:24px;font-size:12px;line-height:24px;text-align:center;font-weight:bold;z-index:999999;pointer-events:none;box-shadow:0 0 4px rgba(0,0,0,0.5)`;
-                  badge.textContent = num;
-                  document.body.appendChild(badge);
-                }
-              });
-
-              return areas.length;
-            });
-          }
-
-          async function scrollAreaByPixel(page, areaIndex, px, direction) {
-            const sign = direction === 'up' ? -1 : 1;
-            await page.evaluate(({idx, px, sign}) => {
-              const el = document.querySelector(`[data-rubika-scroll-id="${idx}"]`);
-              if (el) {
-                el.scrollBy(0, sign * px);
-              } else if (idx === 1) {
-                window.scrollBy(0, sign * px);
-              }
-            }, {idx: areaIndex, px, sign});
-          }
-
-          async function removeScrollHighlights(page) {
-            await page.evaluate(() => {
-              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
-              document.querySelectorAll('[data-rubika-scroll-id]').forEach(el => el.removeAttribute('data-rubika-scroll-id'));
-            });
-          }
-
-          // ======================== ویدیوهای صفحه (پیشرفته + yt-dlp) ========================
-          async function highlightVideoElements(page) {
-            const pageUrl = page.url();
-            const videoData = await page.evaluate(() => {
-              const results = [];
-              const videos = document.querySelectorAll('video');
-              videos.forEach(v => {
-                const src = v.currentSrc || v.querySelector('source')?.src || '';
-                if (src) results.push({ src, type: 'direct' });
-              });
-              const extensions = ['mp4', 'webm', 'ogg', 'mov', 'mkv', 'avi', 'flv'];
-              const links = document.querySelectorAll('a');
-              links.forEach(a => {
-                const href = a.href;
-                const ext = href.split('.').pop().split('?')[0].toLowerCase();
-                if (extensions.includes(ext)) results.push({ src: href, type: 'direct' });
-              });
-              const iframes = document.querySelectorAll('iframe');
-              const embedPatterns = [
-                { pattern: /youtube\.com\/embed\/([\w-]+)/, platform: 'youtube' },
-                { pattern: /player\.vimeo\.com\/video\/(\d+)/, platform: 'vimeo' },
-                { pattern: /dailymotion\.com\/embed\/video\/([\w]+)/, platform: 'dailymotion' },
-                { pattern: /instagram\.com\/.*\/embed/, platform: 'instagram' }
-              ];
-              iframes.forEach(iframe => {
-                const src = iframe.src;
-                if (!src) return;
-                for (const {pattern, platform} of embedPatterns) {
-                  if (src.match(pattern)) {
-                    results.push({ src, type: 'embed', platform });
-                    break;
-                  }
-                }
-              });
-              const unique = [];
-              const seen = new Set();
-              for (const r of results) {
-                if (seen.has(r.src)) continue;
-                seen.add(r.src);
-                unique.push(r);
-              }
-              return unique;
-            });
-
-            await page.evaluate((list) => {
-              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
-              document.querySelectorAll('[data-rubika-video-id]').forEach(el => el.removeAttribute('data-rubika-video-id'));
-
-              list.forEach((item, idx) => {
-                let el = null;
-                if (item.type === 'direct') {
-                  el = document.querySelector(`video[src="${item.src}"], video source[src="${item.src}"]`);
-                  if (!el) el = document.querySelector(`a[href="${item.src}"]`);
-                } else {
-                  el = document.querySelector(`iframe[src="${item.src}"]`);
-                }
-                if (!el) return;
-                const num = idx + 1;
-                el.setAttribute('data-rubika-video-id', num);
-                const rect = el.getBoundingClientRect();
-                const overlay = document.createElement('div');
-                overlay.className = 'rubika-hl-overlay';
-                overlay.style.cssText = `position:fixed;top:${Math.max(0,rect.top)}px;left:${Math.max(0,rect.left)}px;width:${Math.min(rect.width,window.innerWidth-rect.left)}px;height:${Math.min(rect.height,window.innerHeight-rect.top)}px;background:rgba(0,0,255,0.15);border:2px dashed blue;z-index:999996;pointer-events:none`;
-                document.body.appendChild(overlay);
-
-                const badge = document.createElement('div');
-                badge.className = 'rubika-hl-badge';
-                badge.style.cssText = `position:fixed;top:${Math.max(2,rect.top-6)}px;left:${Math.max(2,rect.left-6)}px;background:blue;color:white;border-radius:50%;width:24px;height:24px;font-size:12px;line-height:24px;text-align:center;font-weight:bold;z-index:999999;pointer-events:none;box-shadow:0 0 4px rgba(0,0,0,0.5)`;
-                badge.textContent = num;
-                document.body.appendChild(badge);
-              });
-            }, videoData);
-
-            return { videos: videoData, pageUrl };
-          }
-
-          async function removeVideoHighlights(page) {
-            await page.evaluate(() => {
-              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
-              document.querySelectorAll('[data-rubika-video-id]').forEach(el => el.removeAttribute('data-rubika-video-id'));
-            });
-          }
-
-          // ======================== تصاویر صفحه ========================
-          async function highlightImages(page) {
-            const pageUrl = page.url();
-            const imageData = await page.evaluate(() => {
-              const results = [];
-              const imgs = document.querySelectorAll('img[src]');
-              imgs.forEach(img => {
-                const src = img.src;
-                if (src && !src.startsWith('data:')) results.push(src);
-              });
-              return [...new Set(results)];
-            });
-
-            await page.evaluate((list) => {
-              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
-              document.querySelectorAll('[data-rubika-img-id]').forEach(el => el.removeAttribute('data-rubika-img-id'));
-
-              list.forEach((src, idx) => {
-                const img = document.querySelector(`img[src="${src}"]`);
-                if (!img) return;
-                const num = idx + 1;
-                img.setAttribute('data-rubika-img-id', num);
-                const rect = img.getBoundingClientRect();
-                const overlay = document.createElement('div');
-                overlay.className = 'rubika-hl-overlay';
-                overlay.style.cssText = `position:fixed;top:${Math.max(0,rect.top)}px;left:${Math.max(0,rect.left)}px;width:${Math.min(rect.width,window.innerWidth-rect.left)}px;height:${Math.min(rect.height,window.innerHeight-rect.top)}px;background:rgba(255,165,0,0.2);border:2px dashed orange;z-index:999996;pointer-events:none`;
-                document.body.appendChild(overlay);
-
-                const badge = document.createElement('div');
-                badge.className = 'rubika-hl-badge';
-                badge.style.cssText = `position:fixed;top:${Math.max(2,rect.top-6)}px;left:${Math.max(2,rect.left-6)}px;background:orange;color:white;border-radius:50%;width:24px;height:24px;font-size:12px;line-height:24px;text-align:center;font-weight:bold;z-index:999999;pointer-events:none;box-shadow:0 0 4px rgba(0,0,0,0.5)`;
-                badge.textContent = num;
-                document.body.appendChild(badge);
-              });
-            }, imageData);
-
-            return { images: imageData, pageUrl };
-          }
-
-          async function removeImageHighlights(page) {
-            await page.evaluate(() => {
-              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
-              document.querySelectorAll('[data-rubika-img-id]').forEach(el => el.removeAttribute('data-rubika-img-id'));
-            });
-          }
-
-          async function downloadImage(url, referer) {
-            const dir = '/tmp/downloaded_images';
-            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-            const timestamp = Date.now();
-            const parsed = new URL(url);
-            const base = path.basename(parsed.pathname) || 'image.jpg';
-            const outPath = path.join(dir, `img_${timestamp}_${base}`);
-            log(`📥 دانلود تصویر: ${url}`);
-            try {
-              execSync(`curl --socks5 127.0.0.1:10808 -L -e "${referer}" -A "Mozilla/5.0" -o "${outPath}" "${url}"`, { stdio: 'inherit', timeout: 60000 });
-              return { ok: true, path: outPath, name: path.basename(outPath) };
-            } catch(e) {
-              err('خطا در دانلود تصویر:', e.message);
-              return { ok: false, error: e.message };
-            }
-          }
-
-          // ======================== دانلود ویدیو (با fallback به yt-dlp) ========================
-          async function downloadVideo(url, type, referer, platform, pageUrl) {
-            const dir = '/tmp/downloaded_videos';
-            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-            const timestamp = Date.now();
-
-            if (type === 'direct' && url.startsWith('blob:')) {
-              log('📥 blob URL detected, using yt-dlp with page URL');
-              const outPath = path.join(dir, `video_${timestamp}_page.mp4`);
-              try {
-                execSync(`yt-dlp --proxy socks5://127.0.0.1:10808 -o "${outPath}" "${pageUrl}"`, { stdio: 'inherit', timeout: 600000 });
-                return { ok: true, path: outPath, name: path.basename(outPath) };
-              } catch(e) {
-                err('yt-dlp failed:', e.message);
-                return { ok: false, error: e.message };
-              }
-            }
-
-            if (type === 'direct') {
-              const parsed = new URL(url);
-              const base = path.basename(parsed.pathname) || 'video.mp4';
-              const outPath = path.join(dir, `video_${timestamp}_${base}`);
-              log(`📥 دانلود مستقیم: ${url}`);
-              try {
-                execSync(`curl --socks5 127.0.0.1:10808 -L -e "${referer}" -A "Mozilla/5.0" -o "${outPath}" "${url}"`, { stdio: 'inherit', timeout: 600000 });
-                return { ok: true, path: outPath, name: path.basename(outPath) };
-              } catch(e) {
-                log('⚠️ دانلود مستقیم شکست خورد، تلاش با yt-dlp...');
-                const fallbackPath = path.join(dir, `video_${timestamp}_page.mp4`);
-                try {
-                  execSync(`yt-dlp --proxy socks5://127.0.0.1:10808 -o "${fallbackPath}" "${pageUrl}"`, { stdio: 'inherit', timeout: 600000 });
-                  return { ok: true, path: fallbackPath, name: path.basename(fallbackPath) };
-                } catch(e2) {
-                  err('yt-dlp نیز شکست خورد:', e2.message);
-                  return { ok: false, error: e2.message };
-                }
-              }
-            } else if (type === 'embed') {
-              const outPath = path.join(dir, `video_${timestamp}_${platform || 'embed'}.mp4`);
-              log(`📥 دانلود embed با yt-dlp: ${url}`);
-              try {
-                execSync(`yt-dlp --proxy socks5://127.0.0.1:10808 -o "${outPath}" "${url}"`, { stdio: 'inherit', timeout: 600000 });
-                return { ok: true, path: outPath, name: path.basename(outPath) };
-              } catch(e) {
-                err('yt-dlp failed:', e.message);
-                return { ok: false, error: e.message };
-              }
-            }
-            return { ok: false, error: 'نوع نامشخص' };
-          }
-
-          // ======================== زوم صفحه ========================
-          async function zoomPage(page, zoomIn = true) {
-            const currentZoom = await page.evaluate(() => {
-              let zoom = getComputedStyle(document.body).zoom || '1.0';
-              return parseFloat(zoom);
-            });
-            let newZoom = currentZoom;
-            if (zoomIn) newZoom = Math.min(currentZoom + 0.1, 3.0);
-            else newZoom = Math.max(currentZoom - 0.1, 0.3);
-            await page.evaluate((z) => { document.body.style.zoom = z; }, newZoom.toString());
-            return newZoom;
           }
 
           // ======================== کی‌پد کنترلی ========================
@@ -669,6 +281,305 @@ jobs:
             };
           }
 
+          // ======================== انتخاب هوشمند (Shadow DOM & iframe) ========================
+          async function highlightClickableElements(page) {
+            return await page.evaluate(() => {
+              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
+              document.querySelectorAll('[data-rubika-sel-id]').forEach(el => el.removeAttribute('data-rubika-sel-id'));
+
+              const baseSelectors = [
+                'a', 'button', 'input', 'select', 'textarea', 'area', 'summary', 'details', 'label',
+                '[onclick]',
+                '[role="button"]', '[role="menuitem"]', '[role="option"]', '[role="tab"]',
+                '[role="link"]', '[role="listbox"]', '[role="combobox"]', '[role="menu"]',
+                '[role="menubar"]', '[role="treeitem"]', '[role="gridcell"]', '[role="row"]',
+                '[role="switch"]', '[role="checkbox"]', '[role="radio"]', '[role="textbox"]',
+                '[role="searchbox"]', '[role="spinbutton"]', '[role="slider"]', '[role="separator"]',
+                '[tabindex]:not([tabindex="-1"])', '[contenteditable="true"]',
+                'div[role]', 'span[role]', 'li[role]',
+                '[class*="play"]', '[class*="pause"]', '[class*="control"]',
+                '[class*="forward"]', '[class*="back"]', '[class*="next"]', '[class*="prev"]',
+                '[aria-label*="Play"]', '[aria-label*="Pause"]', '[aria-label*="Mute"]'
+              ];
+
+              const elements = new Set();
+              function collect(root) {
+                try { root.querySelectorAll(baseSelectors.join(',')).forEach(el => elements.add(el)); } catch(e) {}
+                root.querySelectorAll('*').forEach(node => { if (node.shadowRoot) collect(node.shadowRoot); });
+                root.querySelectorAll('iframe').forEach(iframe => {
+                  try { const doc = iframe.contentDocument || iframe.contentWindow.document; if (doc) collect(doc); } catch(e) {}
+                });
+              }
+              collect(document);
+
+              const visible = Array.from(elements).filter(el => {
+                const rect = el.getBoundingClientRect();
+                return rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < window.innerHeight && rect.right > 0 && rect.left < window.innerWidth;
+              });
+
+              visible.sort((a,b) => {
+                const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+                if (Math.abs(ra.top - rb.top) < 5) return ra.left - rb.left;
+                return ra.top - rb.top;
+              });
+
+              visible.forEach((el, idx) => {
+                const num = idx + 1;
+                el.setAttribute('data-rubika-sel-id', num);
+                const rect = el.getBoundingClientRect();
+                const overlay = document.createElement('div');
+                overlay.className = 'rubika-hl-overlay';
+                overlay.style.cssText = `position:fixed;top:${Math.max(0,rect.top)}px;left:${Math.max(0,rect.left)}px;width:${Math.min(rect.width,window.innerWidth-rect.left)}px;height:${Math.min(rect.height,window.innerHeight-rect.top)}px;background:rgba(255,0,0,0.1);border:2px dashed red;z-index:999996;pointer-events:none;box-sizing:border-box`;
+                document.body.appendChild(overlay);
+                const badge = document.createElement('div');
+                badge.className = 'rubika-hl-badge';
+                badge.style.cssText = `position:fixed;top:${Math.max(2,rect.top-6)}px;left:${Math.max(2,rect.left-6)}px;background:black;color:white;border-radius:50%;width:20px;height:20px;font-size:11px;line-height:20px;text-align:center;font-weight:bold;z-index:999999;pointer-events:none;box-shadow:0 0 4px rgba(0,0,0,0.5)`;
+                badge.textContent = num;
+                document.body.appendChild(badge);
+              });
+
+              return visible.length;
+            });
+          }
+
+          async function removeHighlights(page) {
+            await page.evaluate(() => {
+              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
+              document.querySelectorAll('[data-rubika-sel-id]').forEach(el => el.removeAttribute('data-rubika-sel-id'));
+            });
+          }
+
+          async function clickByNumber(page, number) {
+            try {
+              const found = await page.evaluate((num) => {
+                const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
+                if (!el) return false;
+                el.scrollIntoView({ block: 'center', inline: 'center' });
+                el.focus({ preventScroll: true });
+                return true;
+              }, number);
+              if (!found) return false;
+              const navPromise = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 8000 }).catch(() => null);
+              await page.evaluate((num) => {
+                const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
+                if (el) { if (el.tagName === 'A' && el.target === '_blank') el.target = '_self'; el.click(); }
+              }, number);
+              await navPromise;
+              await sleep(1000);
+              return true;
+            } catch(e) { log('⚠️ مدیریت ناوبری کلیک'); await sleep(2000); return true; }
+          }
+
+          // ======================== اسکرول هوشمند ========================
+          async function highlightScrollableAreas(page) {
+            return await page.evaluate(() => {
+              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
+              document.querySelectorAll('[data-rubika-scroll-id]').forEach(el => el.removeAttribute('data-rubika-scroll-id'));
+              const areas = [];
+              if (document.documentElement.scrollHeight > window.innerHeight) areas.push({ type: 'window', rect: { top:0, left:0, width: window.innerWidth, height: window.innerHeight } });
+              document.querySelectorAll('*').forEach(el => {
+                const style = window.getComputedStyle(el);
+                if ((style.overflowY === 'auto' || style.overflowY === 'scroll') && el.scrollHeight > el.clientHeight) {
+                  const rect = el.getBoundingClientRect();
+                  if (rect.width > 20 && rect.height > 20) areas.push({ type: 'element', el });
+                }
+              });
+              areas.forEach((area, idx) => {
+                const num = idx + 1;
+                if (area.type === 'window') {
+                  const overlay = document.createElement('div'); overlay.className = 'rubika-hl-overlay';
+                  overlay.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,255,0,0.05);border:2px dashed green;z-index:999996;pointer-events:none;box-sizing:border-box`;
+                  document.body.appendChild(overlay);
+                  const badge = document.createElement('div'); badge.className = 'rubika-hl-badge';
+                  badge.style.cssText = `position:fixed;top:5px;left:5px;background:green;color:white;border-radius:50%;width:24px;height:24px;font-size:12px;line-height:24px;text-align:center;font-weight:bold;z-index:999999;pointer-events:none;box-shadow:0 0 4px rgba(0,0,0,0.5)`;
+                  badge.textContent = num; document.body.appendChild(badge);
+                } else {
+                  el.setAttribute('data-rubika-scroll-id', num);
+                  const rect = el.getBoundingClientRect();
+                  const overlay = document.createElement('div'); overlay.className = 'rubika-hl-overlay';
+                  overlay.style.cssText = `position:fixed;top:${Math.max(0,rect.top)}px;left:${Math.max(0,rect.left)}px;width:${Math.min(rect.width,window.innerWidth-rect.left)}px;height:${Math.min(rect.height,window.innerHeight-rect.top)}px;background:rgba(0,255,0,0.1);border:2px dashed green;z-index:999996;pointer-events:none;box-sizing:border-box`;
+                  document.body.appendChild(overlay);
+                  const badge = document.createElement('div'); badge.className = 'rubika-hl-badge';
+                  badge.style.cssText = `position:fixed;top:${Math.max(2,rect.top-6)}px;left:${Math.max(2,rect.left-6)}px;background:green;color:white;border-radius:50%;width:24px;height:24px;font-size:12px;line-height:24px;text-align:center;font-weight:bold;z-index:999999;pointer-events:none;box-shadow:0 0 4px rgba(0,0,0,0.5)`;
+                  badge.textContent = num; document.body.appendChild(badge);
+                }
+              });
+              return areas.length;
+            });
+          }
+
+          async function scrollAreaByPixel(page, areaIndex, px, direction) {
+            const sign = direction === 'up' ? -1 : 1;
+            await page.evaluate(({idx, px, sign}) => {
+              const el = document.querySelector(`[data-rubika-scroll-id="${idx}"]`);
+              if (el) el.scrollBy(0, sign * px);
+              else if (idx === 1) window.scrollBy(0, sign * px);
+            }, {idx: areaIndex, px, sign});
+          }
+
+          async function removeScrollHighlights(page) {
+            await page.evaluate(() => {
+              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
+              document.querySelectorAll('[data-rubika-scroll-id]').forEach(el => el.removeAttribute('data-rubika-scroll-id'));
+            });
+          }
+
+          // ======================== ویدیوها ========================
+          async function highlightVideoElements(page) {
+            const pageUrl = page.url();
+            const videoData = await page.evaluate(() => {
+              const results = [];
+              document.querySelectorAll('video').forEach(v => {
+                const src = v.currentSrc || v.querySelector('source')?.src || '';
+                if (src) results.push({ src, type: 'direct' });
+              });
+              document.querySelectorAll('a').forEach(a => {
+                const href = a.href;
+                const ext = href.split('.').pop().split('?')[0].toLowerCase();
+                if (['mp4','webm','ogg','mov','mkv','avi','flv'].includes(ext)) results.push({ src: href, type: 'direct' });
+              });
+              const embedPatterns = [
+                { pattern: /youtube\.com\/embed\/([\w-]+)/, platform: 'youtube' },
+                { pattern: /player\.vimeo\.com\/video\/(\d+)/, platform: 'vimeo' },
+                { pattern: /dailymotion\.com\/embed\/video\/([\w]+)/, platform: 'dailymotion' },
+                { pattern: /instagram\.com\/.*\/embed/, platform: 'instagram' }
+              ];
+              document.querySelectorAll('iframe').forEach(iframe => {
+                const src = iframe.src;
+                if (!src) return;
+                for (const {pattern, platform} of embedPatterns) {
+                  if (src.match(pattern)) { results.push({ src, type: 'embed', platform }); break; }
+                }
+              });
+              return [...new Map(results.map(r=> [r.src, r])).values()];
+            });
+
+            await page.evaluate((list) => {
+              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
+              document.querySelectorAll('[data-rubika-video-id]').forEach(el => el.removeAttribute('data-rubika-video-id'));
+              list.forEach((item, idx) => {
+                let el = null;
+                if (item.type === 'direct') {
+                  el = document.querySelector(`video[src="${item.src}"], video source[src="${item.src}"]`);
+                  if (!el) el = document.querySelector(`a[href="${item.src}"]`);
+                } else {
+                  el = document.querySelector(`iframe[src="${item.src}"]`);
+                }
+                if (!el) return;
+                const num = idx + 1;
+                el.setAttribute('data-rubika-video-id', num);
+                const rect = el.getBoundingClientRect();
+                const overlay = document.createElement('div'); overlay.className = 'rubika-hl-overlay';
+                overlay.style.cssText = `position:fixed;top:${Math.max(0,rect.top)}px;left:${Math.max(0,rect.left)}px;width:${Math.min(rect.width,window.innerWidth-rect.left)}px;height:${Math.min(rect.height,window.innerHeight-rect.top)}px;background:rgba(0,0,255,0.15);border:2px dashed blue;z-index:999996;pointer-events:none`;
+                document.body.appendChild(overlay);
+                const badge = document.createElement('div'); badge.className = 'rubika-hl-badge';
+                badge.style.cssText = `position:fixed;top:${Math.max(2,rect.top-6)}px;left:${Math.max(2,rect.left-6)}px;background:blue;color:white;border-radius:50%;width:24px;height:24px;font-size:12px;line-height:24px;text-align:center;font-weight:bold;z-index:999999;pointer-events:none;box-shadow:0 0 4px rgba(0,0,0,0.5)`;
+                badge.textContent = num;
+                document.body.appendChild(badge);
+              });
+            }, videoData);
+
+            return { videos: videoData, pageUrl };
+          }
+
+          async function removeVideoHighlights(page) {
+            await page.evaluate(() => {
+              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
+              document.querySelectorAll('[data-rubika-video-id]').forEach(el => el.removeAttribute('data-rubika-video-id'));
+            });
+          }
+
+          // ======================== تصاویر ========================
+          async function highlightImages(page) {
+            const pageUrl = page.url();
+            const imageData = await page.evaluate(() => {
+              return [...new Set(Array.from(document.querySelectorAll('img[src]')).map(img => img.src).filter(s => s && !s.startsWith('data:')))];
+            });
+
+            await page.evaluate((list) => {
+              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
+              document.querySelectorAll('[data-rubika-img-id]').forEach(el => el.removeAttribute('data-rubika-img-id'));
+              list.forEach((src, idx) => {
+                const img = document.querySelector(`img[src="${src}"]`);
+                if (!img) return;
+                const num = idx + 1;
+                img.setAttribute('data-rubika-img-id', num);
+                const rect = img.getBoundingClientRect();
+                const overlay = document.createElement('div'); overlay.className = 'rubika-hl-overlay';
+                overlay.style.cssText = `position:fixed;top:${Math.max(0,rect.top)}px;left:${Math.max(0,rect.left)}px;width:${Math.min(rect.width,window.innerWidth-rect.left)}px;height:${Math.min(rect.height,window.innerHeight-rect.top)}px;background:rgba(255,165,0,0.2);border:2px dashed orange;z-index:999996;pointer-events:none`;
+                document.body.appendChild(overlay);
+                const badge = document.createElement('div'); badge.className = 'rubika-hl-badge';
+                badge.style.cssText = `position:fixed;top:${Math.max(2,rect.top-6)}px;left:${Math.max(2,rect.left-6)}px;background:orange;color:white;border-radius:50%;width:24px;height:24px;font-size:12px;line-height:24px;text-align:center;font-weight:bold;z-index:999999;pointer-events:none;box-shadow:0 0 4px rgba(0,0,0,0.5)`;
+                badge.textContent = num;
+                document.body.appendChild(badge);
+              });
+            }, imageData);
+
+            return { images: imageData, pageUrl };
+          }
+
+          async function removeImageHighlights(page) {
+            await page.evaluate(() => {
+              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
+              document.querySelectorAll('[data-rubika-img-id]').forEach(el => el.removeAttribute('data-rubika-img-id'));
+            });
+          }
+
+          // ======================== دانلودها ========================
+          async function downloadImage(url, referer) {
+            const dir = '/tmp/downloaded_images';
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+            const outPath = path.join(dir, `img_${Date.now()}_${path.basename(new URL(url).pathname) || 'image.jpg'}`);
+            try {
+              execSync(`curl --socks5 127.0.0.1:10808 -L -e "${referer}" -A "Mozilla/5.0" -o "${outPath}" "${url}"`, { stdio: 'inherit', timeout: 60000 });
+              return { ok: true, path: outPath };
+            } catch(e) { err('دانلود تصویر خطا:', e.message); return { ok: false }; }
+          }
+
+          async function downloadVideo(url, type, referer, platform, pageUrl) {
+            const dir = '/tmp/downloaded_videos';
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+            const ts = Date.now();
+
+            if (type === 'direct' && url.startsWith('blob:')) {
+              const outPath = path.join(dir, `video_${ts}_page.mp4`);
+              try {
+                execSync(`yt-dlp --proxy socks5://127.0.0.1:10808 -o "${outPath}" "${pageUrl}"`, { stdio: 'inherit', timeout: 600000 });
+                return { ok: true, path: outPath };
+              } catch(e) { err('yt-dlp شکست:', e.message); return { ok: false }; }
+            }
+
+            if (type === 'direct') {
+              const outPath = path.join(dir, `video_${ts}_${path.basename(new URL(url).pathname) || 'video.mp4'}`);
+              try {
+                execSync(`curl --socks5 127.0.0.1:10808 -L -e "${referer}" -A "Mozilla/5.0" -o "${outPath}" "${url}"`, { stdio: 'inherit', timeout: 600000 });
+                return { ok: true, path: outPath };
+              } catch(e) {
+                log('دانلود مستقیم شکست، تلاش با yt-dlp...');
+                const fallbackPath = path.join(dir, `video_${ts}_page.mp4`);
+                try {
+                  execSync(`yt-dlp --proxy socks5://127.0.0.1:10808 -o "${fallbackPath}" "${pageUrl}"`, { stdio: 'inherit', timeout: 600000 });
+                  return { ok: true, path: fallbackPath };
+                } catch(e2) { err('yt-dlp نیز شکست:', e2.message); return { ok: false }; }
+              }
+            } else if (type === 'embed') {
+              const outPath = path.join(dir, `video_${ts}_${platform || 'embed'}.mp4`);
+              try {
+                execSync(`yt-dlp --proxy socks5://127.0.0.1:10808 -o "${outPath}" "${url}"`, { stdio: 'inherit', timeout: 600000 });
+                return { ok: true, path: outPath };
+              } catch(e) { err('yt-dlp embed شکست:', e.message); return { ok: false }; }
+            }
+            return { ok: false };
+          }
+
+          // ======================== زوم ========================
+          async function zoomPage(page, zoomIn = true) {
+            const currentZoom = await page.evaluate(() => parseFloat(getComputedStyle(document.body).zoom || '1.0'));
+            let newZoom = zoomIn ? Math.min(currentZoom + 0.1, 3.0) : Math.max(currentZoom - 0.1, 0.3);
+            await page.evaluate((z) => { document.body.style.zoom = z; }, newZoom.toString());
+            return newZoom;
+          }
+
           // ======================== مدیریت حالت ========================
           const chatStates = new Map();
           function getState(chatId) {
@@ -707,13 +618,12 @@ jobs:
             const state = getState(chatId);
             const shotPath = `/tmp/shot_${chatId}_${Date.now()}.png`;
             await page.screenshot({ path: shotPath, fullPage: false });
-
             if (state.lastScreenshotMsgId) {
               try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
             }
             const keypad = buildControlKeypad();
-            const newMsgId = await uploadAndSendFileChunked(chatId, shotPath, 'Image', path.basename(shotPath));
-            if (newMsgId) state.lastScreenshotMsgId = newMsgId;
+            const msgId = await uploadAndSendFileChunked(chatId, shotPath, 'Image', '', keypad);
+            if (msgId) state.lastScreenshotMsgId = msgId;
             try { fs.unlinkSync(shotPath); } catch(e) {}
           }
 
@@ -721,54 +631,38 @@ jobs:
           async function handleButton(page, chatId, buttonId, browserManager) {
             const state = getState(chatId);
             // ریست حالت‌های موقت
-            state.typingMode = false;
-            state.urlMode = false;
-            state.selectionMode = false;
-            state.videoMode = false;
-            state.videoData = null;
-            state.imageMode = false;
-            state.imageData = null;
+            Object.assign(state, {
+              typingMode: false, urlMode: false, selectionMode: false,
+              videoMode: false, videoData: null, imageMode: false, imageData: null,
+              scrollMultiMode: false, scrollDirection: null, scrollAreasCount: 0, scrollSelectedIndex: null
+            });
+
+            const keypad = buildControlKeypad();
 
             switch(buttonId) {
               case 'SCROLL_UP':
-                state.scrollMultiMode = true;
-                state.scrollDirection = 'up';
-                const upCount = await highlightScrollableAreas(page);
-                state.scrollAreasCount = upCount;
-                if (upCount === 0) {
-                  await sendMessage(chatId, '⚠️ هیچ ناحیه اسکرولی یافت نشد.');
-                  state.scrollMultiMode = false;
-                } else {
-                  const shotPath = `/tmp/scroll_${chatId}_${Date.now()}.png`;
-                  await page.screenshot({ path: shotPath, fullPage: false });
-                  if (state.lastScreenshotMsgId) try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
-                  const msgId = await uploadAndSendFileChunked(chatId, shotPath, 'Image', path.basename(shotPath));
-                  if (msgId) state.lastScreenshotMsgId = msgId;
-                  try { fs.unlinkSync(shotPath); } catch(e) {}
-                  await sendMessage(chatId, `🟢 ${upCount} ناحیه اسکرول با رنگ سبز نشانه‌گذاری شد.\nشماره ناحیه مورد نظر را وارد کنید.`);
-                }
-                return;
               case 'SCROLL_DOWN':
                 state.scrollMultiMode = true;
-                state.scrollDirection = 'down';
-                const downCount = await highlightScrollableAreas(page);
-                state.scrollAreasCount = downCount;
-                if (downCount === 0) {
+                state.scrollDirection = buttonId === 'SCROLL_UP' ? 'up' : 'down';
+                const cnt = await highlightScrollableAreas(page);
+                state.scrollAreasCount = cnt;
+                if (cnt === 0) {
                   await sendMessage(chatId, '⚠️ هیچ ناحیه اسکرولی یافت نشد.');
                   state.scrollMultiMode = false;
+                  await updateScreenshot(page, chatId);
                 } else {
                   const shotPath = `/tmp/scroll_${chatId}_${Date.now()}.png`;
                   await page.screenshot({ path: shotPath, fullPage: false });
                   if (state.lastScreenshotMsgId) try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
-                  const msgId = await uploadAndSendFileChunked(chatId, shotPath, 'Image', path.basename(shotPath));
+                  const msgId = await uploadAndSendFileChunked(chatId, shotPath, 'Image', '', keypad);
                   if (msgId) state.lastScreenshotMsgId = msgId;
                   try { fs.unlinkSync(shotPath); } catch(e) {}
-                  await sendMessage(chatId, `🟢 ${downCount} ناحیه اسکرول با رنگ سبز نشانه‌گذاری شد.\nشماره ناحیه مورد نظر را وارد کنید.`);
+                  await sendMessage(chatId, `🟢 ${cnt} ناحیه اسکرول (سبز) نشانه‌گذاری شد.\nشماره ناحیه را وارد کنید.`);
                 }
                 return;
               case 'TYPE':
                 state.typingMode = true;
-                await sendMessage(chatId, '⌨️ متن مورد نظر را ارسال کنید:');
+                await sendMessage(chatId, '⌨️ متن را ارسال کنید:');
                 return;
               case 'GO_URL':
                 state.urlMode = true;
@@ -776,19 +670,20 @@ jobs:
                 return;
               case 'SELECT':
                 state.selectionMode = true;
-                const count = await highlightClickableElements(page);
-                if (count === 0) {
-                  await sendMessage(chatId, '⚠️ هیچ عنصر قابل کلیکی یافت نشد.');
+                const selCount = await highlightClickableElements(page);
+                if (selCount === 0) {
+                  await sendMessage(chatId, '⚠️ هیچ عنصری یافت نشد.');
                   state.selectionMode = false;
-                  return;
+                  await updateScreenshot(page, chatId);
+                } else {
+                  const selShot = `/tmp/sel_${chatId}_${Date.now()}.png`;
+                  await page.screenshot({ path: selShot, fullPage: false });
+                  if (state.lastScreenshotMsgId) try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
+                  const msgId = await uploadAndSendFileChunked(chatId, selShot, 'Image', '', keypad);
+                  if (msgId) state.lastScreenshotMsgId = msgId;
+                  try { fs.unlinkSync(selShot); } catch(e) {}
+                  await sendMessage(chatId, `🔢 ${selCount} عنصر نشانه‌گذاری شد. شماره را وارد کنید.`);
                 }
-                const selShotPath = `/tmp/sel_${chatId}_${Date.now()}.png`;
-                await page.screenshot({ path: selShotPath, fullPage: false });
-                if (state.lastScreenshotMsgId) try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
-                const selMsgId = await uploadAndSendFileChunked(chatId, selShotPath, 'Image', path.basename(selShotPath));
-                if (selMsgId) state.lastScreenshotMsgId = selMsgId;
-                try { fs.unlinkSync(selShotPath); } catch(e) {}
-                await sendMessage(chatId, `🔢 ${count} عنصر نشانه‌گذاری شد. شماره را وارد کنید.`);
                 return;
               case 'VIDEOS':
                 state.videoMode = true;
@@ -798,15 +693,16 @@ jobs:
                 if (videos.length === 0) {
                   await sendMessage(chatId, '❌ هیچ ویدیویی پیدا نشد.');
                   state.videoMode = false;
-                  return;
+                  await updateScreenshot(page, chatId);
+                } else {
+                  const vidShot = `/tmp/vid_${chatId}_${Date.now()}.png`;
+                  await page.screenshot({ path: vidShot, fullPage: false });
+                  if (state.lastScreenshotMsgId) try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
+                  const msgId = await uploadAndSendFileChunked(chatId, vidShot, 'Image', '', keypad);
+                  if (msgId) state.lastScreenshotMsgId = msgId;
+                  try { fs.unlinkSync(vidShot); } catch(e) {}
+                  await sendMessage(chatId, `🎥 ${videos.length} ویدیو (آبی) نشانه‌گذاری شد.\nشماره مورد نظر را بفرستید.`);
                 }
-                const vidShotPath = `/tmp/vid_${chatId}_${Date.now()}.png`;
-                await page.screenshot({ path: vidShotPath, fullPage: false });
-                if (state.lastScreenshotMsgId) try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
-                const vidMsgId = await uploadAndSendFileChunked(chatId, vidShotPath, 'Image', path.basename(vidShotPath));
-                if (vidMsgId) state.lastScreenshotMsgId = vidMsgId;
-                try { fs.unlinkSync(vidShotPath); } catch(e) {}
-                await sendMessage(chatId, `🎥 ${videos.length} ویدیو با رنگ آبی نشانه‌گذاری شد.\nشماره مورد نظر را برای دانلود بفرستید.`);
                 return;
               case 'IMAGES':
                 state.imageMode = true;
@@ -816,49 +712,46 @@ jobs:
                 if (images.length === 0) {
                   await sendMessage(chatId, '❌ هیچ تصویری پیدا نشد.');
                   state.imageMode = false;
-                  return;
+                  await updateScreenshot(page, chatId);
+                } else {
+                  const imgShot = `/tmp/img_${chatId}_${Date.now()}.png`;
+                  await page.screenshot({ path: imgShot, fullPage: false });
+                  if (state.lastScreenshotMsgId) try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
+                  const msgId = await uploadAndSendFileChunked(chatId, imgShot, 'Image', '', keypad);
+                  if (msgId) state.lastScreenshotMsgId = msgId;
+                  try { fs.unlinkSync(imgShot); } catch(e) {}
+                  await sendMessage(chatId, `🖼️ ${images.length} تصویر (نارنجی) نشانه‌گذاری شد.\nشماره مورد نظر را بفرستید.`);
                 }
-                const imgShotPath = `/tmp/img_${chatId}_${Date.now()}.png`;
-                await page.screenshot({ path: imgShotPath, fullPage: false });
-                if (state.lastScreenshotMsgId) try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
-                const imgMsgId = await uploadAndSendFileChunked(chatId, imgShotPath, 'Image', path.basename(imgShotPath));
-                if (imgMsgId) state.lastScreenshotMsgId = imgMsgId;
-                try { fs.unlinkSync(imgShotPath); } catch(e) {}
-                await sendMessage(chatId, `🖼️ ${images.length} تصویر با رنگ نارنجی نشانه‌گذاری شد.\nشماره مورد نظر را برای دانلود بفرستید.`);
                 return;
               case 'ENTER':
                 try {
-                  const navPromise = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 5000 }).catch(() => null);
+                  const navP = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 5000 }).catch(() => null);
                   await page.keyboard.press('Enter');
-                  await navPromise;
+                  await navP;
                   await sleep(1000);
-                } catch(e) {
-                  log('⚠️ مدیریت ناوبری پس از Enter');
-                  await sleep(1500);
-                }
+                } catch(e) { log('⚠️ Enter navigation'); await sleep(1500); }
                 break;
-              case 'SCREENSHOT':
-                break;
+              case 'SCREENSHOT': break;
               case 'GO_BACK':
                 try {
                   await page.goBack({ waitUntil: 'networkidle2', timeout: 15000 });
                   await sleep(1000);
                   await sendMessage(chatId, '🠔 به صفحه قبل بازگشتیم.');
                 } catch(e) {
-                  err('خطا در بازگشت:', e.message);
+                  err('بازگشت خطا:', e.message);
                   await sendMessage(chatId, '❌ امکان بازگشت وجود ندارد.');
                 }
                 break;
               case 'ZOOM_IN': {
-                const newZ = await zoomPage(page, true);
-                state.zoomLevel = newZ;
-                await sendMessage(chatId, `🔍 زوم به ${newZ.toFixed(1)}x تغییر کرد.`);
+                const z = await zoomPage(page, true);
+                state.zoomLevel = z;
+                await sendMessage(chatId, `🔍 زوم ${z.toFixed(1)}x`);
                 break;
               }
               case 'ZOOM_OUT': {
-                const newZ = await zoomPage(page, false);
-                state.zoomLevel = newZ;
-                await sendMessage(chatId, `🔍 زوم به ${newZ.toFixed(1)}x تغییر کرد.`);
+                const z = await zoomPage(page, false);
+                state.zoomLevel = z;
+                await sendMessage(chatId, `🔍 زوم ${z.toFixed(1)}x`);
                 break;
               }
               case 'REFRESH':
@@ -866,23 +759,18 @@ jobs:
                   await page.reload({ waitUntil: 'networkidle2', timeout: 30000 });
                   await sleep(1000);
                   await page.evaluate((z) => { document.body.style.zoom = z; }, state.zoomLevel.toString());
-                } catch(e) {
-                  err('خطا در رفرش:', e.message);
-                  await sendMessage(chatId, '❌ رفرش با مشکل مواجه شد.');
-                }
+                } catch(e) { err('رفرش خطا:', e.message); await sendMessage(chatId, '❌ رفرش با مشکل مواجه شد.'); }
                 break;
               case 'CHANGE_PROXY':
                 const switched = await browserManager.switchProxy();
-                if (switched) {
-                  await sendMessage(chatId, '🔁 پروکسی با موفقیت تغییر کرد.');
-                } else {
-                  await sendMessage(chatId, '❌ هیچ پروکسی سالمی یافت نشد.');
-                  process.exit(1);
-                }
+                if (switched) await sendMessage(chatId, '🔁 پروکسی تغییر کرد.');
+                else { await sendMessage(chatId, '❌ هیچ پروکسی سالمی یافت نشد.'); process.exit(1); }
                 return;
             }
 
-            if (!['SCROLL_UP', 'SCROLL_DOWN', 'TYPE', 'GO_URL', 'SELECT', 'VIDEOS', 'IMAGES', 'CHANGE_PROXY'].includes(buttonId)) {
+            if (!['SCROLL_UP', 'SCROLL_DOWN', 'TYPE', 'GO_URL', 'SELECT', 'VIDEOS', 'IMAGES', 'CHANGE_PROXY', 'SCREENSHOT', 'ZOOM_IN', 'ZOOM_OUT'].includes(buttonId)) {
+              await updateScreenshot(page, chatId);
+            } else if (buttonId === 'SCREENSHOT' || buttonId === 'ZOOM_IN' || buttonId === 'ZOOM_OUT' || buttonId === 'REFRESH' || buttonId === 'GO_BACK' || buttonId === 'ENTER') {
               await updateScreenshot(page, chatId);
             }
           }
@@ -890,27 +778,28 @@ jobs:
           // ======================== پردازش ورودی‌های متنی ========================
           async function handleTextInput(page, chatId, text) {
             const state = getState(chatId);
+            const keypad = buildControlKeypad();
 
-            // اولویت با حالت اسکرول چندگانه
+            // اسکرول چندگانه
             if (state.scrollMultiMode) {
               if (state.scrollSelectedIndex === null) {
                 const idx = parseInt(text);
                 if (isNaN(idx) || idx < 1 || idx > state.scrollAreasCount) {
-                  const msg = await sendMessage(chatId, `❌ شماره بین ۱ تا ${state.scrollAreasCount} وارد کنید.`);
-                  if (msg?.data?.message_id) state.tempMessageIds.push(msg.data.message_id);
+                  const m = await sendMessage(chatId, `❌ شماره بین ۱ تا ${state.scrollAreasCount} وارد کنید.`);
+                  if (m?.data?.message_id) state.tempMessageIds.push(m.data.message_id);
                   return;
                 }
                 state.scrollSelectedIndex = idx;
                 await removeScrollHighlights(page);
                 const dirText = state.scrollDirection === 'up' ? 'بالا' : 'پایین';
-                const msg = await sendMessage(chatId, `✅ ناحیه ${idx} انتخاب شد.\nچند پیکسل به ${dirText} اسکرول کنم؟`);
-                if (msg?.data?.message_id) state.tempMessageIds.push(msg.data.message_id);
+                const m = await sendMessage(chatId, `✅ ناحیه ${idx} انتخاب شد.\nچند پیکسل به ${dirText} اسکرول کنم؟`);
+                if (m?.data?.message_id) state.tempMessageIds.push(m.data.message_id);
                 return;
               } else {
                 const px = parseInt(text);
                 if (isNaN(px) || px <= 0) {
-                  const msg = await sendMessage(chatId, '❌ عدد مثبت وارد کنید.');
-                  if (msg?.data?.message_id) state.tempMessageIds.push(msg.data.message_id);
+                  const m = await sendMessage(chatId, '❌ عدد مثبت وارد کنید.');
+                  if (m?.data?.message_id) state.tempMessageIds.push(m.data.message_id);
                   return;
                 }
                 await scrollAreaByPixel(page, state.scrollSelectedIndex, px, state.scrollDirection);
@@ -924,51 +813,34 @@ jobs:
               }
             }
 
-            // حالت تایپ
             if (state.typingMode) {
               state.typingMode = false;
               if (text) {
-                log(`⌨️ تایپ "${text}" در ${chatId}`);
                 await page.keyboard.type(text, { delay: 50 });
                 await sleep(300);
-                await updateScreenshot(page, chatId);
               }
+              await updateScreenshot(page, chatId);
               return;
             }
 
-            // حالت آدرس جدید
             if (state.urlMode) {
               state.urlMode = false;
               if (text) {
-                log(`🌐 رفتن به ${text} از ${chatId}`);
                 try {
                   await page.goto(text, { waitUntil: 'networkidle2', timeout: 30000 });
                   await sleep(2000);
                   await page.evaluate((z) => { document.body.style.zoom = z; }, state.zoomLevel.toString());
-                  await updateScreenshot(page, chatId);
-                } catch(e) {
-                  err('بارگذاری ناموفق:', e.message);
-                  await sendMessage(chatId, `❌ خطا در باز کردن آدرس: ${e.message}`);
-                }
+                } catch(e) { err('بارگذاری ناموفق:', e.message); await sendMessage(chatId, `❌ خطا در باز کردن آدرس.`); }
               }
+              await updateScreenshot(page, chatId);
               return;
             }
 
-            // حالت انتخاب شماره‌ای
             if (state.selectionMode) {
               const num = parseInt(text);
-              if (isNaN(num) || num <= 0) {
-                const msg = await sendMessage(chatId, '❌ عدد معتبر وارد کنید.');
-                if (msg?.data?.message_id) state.tempMessageIds.push(msg.data.message_id);
-                return;
-              }
-              const success = await clickByNumber(page, num);
-              if (!success) {
-                const msg = await sendMessage(chatId, `❌ کلیک روی عنصر ${num} ناموفق بود.`);
-                if (msg?.data?.message_id) state.tempMessageIds.push(msg.data.message_id);
-              } else {
-                log(`✅ کلیک روی عنصر شماره ${num} موفق`);
-              }
+              if (isNaN(num) || num <= 0) { await sendMessage(chatId, '❌ عدد معتبر وارد کنید.'); return; }
+              const ok = await clickByNumber(page, num);
+              if (!ok) await sendMessage(chatId, `❌ کلیک روی عنصر ${num} ناموفق بود.`);
               await removeHighlights(page);
               state.selectionMode = false;
               await sleep(300);
@@ -976,80 +848,59 @@ jobs:
               return;
             }
 
-            // حالت دانلود ویدیو
             if (state.videoMode) {
               const num = parseInt(text);
-              const videos = state.videoData;
-              if (isNaN(num) || num < 1 || num > videos.length) {
-                const msg = await sendMessage(chatId, '❌ شماره نامعتبر.');
-                if (msg?.data?.message_id) state.tempMessageIds.push(msg.data.message_id);
+              if (isNaN(num) || num < 1 || num > state.videoData.length) {
+                await sendMessage(chatId, '❌ شماره نامعتبر.');
                 return;
               }
-              const selected = videos[num-1];
-              await sendMessage(chatId, `📥 در حال دانلود ویدیوی شماره ${num} ...`);
-              const result = await downloadVideo(selected.src, selected.type, state.pageUrlAtVideo, selected.platform, state.pageUrlAtVideo);
-              if (result.ok) {
-                const sent = await uploadAndSendFileChunked(chatId, result.path, 'Video', result.name);
-                if (sent) {
-                  log(`✅ ویدیو ${result.name} با موفقیت به روبیکا ارسال شد.`);
-                } else {
-                  await sendMessage(chatId, `❌ ارسال ویدیو به روبیکا ناموفق بود.`);
-                }
-                try { fs.unlinkSync(result.path); } catch(e) {}
-              } else {
-                await sendMessage(chatId, `❌ خطا در دانلود: ${result.error || 'نامشخص'}`);
-              }
+              const sel = state.videoData[num-1];
+              await sendMessage(chatId, `📥 دانلود ویدیوی شماره ${num} ...`);
+              const res = await downloadVideo(sel.src, sel.type, state.pageUrlAtVideo, sel.platform, state.pageUrlAtVideo);
+              if (res.ok) {
+                const sent = await uploadAndSendFileChunked(chatId, res.path, 'Video', `🎥 ${path.basename(res.path)}`, keypad);
+                if (!sent) await sendMessage(chatId, '❌ ارسال ویدیو ناموفق.');
+                try { fs.unlinkSync(res.path); } catch(e) {}
+              } else await sendMessage(chatId, '❌ دانلود ناموفق.');
               await removeVideoHighlights(page);
               state.videoMode = false;
               state.videoData = null;
-              state.pageUrlAtVideo = '';
               await sleep(300);
               await updateScreenshot(page, chatId);
               return;
             }
 
-            // حالت دانلود تصویر
             if (state.imageMode) {
               const num = parseInt(text);
-              const images = state.imageData;
-              if (isNaN(num) || num < 1 || num > images.length) {
-                const msg = await sendMessage(chatId, '❌ شماره نامعتبر.');
-                if (msg?.data?.message_id) state.tempMessageIds.push(msg.data.message_id);
+              if (isNaN(num) || num < 1 || num > state.imageData.length) {
+                await sendMessage(chatId, '❌ شماره نامعتبر.');
                 return;
               }
-              const selectedUrl = images[num-1];
-              await sendMessage(chatId, `📥 در حال دانلود تصویر شماره ${num} ...`);
-              const result = await downloadImage(selectedUrl, state.pageUrlAtImage);
-              if (result.ok) {
-                const sent = await uploadAndSendFileChunked(chatId, result.path, 'Image', result.name);
-                if (sent) {
-                  log(`✅ تصویر ${result.name} با موفقیت به روبیکا ارسال شد.`);
-                } else {
-                  await sendMessage(chatId, `❌ ارسال تصویر به روبیکا ناموفق بود.`);
-                }
-                try { fs.unlinkSync(result.path); } catch(e) {}
-              } else {
-                await sendMessage(chatId, `❌ خطا در دانلود تصویر: ${result.error || 'نامشخص'}`);
-              }
+              const url = state.imageData[num-1];
+              await sendMessage(chatId, `📥 دانلود تصویر شماره ${num} ...`);
+              const res = await downloadImage(url, state.pageUrlAtImage);
+              if (res.ok) {
+                const sent = await uploadAndSendFileChunked(chatId, res.path, 'Image', `🖼️ ${path.basename(res.path)}`, keypad);
+                if (!sent) await sendMessage(chatId, '❌ ارسال تصویر ناموفق.');
+                try { fs.unlinkSync(res.path); } catch(e) {}
+              } else await sendMessage(chatId, '❌ دانلود ناموفق.');
               await removeImageHighlights(page);
               state.imageMode = false;
               state.imageData = null;
-              state.pageUrlAtImage = '';
               await sleep(300);
               await updateScreenshot(page, chatId);
               return;
             }
 
-            // دستورات ساده
             if (text === '/start') {
-              await sendMessage(chatId, '🟢 ربات آماده است.');
+              await sendMessage(chatId, '🟢 ربات آماده.');
               if (!state.lastScreenshotMsgId) await updateScreenshot(page, chatId);
             } else if (text === 'help') {
-              await sendMessage(chatId, '🎮 دکمه‌ها:\n⬆️⬇️ اسکرول هوشمند\n⌨️ تایپ\n🌐 آدرس جدید\n🔍 انتخاب با شماره\n🎥 ویدیوهای صفحه\n🖼️ تصاویر\n↵ Enter\n📸 اسکرین‌شات\n🠔 عقب\n🔍 زوم +/-\n🔄 رفرش\n🔁 عوض کردن پروکسی');
+              await sendMessage(chatId, '🎮 دکمه‌ها:\n⬆️⬇️ اسکرول هوشمند\n⌨️ تایپ\n🌐 آدرس جدید\n🔍 انتخاب با شماره\n🎥 ویدیوها\n🖼️ تصاویر\n↵ Enter\n📸 اسکرین‌شات\n🠔 عقب\n🔍 زوم +/-\n🔄 رفرش\n🔁 پروکسی');
             }
           }
 
-          // ======================== مدیریت پروکسی و مرورگر ========================
+          // ======================== مدیریت پروکسی ========================
           class BrowserManager {
             constructor(proxies) {
               this.proxies = proxies;
@@ -1058,24 +909,17 @@ jobs:
               this.xrayProc = null;
               this.currentProxyIndex = -1;
             }
-
             async startBrowserWithProxy(index) {
               if (this.xrayProc) { this.xrayProc.kill(); await sleep(500); }
               if (this.browser) { try { await this.browser.close(); } catch(_) {} }
-
               const uri = this.proxies[index];
               log(`🔌 تست پروکسی ${index+1}/${this.proxies.length}: ${uri.substring(0,60)}...`);
               this.xrayProc = await startXray(uri, index);
               if (!this.xrayProc) throw new Error('Xray start failed');
               if (!testCurl(10808)) throw new Error('Curl failed');
-
               this.browser = await puppeteer.launch({
                 headless: 'new',
-                args: [
-                  '--no-sandbox','--disable-setuid-sandbox',
-                  '--proxy-server=socks5://127.0.0.1:10808',
-                  '--disable-dev-shm-usage','--window-size=1280,720'
-                ],
+                args: ['--no-sandbox','--disable-setuid-sandbox','--proxy-server=socks5://127.0.0.1:10808','--disable-dev-shm-usage','--window-size=1280,720'],
                 defaultViewport: null
               });
               this.page = await this.browser.newPage();
@@ -1083,7 +927,6 @@ jobs:
               await this.page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
               await this.page.evaluate(() => { document.body.style.zoom = '1.0'; });
             }
-
             async findWorkingProxy() {
               for (let i = 0; i < this.proxies.length; i++) {
                 try {
@@ -1094,7 +937,7 @@ jobs:
                     const bodyText = document.body.innerText.toLowerCase();
                     return ['access denied', 'you have been blocked', 'cloudflare', 'attention required'].some(t => bodyText.includes(t));
                   });
-                  if (blocked) { log('⛔ پروکسی بلاک دارد. بعدی.'); continue; }
+                  if (blocked) { log('⛔ پروکسی بلاک دارد.'); continue; }
                   this.currentProxyIndex = i;
                   log('✅ اتصال موفق.');
                   return true;
@@ -1102,10 +945,9 @@ jobs:
               }
               return false;
             }
-
             async switchProxy() {
               let newIdx = (this.currentProxyIndex + 1) % this.proxies.length;
-              for (let attempts = 0; attempts < this.proxies.length; attempts++) {
+              for (let i = 0; i < this.proxies.length; i++) {
                 try {
                   await this.startBrowserWithProxy(newIdx);
                   await this.page.goto(TARGET_URL, { waitUntil: 'networkidle2', timeout: 30000 });
@@ -1114,9 +956,9 @@ jobs:
                     const bodyText = document.body.innerText.toLowerCase();
                     return ['access denied', 'you have been blocked', 'cloudflare', 'attention required'].some(t => bodyText.includes(t));
                   });
-                  if (blocked) { log('پروکسی جدید بلاک دارد، بعدی...'); newIdx = (newIdx + 1) % this.proxies.length; continue; }
+                  if (blocked) { log('پروکسی جدید بلاک دارد.'); newIdx = (newIdx + 1) % this.proxies.length; continue; }
                   this.currentProxyIndex = newIdx;
-                  log(`✅ پروکسی به شماره ${newIdx+1} تغییر کرد.`);
+                  log(`✅ پروکسی به ${newIdx+1} تغییر کرد.`);
                   if (OWNER) await updateScreenshot(this.page, OWNER);
                   return true;
                 } catch(e) { log('خطا با پروکسی:', e.message); newIdx = (newIdx + 1) % this.proxies.length; }
@@ -1133,25 +975,18 @@ jobs:
               if (!bot?.username) { err('توکن نامعتبر'); process.exit(1); }
               log('✅ ربات:', bot.username);
 
-              if (!fs.existsSync(PROXY_FILE)) {
-                err(`فایل ${PROXY_FILE} یافت نشد.`);
-                process.exit(1);
-              }
-
-              const proxies = fs.readFileSync(PROXY_FILE, 'utf8')
-                .split('\n').map(l => l.trim())
-                .filter(l => /^(vless|trojan|ss|vmess):\/\//.test(l));
-              log(`${proxies.length} کانفیگ خوب بارگذاری شد.`);
+              if (!fs.existsSync(PROXY_FILE)) { err(`فایل ${PROXY_FILE} یافت نشد.`); process.exit(1); }
+              const proxies = fs.readFileSync(PROXY_FILE, 'utf8').split('\n').map(l => l.trim()).filter(l => /^(vless|trojan|ss|vmess):\/\//.test(l));
+              log(`${proxies.length} کانفیگ خوب.`);
 
               const browserManager = new BrowserManager(proxies);
-              const found = await browserManager.findWorkingProxy();
-              if (!found) { err('هیچ پروکسی سالمی یافت نشد.'); process.exit(1); }
-
+              if (!(await browserManager.findWorkingProxy())) { err('هیچ پروکسی سالمی یافت نشد.'); process.exit(1); }
               const page = browserManager.page;
+
               if (OWNER) await sendMessage(OWNER, '🟢 ربات روشن شد.');
               else log('⚠️ OWNER_CHAT_ID تنظیم نشده.');
 
-              log('🧹 پاک‌سازی تاریخچه...');
+              // پاک‌سازی تاریخچه
               let offset = null, flushed = 0;
               while (true) {
                 const params = { limit: 10 };
@@ -1164,10 +999,9 @@ jobs:
                 if (upRes.data?.next_offset_id) offset = upRes.data.next_offset_id;
                 else break;
               }
-              log(`✅ تاریخچه پاک شد (${flushed} آپدیت). offset: ${offset || 'ندارد'}`);
+              log(`✅ تاریخچه پاک (${flushed} آپدیت). offset: ${offset || 'ندارد'}`);
 
-              const ownerChat = OWNER;
-              if (ownerChat) await updateScreenshot(page, ownerChat);
+              if (OWNER) await updateScreenshot(page, OWNER);
 
               let consecutiveErrors = 0;
               const END_TIME = Date.now() + 17380 * 1000;
@@ -1208,20 +1042,13 @@ jobs:
                         }
                       } catch(handlerError) {
                         err('خطا در پردازش:', handlerError.message);
-                        // ریست تمام حالت‌ها
                         const st = getState(chatId);
-                        st.typingMode = false;
-                        st.urlMode = false;
-                        st.scrollMultiMode = false;
-                        st.scrollDirection = null;
-                        st.scrollAreasCount = 0;
-                        st.scrollSelectedIndex = null;
-                        st.selectionMode = false;
-                        st.videoMode = false;
-                        st.videoData = null;
-                        st.imageMode = false;
-                        st.imageData = null;
-                        await sendMessage(chatId, '⚠️ خطایی رخ داد. حالت‌ها ریست شدند. لطفاً دوباره تلاش کنید.');
+                        Object.assign(st, {
+                          typingMode: false, urlMode: false, scrollMultiMode: false,
+                          scrollDirection: null, scrollAreasCount: 0, scrollSelectedIndex: null,
+                          selectionMode: false, videoMode: false, videoData: null, imageMode: false, imageData: null
+                        });
+                        await sendMessage(chatId, '⚠️ خطا. حالت‌ها ریست شد.');
                         await updateScreenshot(page, chatId);
                       }
                     }
