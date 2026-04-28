@@ -1,0 +1,304 @@
+name: 🕵️ Proxy Google Checker (Anti-Captcha)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'   # هر ۶ ساعت
+
+jobs:
+  proxy-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 290
+    permissions:
+      contents: write          # برای Commit کردن فایل خروجی
+
+    steps:
+      - name: 📥 دریافت کد
+        uses: actions/checkout@v4
+
+      - name: 🧰 نصب ابزارها
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y curl unzip
+          wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
+          unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
+          npm init -y
+          npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
+
+      - name: 🤖 اجرای تستر پروکسی‌ها (با تشخیص "I'm not a robot")
+        run: |
+          cat > tester.cjs << 'ENDSCRIPT'
+          const { spawn } = require('child_process');
+          const fs = require('fs');
+          const path = require('path');
+          const puppeteer = require('puppeteer-extra');
+          const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+          puppeteer.use(StealthPlugin());
+
+          const GOOD_PROXIES_FILE = 'google_good.txt';
+          const SEARCH_QUERY = 'ایران';
+
+          function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
+          function log(...args) { console.log(`[${ts()}]`, ...args); }
+          function err(...args) { console.error(`[${ts()}] ❌`, ...args); }
+
+          // =============== Xray Helpers ===============
+          function parseURI(uri) {
+            try {
+              const u = new URL(uri);
+              return {
+                protocol: u.protocol.replace(':',''),
+                uuid: u.username,
+                address: u.hostname,
+                port: u.port,
+                params: Object.fromEntries(u.searchParams.entries())
+              };
+            } catch(e) { return null; }
+          }
+
+          function generateXrayConfig(uri) {
+            const p = parseURI(uri);
+            if (!p) return null;
+            const inbound = { port: 10808, protocol: 'socks', settings: { auth: 'noauth', udp: true } };
+            let outbound = {
+              protocol: p.protocol,
+              settings: p.protocol === 'trojan' ? {
+                servers: [{ address: p.address, port: parseInt(p.port), password: p.uuid }]
+              } : {
+                vnext: [{ address: p.address, port: parseInt(p.port), users: [{ id: p.uuid, encryption: p.params.encryption || 'none', flow: p.params.flow || '' }] }]
+              },
+              streamSettings: { network: p.params.type || 'tcp' }
+            };
+            const network = p.params.type || 'tcp';
+            outbound.streamSettings.network = network;
+            if (network === 'ws') {
+              outbound.streamSettings.wsSettings = {
+                path: p.params.path || '/',
+                headers: p.params.host ? { Host: p.params.host } : {}
+              };
+            }
+            const security = p.params.security || 'none';
+            if (security === 'tls' || security === 'reality') {
+              outbound.streamSettings.security = security;
+              const tls = { serverName: p.params.sni || p.address };
+              if (security === 'reality') {
+                tls.fingerprint = p.params.fp || 'chrome';
+                tls.publicKey = p.params.pbk || '';
+                tls.shortId = p.params.sid || '';
+                tls.spiderX = '';
+              }
+              if (p.params.allowInsecure === '1') tls.allowInsecure = true;
+              if (p.params.alpn) tls.alpn = p.params.alpn.split(',');
+              outbound.streamSettings.tlsSettings = tls;
+            } else {
+              outbound.streamSettings.security = 'none';
+            }
+            return { inbounds: [inbound], outbounds: [outbound] };
+          }
+
+          async function startXray(uri, idx) {
+            const config = generateXrayConfig(uri);
+            if (!config) return null;
+            const cfgPath = `/tmp/xray_${idx}.json`;
+            fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
+            const xray = spawn(path.join(process.cwd(), 'xray', 'xray'), ['run', '-config', cfgPath], { stdio: 'pipe' });
+            await new Promise(r => setTimeout(r, 4000));
+            return xray;
+          }
+
+          function testCurl(port) {
+            try {
+              require('child_process').execSync(
+                `curl --socks5 127.0.0.1:${port} --max-time 8 -s https://www.google.com`,
+                { encoding: 'utf8', stdio: 'pipe', timeout: 10000 }
+              );
+              return true;
+            } catch(e) {
+              return false;
+            }
+          }
+
+          const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+          // =============== ذخیره فوری یک پروکسی ===============
+          function saveGoodProxy(uri) {
+            // جلوگیری از ذخیره تکراری
+            let existing = [];
+            if (fs.existsSync(GOOD_PROXIES_FILE)) {
+              existing = fs.readFileSync(GOOD_PROXIES_FILE, 'utf8')
+                .split('\n')
+                .map(l => l.trim())
+                .filter(l => l.length > 0);
+            }
+            if (!existing.includes(uri)) {
+              fs.appendFileSync(GOOD_PROXIES_FILE, uri + '\n');
+              log('💾 پروکسی بلافاصله ذخیره شد:', uri.substring(0, 70) + '...');
+            } else {
+              log('⏭️ پروکسی قبلاً در لیست وجود دارد.');
+            }
+          }
+
+          // =============== تست Google با تشخیص هوشمند کپچا ===============
+          async function testGoogleWithProxy(uri) {
+            // راه‌اندازی Xray برای این پروکسی
+            const xrayProc = await startXray(uri, 0);
+            if (!xrayProc) return false;
+
+            // تست اولیه با curl
+            if (!testCurl(10808)) {
+              log('پروکسی در تست curl مردود شد');
+              xrayProc.kill();
+              return false;
+            }
+            log('✅ تست اولیه curl موفق بود، حالا بررسی گوگل...');
+
+            let browser;
+            try {
+              browser = await puppeteer.launch({
+                headless: 'new',
+                args: [
+                  '--no-sandbox',
+                  '--disable-setuid-sandbox',
+                  '--proxy-server=socks5://127.0.0.1:10808',
+                  '--disable-dev-shm-usage',
+                  '--window-size=1280,720'
+                ],
+                defaultViewport: null
+              });
+
+              const page = await browser.newPage();
+              await page.setViewport({ width: 1280, height: 720, deviceScaleFactor: 1 });
+              await page.setUserAgent(
+                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
+              );
+
+              // رفتن به گوگل
+              await page.goto('https://www.google.com', { waitUntil: 'networkidle2', timeout: 30000 });
+              await sleep(1000);
+
+              // بررسی وجود فیلد جستجو
+              const searchInput = await page.$('input[name="q"], textarea[name="q"]');
+              if (!searchInput) {
+                log('فیلد جستجوی گوگل پیدا نشد. احتمالاً صفحه مسدود یا کپچا.');
+                await browser.close();
+                xrayProc.kill();
+                return false;
+              }
+
+              // تایپ عبارت جستجو
+              await searchInput.click({ clickCount: 3 });
+              await page.keyboard.type(SEARCH_QUERY, { delay: 60 });
+              await sleep(300);
+
+              // زدن Enter و انتظار برای صفحه نتایج
+              await Promise.all([
+                page.keyboard.press('Enter'),
+                page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 15000 }).catch(() => null)
+              ]);
+              await sleep(2000);
+
+              const currentUrl = page.url();
+              log(`آدرس بعد از جستجو: ${currentUrl}`);
+
+              // 1. چک کردن اینکه در صفحه نتایج هستیم
+              if (!currentUrl.includes('/search') && !currentUrl.includes('?q=')) {
+                log('به صفحه نتایج هدایت نشدیم.');
+                await browser.close();
+                xrayProc.kill();
+                return false;
+              }
+
+              // 2. تشخیص کپچا / I'm not a robot / Sorry
+              const isBlocked = await page.evaluate(() => {
+                // الف: iframe ریکپچا
+                const recaptchaIframe = document.querySelector('iframe[src*="recaptcha"], iframe[src*="google.com/recaptcha"]');
+                if (recaptchaIframe) return true;
+
+                // ب: فرم Sorry گوگل
+                const sorryForm = document.querySelector('form[action*="sorry"]');
+                if (sorryForm) return true;
+
+                // پ: عنوان صفحه شامل "sorry"
+                if (document.title.toLowerCase().includes('sorry')) return true;
+
+                // ت: متن «I'm not a robot» یا «من ربات نیستم» (گاه با ترجمه)
+                const bodyText = document.body.innerText.toLowerCase();
+                if (bodyText.includes("i'm not a robot") || bodyText.includes('من ربات نیستم')) return true;
+
+                // ث: عبارت «unusual traffic» (ترافیک غیرعادی)
+                if (bodyText.includes('unusual traffic') && bodyText.includes('automated')) return true;
+
+                return false;
+              });
+
+              if (isBlocked) {
+                log('🚫 کپچا / I′m not a robot تشخیص داده شد. پروکسی رد شد.');
+                await browser.close();
+                xrayProc.kill();
+                return false;
+              }
+
+              // اگر به اینجا رسیدیم: نتایج واقعی جستجو
+              log('✅ صفحه نتایج گوگل بدون هیچ مسدودی. پروکسی تأیید شد.');
+              await browser.close();
+              xrayProc.kill();
+              return true;
+
+            } catch (e) {
+              err('خطا در تست گوگل:', e.message);
+              try { await browser.close(); } catch(_) {}
+              xrayProc.kill();
+              return false;
+            }
+          }
+
+          // =============== روند اصلی ===============
+          (async () => {
+            if (!fs.existsSync('proxies.txt')) {
+              err('فایل proxies.txt پیدا نشد. یک فایل در ریشه ریپو بسازید.');
+              process.exit(1);
+            }
+
+            const proxies = fs.readFileSync('proxies.txt', 'utf8')
+              .split('\n')
+              .map(l => l.trim())
+              .filter(l => l.startsWith('vless://') || l.startsWith('trojan://') || l.startsWith('ss://') || l.startsWith('vmess://'));
+
+            log(`${proxies.length} پروکسی برای بررسی بارگذاری شد.`);
+
+            let goodCount = 0;
+
+            for (let i = 0; i < proxies.length; i++) {
+              const uri = proxies[i];
+              log(`\n--- تست ${i+1}/${proxies.length} ---`);
+              log(`پروکسی: ${uri.substring(0, 80)}...`);
+
+              const isGood = await testGoogleWithProxy(uri);
+              if (isGood) {
+                log('🎉 این پروکسی گوگل را بدون کپچا باز کرد.');
+                saveGoodProxy(uri);   // ذخیره فوری
+                goodCount++;
+              } else {
+                log('❌ پروکسی مناسب نیست (کپچا/مسدود/خطا).');
+              }
+
+              // فاصله بین تست‌ها
+              await sleep(3000);
+            }
+
+            log(`\n✅ ${goodCount} پروکسی جدید تأیید و ذخیره شد.`);
+            log(`📁 فایل ${GOOD_PROXIES_FILE} بروز است.`);
+
+            process.exit(0);
+          })();
+          ENDSCRIPT
+
+          timeout 17400 node tester.cjs
+
+      - name: 📤 ذخیره و Commit فایل پروکسی‌های خوب
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add google_good.txt
+          git commit -m "✅ بروزرسانی پروکسی‌های بدون کپچا - $(date +'%Y-%m-%d %H:%M')" || echo "بدون تغییر"
+          git push
