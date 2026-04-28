@@ -1,4 +1,4 @@
-name: 🌐 مرورگر راه دور (دانلود ویدیو + اسکرول چندگانه + زوم)
+name: 🌐 مرورگر راه دور (ارسال مستقیم به روبیکا)
 
 on:
   workflow_dispatch:
@@ -24,7 +24,7 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای ربات (نسخه نهایی)
+      - name: 🤖 اجرای ربات (نسخه نهایی با ارسال مستقیم)
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           RUBIKA_OWNER_CHAT_ID: ${{ secrets.RUBIKA_OWNER_CHAT_ID }}
@@ -39,6 +39,7 @@ jobs:
 
           const PROXY_FILE = 'کانفیگ های خوب.txt';
           const TARGET_URL = 'https://console.groq.com/playground';
+          const CHUNK_SIZE = 40 * 1024 * 1024; // 40MB
 
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
           function log(...args) { console.log(`[${ts()}]`, ...args); }
@@ -116,29 +117,41 @@ jobs:
             } catch(e) { return false; }
           }
 
-          // ======================== Rubika API ========================
+          // ======================== Rubika API (با retry) ========================
           const TOKEN = process.env.RUBIKA_BOT_TOKEN;
           const OWNER = process.env.RUBIKA_OWNER_CHAT_ID || '';
           const BASE = `https://botapi.rubika.ir/v3/${TOKEN}`;
 
-          async function api(method, body = {}) {
+          async function api(method, body = {}, retries = 3) {
             const url = `${BASE}/${method}`;
-            try {
-              const res = await fetch(url, {
-                method: 'POST',
-                headers: {'Content-Type':'application/json'},
-                body: JSON.stringify(body)
-              });
-              const text = await res.text();
-              let data;
-              try { data = JSON.parse(text); } catch(e) {
-                err(`⚠️ پاسخ ${method} JSON نیست:`, text.substring(0, 300));
-                return { error: true, raw: text };
+            for (let attempt = 0; attempt < retries; attempt++) {
+              try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+                const res = await fetch(url, {
+                  method: 'POST',
+                  headers: {'Content-Type':'application/json'},
+                  body: JSON.stringify(body),
+                  signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+                const text = await res.text();
+                let data;
+                try { data = JSON.parse(text); } catch(e) {
+                  if (attempt < retries - 1) { await sleep(2000 * (attempt + 1)); continue; }
+                  err(`⚠️ پاسخ ${method} JSON نیست:`, text.substring(0, 300));
+                  return { error: true, raw: text };
+                }
+                return data;
+              } catch(e) {
+                if (attempt < retries - 1) {
+                  log(`🔄 تلاش مجدد ${method} (${attempt+2}/${retries})...`);
+                  await sleep(2000 * (attempt + 1));
+                  continue;
+                }
+                err(`🚨 خطای شبکه در ${method}:`, e.message);
+                return { error: true, message: e.message };
               }
-              return data;
-            } catch(e) {
-              err(`🚨 خطای شبکه در ${method}:`, e.message);
-              return { error: true, message: e.message };
             }
           }
 
@@ -151,7 +164,8 @@ jobs:
             return await api('deleteMessage', { chat_id: chatId, message_id: messageId });
           }
 
-          async function uploadAndSendFile(chatId, filePath, fileType, keypad = null) {
+          // ======================== آپلود و ارسال فایل به روبیکا (تکه‌ای) ========================
+          async function uploadSingleFile(filePath, fileType) {
             const reqRes = await api('requestSendFile', { type: fileType });
             const uploadUrl = reqRes?.data?.upload_url;
             if (!uploadUrl) { err('upload_url دریافت نشد'); return null; }
@@ -166,17 +180,64 @@ jobs:
             try { upJson = JSON.parse(upText); } catch(e) {}
             const fileId = upJson?.file_id || upJson?.data?.file_id;
             if (!fileId) { err('file_id یافت نشد'); return null; }
+            return fileId;
+          }
 
-            const sendBody = { chat_id: chatId, file_id: fileId, text: '' };
-            if (keypad) {
-              sendBody.chat_keypad = keypad;
-              sendBody.chat_keypad_type = 'New';
-            }
+          async function sendFileToChat(chatId, fileId, text = '') {
+            const sendBody = { chat_id: chatId, file_id: fileId, text };
             const sendRes = await api('sendFile', sendBody);
             return sendRes?.data?.message_id || null;
           }
 
-          // ======================== انتخاب هوشمند با شماره (پیشرفته: Shadow DOM و iframe) ========================
+          async function uploadAndSendFileChunked(chatId, filePath, fileType, baseName) {
+            const stats = fs.statSync(filePath);
+            const sizeMB = (stats.size / (1024 * 1024)).toFixed(1);
+            log(`📤 ارسال فایل ${baseName} (${sizeMB}MB) به روبیکا...`);
+
+            if (stats.size <= CHUNK_SIZE) {
+              // ارسال مستقیم
+              const fileId = await uploadSingleFile(filePath, fileType);
+              if (!fileId) return false;
+              const msgId = await sendFileToChat(chatId, fileId, `📦 ${baseName} (${sizeMB}MB)`);
+              if (!msgId) { err('sendFile ناموفق'); return false; }
+              log(`✅ فایل ${baseName} با موفقیت ارسال شد.`);
+              return true;
+            }
+
+            // تقسیم به تکه‌های ۴۰ مگابایتی
+            const chunkDir = `/tmp/chunks_${Date.now()}`;
+            fs.mkdirSync(chunkDir, { recursive: true });
+            const prefix = path.join(chunkDir, 'chunk_');
+            execSync(`split -b ${CHUNK_SIZE} -d "${filePath}" "${prefix}"`);
+            const chunks = fs.readdirSync(chunkDir).sort();
+            const total = chunks.length;
+
+            log(`📦 فایل به ${total} تکه تقسیم شد.`);
+            await sendMessage(chatId, `📦 فایل ${baseName} (${sizeMB}MB) به ${total} تکه ۴۰MB تقسیم و ارسال می‌شود...`);
+
+            for (let i = 0; i < chunks.length; i++) {
+              const chunkPath = path.join(chunkDir, chunks[i]);
+              const chunkName = `${baseName}.part${String(i+1).padStart(2,'0')}`;
+              const chunkSize = (fs.statSync(chunkPath).size / (1024 * 1024)).toFixed(1);
+
+              log(`📤 ارسال تکه ${i+1}/${total}: ${chunkName} (${chunkSize}MB)`);
+              const fileId = await uploadSingleFile(chunkPath, 'File');
+              if (!fileId) {
+                err(`❌ آپلود تکه ${i+1} ناموفق`);
+                await sendMessage(chatId, `❌ خطا در ارسال تکه ${i+1}/${total}`);
+                continue;
+              }
+              await sendFileToChat(chatId, fileId, `📦 ${chunkName} (تکه ${i+1}/${total} - ${chunkSize}MB)`);
+              await sleep(3000); // وقفه بین ارسال‌ها برای کاهش فشار
+              fs.unlinkSync(chunkPath); // پاکسازی تکه
+            }
+
+            fs.rmdirSync(chunkDir, { recursive: true });
+            log(`✅ تمام تکه‌های ${baseName} ارسال شد.`);
+            return true;
+          }
+
+          // ======================== انتخاب هوشمند با شماره (Shadow DOM + iframe) ========================
           async function highlightClickableElements(page) {
             return await page.evaluate(() => {
               document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
@@ -203,11 +264,9 @@ jobs:
                 try {
                   root.querySelectorAll(baseSelectors.join(',')).forEach(el => elements.add(el));
                 } catch(e) {}
-                // Shadow DOM
                 root.querySelectorAll('*').forEach(node => {
                   if (node.shadowRoot) collect(node.shadowRoot);
                 });
-                // Same-origin iframes
                 root.querySelectorAll('iframe').forEach(iframe => {
                   try {
                     const doc = iframe.contentDocument || iframe.contentWindow.document;
@@ -287,48 +346,42 @@ jobs:
             }
           }
 
-          // ======================== اسکرول هوشمند (چند ناحیه‌ای) ========================
+          // ======================== اسکرول هوشمند چندناحیه‌ای ========================
           async function highlightScrollableAreas(page) {
             return await page.evaluate(() => {
               document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
               document.querySelectorAll('[data-rubika-scroll-id]').forEach(el => el.removeAttribute('data-rubika-scroll-id'));
 
               const areas = [];
-              // 1. main window (if scrollable)
               const docEl = document.documentElement;
               if (docEl.scrollHeight > window.innerHeight) {
                 areas.push({ type: 'window', rect: { top:0, left:0, width: window.innerWidth, height: window.innerHeight } });
               }
 
-              // 2. all scrollable elements (vertical overflow)
               const all = document.querySelectorAll('*');
               all.forEach(el => {
                 const style = window.getComputedStyle(el);
                 const overflowY = style.overflowY;
                 if ((overflowY === 'auto' || overflowY === 'scroll') && el.scrollHeight > el.clientHeight) {
                   const rect = el.getBoundingClientRect();
-                  if (rect.width > 20 && rect.height > 20) { // avoid tiny items
+                  if (rect.width > 20 && rect.height > 20) {
                     areas.push({ type: 'element', el });
                   }
                 }
               });
 
-              // شماره‌گذاری و هایلایت
               areas.forEach((area, idx) => {
                 const num = idx + 1;
                 if (area.type === 'window') {
-                  // window highlight: whole viewport
                   const overlay = document.createElement('div');
                   overlay.className = 'rubika-hl-overlay';
                   overlay.style.cssText = `position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,255,0,0.05);border:2px dashed green;z-index:999996;pointer-events:none;box-sizing:border-box`;
                   document.body.appendChild(overlay);
-                  area._overlay = overlay;
                   const badge = document.createElement('div');
                   badge.className = 'rubika-hl-badge';
                   badge.style.cssText = `position:fixed;top:5px;left:5px;background:green;color:white;border-radius:50%;width:24px;height:24px;font-size:12px;line-height:24px;text-align:center;font-weight:bold;z-index:999999;pointer-events:none;box-shadow:0 0 4px rgba(0,0,0,0.5)`;
                   badge.textContent = num;
                   document.body.appendChild(badge);
-                  area._badge = badge;
                 } else {
                   const el = area.el;
                   el.setAttribute('data-rubika-scroll-id', num);
@@ -337,13 +390,11 @@ jobs:
                   overlay.className = 'rubika-hl-overlay';
                   overlay.style.cssText = `position:fixed;top:${Math.max(0,rect.top)}px;left:${Math.max(0,rect.left)}px;width:${Math.min(rect.width,window.innerWidth-rect.left)}px;height:${Math.min(rect.height,window.innerHeight-rect.top)}px;background:rgba(0,255,0,0.1);border:2px dashed green;z-index:999996;pointer-events:none;box-sizing:border-box`;
                   document.body.appendChild(overlay);
-                  area._overlay = overlay;
                   const badge = document.createElement('div');
                   badge.className = 'rubika-hl-badge';
                   badge.style.cssText = `position:fixed;top:${Math.max(2,rect.top-6)}px;left:${Math.max(2,rect.left-6)}px;background:green;color:white;border-radius:50%;width:24px;height:24px;font-size:12px;line-height:24px;text-align:center;font-weight:bold;z-index:999999;pointer-events:none;box-shadow:0 0 4px rgba(0,0,0,0.5)`;
                   badge.textContent = num;
                   document.body.appendChild(badge);
-                  area._badge = badge;
                 }
               });
 
@@ -358,7 +409,6 @@ jobs:
               if (el) {
                 el.scrollBy(0, sign * px);
               } else if (idx === 1) {
-                // window area (idx 1 if exists)
                 window.scrollBy(0, sign * px);
               }
             }, {idx: areaIndex, px, sign});
@@ -454,12 +504,75 @@ jobs:
             });
           }
 
+          // ======================== تصاویر صفحه ========================
+          async function highlightImages(page) {
+            const pageUrl = page.url();
+            const imageData = await page.evaluate(() => {
+              const results = [];
+              const imgs = document.querySelectorAll('img[src]');
+              imgs.forEach(img => {
+                const src = img.src;
+                if (src && !src.startsWith('data:')) results.push(src);
+              });
+              return [...new Set(results)];
+            });
+
+            await page.evaluate((list) => {
+              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
+              document.querySelectorAll('[data-rubika-img-id]').forEach(el => el.removeAttribute('data-rubika-img-id'));
+
+              list.forEach((src, idx) => {
+                const img = document.querySelector(`img[src="${src}"]`);
+                if (!img) return;
+                const num = idx + 1;
+                img.setAttribute('data-rubika-img-id', num);
+                const rect = img.getBoundingClientRect();
+                const overlay = document.createElement('div');
+                overlay.className = 'rubika-hl-overlay';
+                overlay.style.cssText = `position:fixed;top:${Math.max(0,rect.top)}px;left:${Math.max(0,rect.left)}px;width:${Math.min(rect.width,window.innerWidth-rect.left)}px;height:${Math.min(rect.height,window.innerHeight-rect.top)}px;background:rgba(255,165,0,0.2);border:2px dashed orange;z-index:999996;pointer-events:none`;
+                document.body.appendChild(overlay);
+
+                const badge = document.createElement('div');
+                badge.className = 'rubika-hl-badge';
+                badge.style.cssText = `position:fixed;top:${Math.max(2,rect.top-6)}px;left:${Math.max(2,rect.left-6)}px;background:orange;color:white;border-radius:50%;width:24px;height:24px;font-size:12px;line-height:24px;text-align:center;font-weight:bold;z-index:999999;pointer-events:none;box-shadow:0 0 4px rgba(0,0,0,0.5)`;
+                badge.textContent = num;
+                document.body.appendChild(badge);
+              });
+            }, imageData);
+
+            return { images: imageData, pageUrl };
+          }
+
+          async function removeImageHighlights(page) {
+            await page.evaluate(() => {
+              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
+              document.querySelectorAll('[data-rubika-img-id]').forEach(el => el.removeAttribute('data-rubika-img-id'));
+            });
+          }
+
+          async function downloadImage(url, referer) {
+            const dir = '/tmp/downloaded_images';
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+            const timestamp = Date.now();
+            const parsed = new URL(url);
+            const base = path.basename(parsed.pathname) || 'image.jpg';
+            const outPath = path.join(dir, `img_${timestamp}_${base}`);
+            log(`📥 دانلود تصویر: ${url}`);
+            try {
+              execSync(`curl --socks5 127.0.0.1:10808 -L -e "${referer}" -A "Mozilla/5.0" -o "${outPath}" "${url}"`, { stdio: 'inherit', timeout: 60000 });
+              return { ok: true, path: outPath, name: path.basename(outPath) };
+            } catch(e) {
+              err('خطا در دانلود تصویر:', e.message);
+              return { ok: false, error: e.message };
+            }
+          }
+
+          // ======================== دانلود ویدیو (با fallback به yt-dlp) ========================
           async function downloadVideo(url, type, referer, platform, pageUrl) {
-            const dir = 'downloaded_videos';
+            const dir = '/tmp/downloaded_videos';
             if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
             const timestamp = Date.now();
 
-            // Fallback to yt-dlp if blob or direct failed
             if (type === 'direct' && url.startsWith('blob:')) {
               log('📥 blob URL detected, using yt-dlp with page URL');
               const outPath = path.join(dir, `video_${timestamp}_page.mp4`);
@@ -505,35 +618,6 @@ jobs:
             return { ok: false, error: 'نوع نامشخص' };
           }
 
-          async function splitAndCommit(filePath, baseName) {
-            const MAX_SIZE = 50 * 1024 * 1024; // 50MB
-            const stats = fs.statSync(filePath);
-            if (stats.size <= 100 * 1024 * 1024) {
-              try {
-                execSync(`git config user.name "github-actions" && git config user.email "actions@github.com"`);
-                execSync(`git add "${filePath}" && git commit -m "دانلود ویدیو ${baseName}" && git push`);
-                return true;
-              } catch(e) {
-                err('خطا در commit مستقیم:', e.message);
-                return false;
-              }
-            } else {
-              const partDir = path.join(path.dirname(filePath), 'parts');
-              if (!fs.existsSync(partDir)) fs.mkdirSync(partDir);
-              const prefix = path.join(partDir, baseName + '.part');
-              execSync(`split -b ${MAX_SIZE} "${filePath}" "${prefix}"`);
-              fs.unlinkSync(filePath);
-              const parts = fs.readdirSync(partDir).filter(f => f.startsWith(baseName + '.part'));
-              for (let i = 0; i < parts.length; i++) {
-                const partPath = path.join(partDir, parts[i]);
-                execSync(`git config user.name "github-actions" && git config user.email "actions@github.com"`);
-                execSync(`git add "${partPath}" && git commit -m "دانلود ویدیو ${baseName} (قسمت ${i+1}/${parts.length})"`);
-              }
-              execSync(`git push`);
-              return true;
-            }
-          }
-
           // ======================== زوم صفحه ========================
           async function zoomPage(page, zoomIn = true) {
             const currentZoom = await page.evaluate(() => {
@@ -543,9 +627,7 @@ jobs:
             let newZoom = currentZoom;
             if (zoomIn) newZoom = Math.min(currentZoom + 0.1, 3.0);
             else newZoom = Math.max(currentZoom - 0.1, 0.3);
-            await page.evaluate((z) => {
-              document.body.style.zoom = z;
-            }, newZoom.toString());
+            await page.evaluate((z) => { document.body.style.zoom = z; }, newZoom.toString());
             return newZoom;
           }
 
@@ -566,8 +648,12 @@ jobs:
                     { id: "VIDEOS",      type: "Simple", button_text: "🎥 ویدیوهای صفحه" }
                 ]},
                 { buttons: [
-                    { id: "ENTER",       type: "Simple", button_text: "↵ Enter" },
-                    { id: "SCREENSHOT",  type: "Simple", button_text: "📸 اسکرین‌شات" }
+                    { id: "IMAGES",      type: "Simple", button_text: "🖼️ تصاویر" },
+                    { id: "ENTER",       type: "Simple", button_text: "↵ Enter" }
+                ]},
+                { buttons: [
+                    { id: "SCREENSHOT",  type: "Simple", button_text: "📸 اسکرین‌شات" },
+                    { id: "GO_BACK",     type: "Simple", button_text: "🠔 عقب" }
                 ]},
                 { buttons: [
                     { id: "ZOOM_IN",    type: "Simple", button_text: "🔍 زوم +" },
@@ -598,6 +684,9 @@ jobs:
                 videoMode: false,
                 videoData: null,
                 pageUrlAtVideo: '',
+                imageMode: false,
+                imageData: null,
+                pageUrlAtImage: '',
                 lastScreenshotMsgId: null,
                 tempMessageIds: [],
                 zoomLevel: 1.0
@@ -623,7 +712,7 @@ jobs:
               try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
             }
             const keypad = buildControlKeypad();
-            const newMsgId = await uploadAndSendFile(chatId, shotPath, 'Image', keypad);
+            const newMsgId = await uploadAndSendFileChunked(chatId, shotPath, 'Image', path.basename(shotPath));
             if (newMsgId) state.lastScreenshotMsgId = newMsgId;
             try { fs.unlinkSync(shotPath); } catch(e) {}
           }
@@ -637,10 +726,8 @@ jobs:
             state.selectionMode = false;
             state.videoMode = false;
             state.videoData = null;
-            state.scrollMultiMode = false;
-            state.scrollDirection = null;
-            state.scrollAreasCount = 0;
-            state.scrollSelectedIndex = null;
+            state.imageMode = false;
+            state.imageData = null;
 
             switch(buttonId) {
               case 'SCROLL_UP':
@@ -655,8 +742,7 @@ jobs:
                   const shotPath = `/tmp/scroll_${chatId}_${Date.now()}.png`;
                   await page.screenshot({ path: shotPath, fullPage: false });
                   if (state.lastScreenshotMsgId) try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
-                  const keypad = buildControlKeypad();
-                  const msgId = await uploadAndSendFile(chatId, shotPath, 'Image', keypad);
+                  const msgId = await uploadAndSendFileChunked(chatId, shotPath, 'Image', path.basename(shotPath));
                   if (msgId) state.lastScreenshotMsgId = msgId;
                   try { fs.unlinkSync(shotPath); } catch(e) {}
                   await sendMessage(chatId, `🟢 ${upCount} ناحیه اسکرول با رنگ سبز نشانه‌گذاری شد.\nشماره ناحیه مورد نظر را وارد کنید.`);
@@ -674,8 +760,7 @@ jobs:
                   const shotPath = `/tmp/scroll_${chatId}_${Date.now()}.png`;
                   await page.screenshot({ path: shotPath, fullPage: false });
                   if (state.lastScreenshotMsgId) try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
-                  const keypad = buildControlKeypad();
-                  const msgId = await uploadAndSendFile(chatId, shotPath, 'Image', keypad);
+                  const msgId = await uploadAndSendFileChunked(chatId, shotPath, 'Image', path.basename(shotPath));
                   if (msgId) state.lastScreenshotMsgId = msgId;
                   try { fs.unlinkSync(shotPath); } catch(e) {}
                   await sendMessage(chatId, `🟢 ${downCount} ناحیه اسکرول با رنگ سبز نشانه‌گذاری شد.\nشماره ناحیه مورد نظر را وارد کنید.`);
@@ -700,8 +785,7 @@ jobs:
                 const selShotPath = `/tmp/sel_${chatId}_${Date.now()}.png`;
                 await page.screenshot({ path: selShotPath, fullPage: false });
                 if (state.lastScreenshotMsgId) try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
-                const selKeypad = buildControlKeypad();
-                const selMsgId = await uploadAndSendFile(chatId, selShotPath, 'Image', selKeypad);
+                const selMsgId = await uploadAndSendFileChunked(chatId, selShotPath, 'Image', path.basename(selShotPath));
                 if (selMsgId) state.lastScreenshotMsgId = selMsgId;
                 try { fs.unlinkSync(selShotPath); } catch(e) {}
                 await sendMessage(chatId, `🔢 ${count} عنصر نشانه‌گذاری شد. شماره را وارد کنید.`);
@@ -719,11 +803,28 @@ jobs:
                 const vidShotPath = `/tmp/vid_${chatId}_${Date.now()}.png`;
                 await page.screenshot({ path: vidShotPath, fullPage: false });
                 if (state.lastScreenshotMsgId) try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
-                const vidKeypad = buildControlKeypad();
-                const vidMsgId = await uploadAndSendFile(chatId, vidShotPath, 'Image', vidKeypad);
+                const vidMsgId = await uploadAndSendFileChunked(chatId, vidShotPath, 'Image', path.basename(vidShotPath));
                 if (vidMsgId) state.lastScreenshotMsgId = vidMsgId;
                 try { fs.unlinkSync(vidShotPath); } catch(e) {}
                 await sendMessage(chatId, `🎥 ${videos.length} ویدیو با رنگ آبی نشانه‌گذاری شد.\nشماره مورد نظر را برای دانلود بفرستید.`);
+                return;
+              case 'IMAGES':
+                state.imageMode = true;
+                const { images, pageUrl: imgPageUrl } = await highlightImages(page);
+                state.imageData = images;
+                state.pageUrlAtImage = imgPageUrl;
+                if (images.length === 0) {
+                  await sendMessage(chatId, '❌ هیچ تصویری پیدا نشد.');
+                  state.imageMode = false;
+                  return;
+                }
+                const imgShotPath = `/tmp/img_${chatId}_${Date.now()}.png`;
+                await page.screenshot({ path: imgShotPath, fullPage: false });
+                if (state.lastScreenshotMsgId) try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
+                const imgMsgId = await uploadAndSendFileChunked(chatId, imgShotPath, 'Image', path.basename(imgShotPath));
+                if (imgMsgId) state.lastScreenshotMsgId = imgMsgId;
+                try { fs.unlinkSync(imgShotPath); } catch(e) {}
+                await sendMessage(chatId, `🖼️ ${images.length} تصویر با رنگ نارنجی نشانه‌گذاری شد.\nشماره مورد نظر را برای دانلود بفرستید.`);
                 return;
               case 'ENTER':
                 try {
@@ -737,6 +838,16 @@ jobs:
                 }
                 break;
               case 'SCREENSHOT':
+                break;
+              case 'GO_BACK':
+                try {
+                  await page.goBack({ waitUntil: 'networkidle2', timeout: 15000 });
+                  await sleep(1000);
+                  await sendMessage(chatId, '🠔 به صفحه قبل بازگشتیم.');
+                } catch(e) {
+                  err('خطا در بازگشت:', e.message);
+                  await sendMessage(chatId, '❌ امکان بازگشت وجود ندارد.');
+                }
                 break;
               case 'ZOOM_IN': {
                 const newZ = await zoomPage(page, true);
@@ -754,7 +865,7 @@ jobs:
                 try {
                   await page.reload({ waitUntil: 'networkidle2', timeout: 30000 });
                   await sleep(1000);
-                  await page.evaluate((z) => { document.body.style.zoom = z; }, state.zoomLevel.toString()); // reapply zoom
+                  await page.evaluate((z) => { document.body.style.zoom = z; }, state.zoomLevel.toString());
                 } catch(e) {
                   err('خطا در رفرش:', e.message);
                   await sendMessage(chatId, '❌ رفرش با مشکل مواجه شد.');
@@ -771,7 +882,7 @@ jobs:
                 return;
             }
 
-            if (!['SCROLL_UP', 'SCROLL_DOWN', 'TYPE', 'GO_URL', 'SELECT', 'VIDEOS', 'CHANGE_PROXY'].includes(buttonId)) {
+            if (!['SCROLL_UP', 'SCROLL_DOWN', 'TYPE', 'GO_URL', 'SELECT', 'VIDEOS', 'IMAGES', 'CHANGE_PROXY'].includes(buttonId)) {
               await updateScreenshot(page, chatId);
             }
           }
@@ -779,26 +890,27 @@ jobs:
           // ======================== پردازش ورودی‌های متنی ========================
           async function handleTextInput(page, chatId, text) {
             const state = getState(chatId);
+
             // اولویت با حالت اسکرول چندگانه
             if (state.scrollMultiMode) {
               if (state.scrollSelectedIndex === null) {
                 const idx = parseInt(text);
                 if (isNaN(idx) || idx < 1 || idx > state.scrollAreasCount) {
                   const msg = await sendMessage(chatId, `❌ شماره بین ۱ تا ${state.scrollAreasCount} وارد کنید.`);
-                  state.tempMessageIds.push(msg?.data?.message_id);
+                  if (msg?.data?.message_id) state.tempMessageIds.push(msg.data.message_id);
                   return;
                 }
                 state.scrollSelectedIndex = idx;
                 await removeScrollHighlights(page);
                 const dirText = state.scrollDirection === 'up' ? 'بالا' : 'پایین';
                 const msg = await sendMessage(chatId, `✅ ناحیه ${idx} انتخاب شد.\nچند پیکسل به ${dirText} اسکرول کنم؟`);
-                state.tempMessageIds.push(msg?.data?.message_id);
+                if (msg?.data?.message_id) state.tempMessageIds.push(msg.data.message_id);
                 return;
               } else {
                 const px = parseInt(text);
                 if (isNaN(px) || px <= 0) {
                   const msg = await sendMessage(chatId, '❌ عدد مثبت وارد کنید.');
-                  state.tempMessageIds.push(msg?.data?.message_id);
+                  if (msg?.data?.message_id) state.tempMessageIds.push(msg.data.message_id);
                   return;
                 }
                 await scrollAreaByPixel(page, state.scrollSelectedIndex, px, state.scrollDirection);
@@ -811,7 +923,8 @@ jobs:
                 return;
               }
             }
-            // دیگر حالت‌ها
+
+            // حالت تایپ
             if (state.typingMode) {
               state.typingMode = false;
               if (text) {
@@ -822,6 +935,8 @@ jobs:
               }
               return;
             }
+
+            // حالت آدرس جدید
             if (state.urlMode) {
               state.urlMode = false;
               if (text) {
@@ -838,17 +953,19 @@ jobs:
               }
               return;
             }
+
+            // حالت انتخاب شماره‌ای
             if (state.selectionMode) {
               const num = parseInt(text);
               if (isNaN(num) || num <= 0) {
                 const msg = await sendMessage(chatId, '❌ عدد معتبر وارد کنید.');
-                state.tempMessageIds.push(msg?.data?.message_id);
+                if (msg?.data?.message_id) state.tempMessageIds.push(msg.data.message_id);
                 return;
               }
               const success = await clickByNumber(page, num);
               if (!success) {
                 const msg = await sendMessage(chatId, `❌ کلیک روی عنصر ${num} ناموفق بود.`);
-                state.tempMessageIds.push(msg?.data?.message_id);
+                if (msg?.data?.message_id) state.tempMessageIds.push(msg.data.message_id);
               } else {
                 log(`✅ کلیک روی عنصر شماره ${num} موفق`);
               }
@@ -858,24 +975,27 @@ jobs:
               await updateScreenshot(page, chatId);
               return;
             }
+
+            // حالت دانلود ویدیو
             if (state.videoMode) {
               const num = parseInt(text);
               const videos = state.videoData;
               if (isNaN(num) || num < 1 || num > videos.length) {
                 const msg = await sendMessage(chatId, '❌ شماره نامعتبر.');
-                state.tempMessageIds.push(msg?.data?.message_id);
+                if (msg?.data?.message_id) state.tempMessageIds.push(msg.data.message_id);
                 return;
               }
               const selected = videos[num-1];
               await sendMessage(chatId, `📥 در حال دانلود ویدیوی شماره ${num} ...`);
               const result = await downloadVideo(selected.src, selected.type, state.pageUrlAtVideo, selected.platform, state.pageUrlAtVideo);
               if (result.ok) {
-                const committed = await splitAndCommit(result.path, result.name);
-                if (committed) {
-                  await sendMessage(chatId, `✅ ویدیو با نام \`${result.name}\` دانلود و ذخیره شد.`);
+                const sent = await uploadAndSendFileChunked(chatId, result.path, 'Video', result.name);
+                if (sent) {
+                  log(`✅ ویدیو ${result.name} با موفقیت به روبیکا ارسال شد.`);
                 } else {
-                  await sendMessage(chatId, `⚠️ ویدیو دانلود شد اما ذخیره ناموفق بود.`);
+                  await sendMessage(chatId, `❌ ارسال ویدیو به روبیکا ناموفق بود.`);
                 }
+                try { fs.unlinkSync(result.path); } catch(e) {}
               } else {
                 await sendMessage(chatId, `❌ خطا در دانلود: ${result.error || 'نامشخص'}`);
               }
@@ -887,12 +1007,45 @@ jobs:
               await updateScreenshot(page, chatId);
               return;
             }
+
+            // حالت دانلود تصویر
+            if (state.imageMode) {
+              const num = parseInt(text);
+              const images = state.imageData;
+              if (isNaN(num) || num < 1 || num > images.length) {
+                const msg = await sendMessage(chatId, '❌ شماره نامعتبر.');
+                if (msg?.data?.message_id) state.tempMessageIds.push(msg.data.message_id);
+                return;
+              }
+              const selectedUrl = images[num-1];
+              await sendMessage(chatId, `📥 در حال دانلود تصویر شماره ${num} ...`);
+              const result = await downloadImage(selectedUrl, state.pageUrlAtImage);
+              if (result.ok) {
+                const sent = await uploadAndSendFileChunked(chatId, result.path, 'Image', result.name);
+                if (sent) {
+                  log(`✅ تصویر ${result.name} با موفقیت به روبیکا ارسال شد.`);
+                } else {
+                  await sendMessage(chatId, `❌ ارسال تصویر به روبیکا ناموفق بود.`);
+                }
+                try { fs.unlinkSync(result.path); } catch(e) {}
+              } else {
+                await sendMessage(chatId, `❌ خطا در دانلود تصویر: ${result.error || 'نامشخص'}`);
+              }
+              await removeImageHighlights(page);
+              state.imageMode = false;
+              state.imageData = null;
+              state.pageUrlAtImage = '';
+              await sleep(300);
+              await updateScreenshot(page, chatId);
+              return;
+            }
+
             // دستورات ساده
             if (text === '/start') {
               await sendMessage(chatId, '🟢 ربات آماده است.');
               if (!state.lastScreenshotMsgId) await updateScreenshot(page, chatId);
             } else if (text === 'help') {
-              await sendMessage(chatId, '🎮 دکمه‌ها:\n⬆️⬇️ اسکرول (ناحیه‌ای)\n⌨️ تایپ\n🌐 آدرس جدید\n🔍 انتخاب با شماره\n🎥 ویدیوهای صفحه\n↵ Enter\n📸 اسکرین‌شات\n🔍 زوم +/-\n🔄 رفرش\n🔁 عوض کردن پروکسی');
+              await sendMessage(chatId, '🎮 دکمه‌ها:\n⬆️⬇️ اسکرول هوشمند\n⌨️ تایپ\n🌐 آدرس جدید\n🔍 انتخاب با شماره\n🎥 ویدیوهای صفحه\n🖼️ تصاویر\n↵ Enter\n📸 اسکرین‌شات\n🠔 عقب\n🔍 زوم +/-\n🔄 رفرش\n🔁 عوض کردن پروکسی');
             }
           }
 
@@ -1046,11 +1199,30 @@ jobs:
 
                       await deleteTempMessages(chatId);
 
-                      if (buttonId) {
-                        log(`🔘 دکمه ${buttonId} از ${chatId}`);
-                        await handleButton(page, chatId, buttonId, browserManager);
-                      } else {
-                        await handleTextInput(page, chatId, text);
+                      try {
+                        if (buttonId) {
+                          log(`🔘 دکمه ${buttonId} از ${chatId}`);
+                          await handleButton(page, chatId, buttonId, browserManager);
+                        } else {
+                          await handleTextInput(page, chatId, text);
+                        }
+                      } catch(handlerError) {
+                        err('خطا در پردازش:', handlerError.message);
+                        // ریست تمام حالت‌ها
+                        const st = getState(chatId);
+                        st.typingMode = false;
+                        st.urlMode = false;
+                        st.scrollMultiMode = false;
+                        st.scrollDirection = null;
+                        st.scrollAreasCount = 0;
+                        st.scrollSelectedIndex = null;
+                        st.selectionMode = false;
+                        st.videoMode = false;
+                        st.videoData = null;
+                        st.imageMode = false;
+                        st.imageData = null;
+                        await sendMessage(chatId, '⚠️ خطایی رخ داد. حالت‌ها ریست شدند. لطفاً دوباره تلاش کنید.');
+                        await updateScreenshot(page, chatId);
                       }
                     }
                     if (upRes.data?.next_offset_id) offset = upRes.data.next_offset_id;
