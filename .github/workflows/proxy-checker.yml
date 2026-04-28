@@ -1,4 +1,4 @@
-name: 🌐 مرورگر Groq حرفه‌ای (ضد پاپ‌آپ + کلیک ابری)
+name: 🌐 مرورگر Groq هوشمند (ضد بلاک + تعویض خودکار پروکسی)
 
 on:
   workflow_dispatch:
@@ -23,7 +23,7 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای ربات Groq مقاوم
+      - name: 🤖 اجرای ربات مقاوم با تعویض هوشمند پروکسی
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           RUBIKA_OWNER_CHAT_ID: ${{ secrets.RUBIKA_OWNER_CHAT_ID }}
@@ -38,6 +38,18 @@ jobs:
 
           const PROXY_FILE = 'کانفیگ های خوب.txt';
           const TARGET_URL = 'https://console.groq.com/playground';
+          const BLOCKED_PATTERNS = [
+            'access denied',
+            'please check your network settings',
+            'you have been blocked',
+            'request blocked',
+            'cloudflare',
+            'attention required',
+            'i am not a robot',
+            'recaptcha',
+            'sorry, you have been blocked',
+            'just a moment'
+          ];
 
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
           function log(...args) { console.log(`[${ts()}]`, ...args); }
@@ -196,32 +208,42 @@ jobs:
             throw lastError;
           }
 
-          // ======================== پیشرفته: انتخاب شماره (منوها، iframe، پاپ‌آپ) ========================
+          // ======================== تشخیص بلاک ========================
+          async function checkPageBlocked(page) {
+            try {
+              const result = await safeEvaluate(page, (patterns) => {
+                const bodyText = document.body.innerText.toLowerCase();
+                const title = document.title.toLowerCase();
+                // چک می‌کنیم آیا الگوهای بلاک وجود دارند
+                for (const p of patterns) {
+                  if (bodyText.includes(p) || title.includes(p)) return true;
+                }
+                return false;
+              }, BLOCKED_PATTERNS);
+              return result;
+            } catch(e) {
+              log('⚠️ بررسی بلاک با خطا مواجه شد:', e.message);
+              return false; // در صورت خطا، صفحه را مسدود در نظر نمی‌گیریم
+            }
+          }
+
+          // ======================== انتخاب پیشرفته ========================
           async function highlightClickableElements(page) {
             return await safeEvaluate(page, () => {
-              // پاک‌سازی قبلی
               document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
               document.querySelectorAll('[data-rubika-sel-id]').forEach(el => el.removeAttribute('data-rubika-sel-id'));
 
               const selectors = [
-                // عناصر اصلی
                 'a', 'button', 'input', 'select', 'textarea', 'summary', 'details', 'label',
-                // iframe (مهم برای کلاودفلر)
-                'iframe',
-                // رویداد کلیک مستقیم
-                '[onclick]',
-                // نقش‌های ARIA
+                'iframe', '[onclick]',
                 '[role="button"]', '[role="menuitem"]', '[role="option"]', '[role="tab"]',
                 '[role="link"]', '[role="listbox"]', '[role="combobox"]', '[role="menu"]',
                 '[role="menubar"]', '[role="treeitem"]', '[role="gridcell"]', '[role="row"]',
                 '[role="switch"]', '[role="checkbox"]', '[role="radio"]', '[role="textbox"]',
                 '[role="searchbox"]', '[role="spinbutton"]', '[role="slider"]', '[role="separator"]',
-                '[role="dialog"]', '[role="alertdialog"]',   // پاپ‌آپ و مدال
-                // فوکوس‌پذیر
+                '[role="dialog"]', '[role="alertdialog"]',
                 '[tabindex]:not([tabindex="-1"])', '[contenteditable="true"]',
-                // المان‌هایی که معمولاً مدال هستند
                 '.modal', '.popup', '.overlay', '.dialog', '[aria-modal="true"]',
-                // div/span با نقش
                 'div[role]', 'span[role]', 'li[role]'
               ];
 
@@ -236,7 +258,6 @@ jobs:
                 }
               });
 
-              // مرتب‌سازی بالا به پایین، چپ به راست
               visible.sort((a, b) => {
                 const ra = a.getBoundingClientRect();
                 const rb = b.getBoundingClientRect();
@@ -247,7 +268,6 @@ jobs:
               visible.forEach((el, idx) => {
                 const num = idx + 1;
                 el.setAttribute('data-rubika-sel-id', num);
-                // اطلاعات اضافه برای کلیک
                 el.setAttribute('data-rubika-is-iframe', el.tagName === 'IFRAME' ? '1' : '0');
 
                 const rect = el.getBoundingClientRect();
@@ -298,7 +318,6 @@ jobs:
 
           async function clickByNumber(page, number) {
             try {
-              // اطلاعات المان را می‌گیریم
               const info = await safeEvaluate(page, (num) => {
                 const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
                 if (!el) return null;
@@ -310,27 +329,20 @@ jobs:
                   isIframe: el.getAttribute('data-rubika-is-iframe') === '1',
                   x: rect.x + rect.width / 2,
                   y: rect.y + rect.height / 2,
-                  width: rect.width,
-                  height: rect.height
                 };
               }, number);
-
               if (!info) return false;
 
               const navPromise = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 5000 }).catch(() => null);
-
               if (info.tag === 'IFRAME' || info.isIframe) {
-                // کلیک با موس در مرکز iframe (کلاودفلر و ...)
                 log(`🖱️ کلیک موس روی iframe شماره ${number} در (${info.x.toFixed(0)},${info.y.toFixed(0)})`);
                 await page.mouse.click(info.x, info.y);
               } else {
-                // کلیک معمولی از طریق DOM
                 await safeEvaluate(page, (num) => {
                   const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
                   if (el) el.click();
                 }, number);
               }
-
               await navPromise;
               await sleep(800);
               return true;
@@ -394,7 +406,7 @@ jobs:
             try { fs.unlinkSync(shotPath); } catch(e) {}
           }
 
-          // ======================== اجرای اصلی ========================
+          // ======================== اجرای اصلی با تعویض هوشمند پروکسی ========================
           (async () => {
             try {
               const me = await api('getMe');
@@ -410,46 +422,73 @@ jobs:
               const proxies = fs.readFileSync(PROXY_FILE, 'utf8')
                 .split('\n').map(l => l.trim())
                 .filter(l => /^(vless|trojan|ss|vmess):\/\//.test(l));
-              log(`${proxies.length} کانفیگ خوب.`);
+              log(`${proxies.length} کانفیگ خوب برای تست.`);
 
+              let browser = null;
+              let page = null;
               let xrayProc = null;
+              let proxyFound = false;
+
+              // حلقه تست پروکسی‌ها تا پیدا شدن یک پروکسی بدون بلاک
               for (let i = 0; i < proxies.length; i++) {
                 const uri = proxies[i];
-                log(`تست ${i+1}/${proxies.length}: ${uri.substring(0,70)}...`);
+                log(`\n🔌 تست پروکسی ${i+1}/${proxies.length}: ${uri.substring(0, 60)}...`);
+
+                // بستن پردازه‌های قبلی اگر وجود داشته باشند
+                if (xrayProc) { xrayProc.kill(); await sleep(500); }
+                if (browser) { try { await browser.close(); } catch(_) {} }
+
+                // راه‌اندازی Xray
                 xrayProc = await startXray(uri, i);
                 if (!xrayProc) continue;
-                if (!testCurl(10808)) { err('curl fail'); xrayProc.kill(); continue; }
-                log('✅ اتصال برقرار.');
-                break;
+                if (!testCurl(10808)) {
+                  err('تست curl ناموفق. سراغ بعدی.');
+                  continue;
+                }
+
+                // باز کردن مرورگر
+                try {
+                  browser = await puppeteer.launch({
+                    headless: 'new',
+                    args: [
+                      '--no-sandbox','--disable-setuid-sandbox',
+                      '--proxy-server=socks5://127.0.0.1:10808',
+                      '--disable-dev-shm-usage','--window-size=1280,720'
+                    ],
+                    defaultViewport: null
+                  });
+                  page = await browser.newPage();
+                  await page.setViewport({ width: 1280, height: 720, deviceScaleFactor: 1 });
+                  await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
+
+                  await page.goto(TARGET_URL, { waitUntil: 'networkidle2', timeout: 30000 });
+                  await sleep(2000);
+
+                  // بررسی بلاک
+                  const blocked = await checkPageBlocked(page);
+                  if (blocked) {
+                    log('⛔ پیغام بلاک/اکسس دینید شناسایی شد. امتحان پروکسی بعدی...');
+                    continue;
+                  }
+
+                  log('✅ پروکسی سالم و بدون بلاک. اتصال نهایی شد.');
+                  proxyFound = true;
+                  break;
+                } catch(e) {
+                  err('خطا در بارگذاری صفحه با این پروکسی:', e.message);
+                  continue;
+                }
               }
-              if (!xrayProc) { err('هیچ پروکسی وصل نشد'); process.exit(1); }
 
-              const browser = await puppeteer.launch({
-                headless: 'new',
-                args: [
-                  '--no-sandbox','--disable-setuid-sandbox',
-                  '--proxy-server=socks5://127.0.0.1:10808',
-                  '--disable-dev-shm-usage','--window-size=1280,720'
-                ],
-                defaultViewport: null
-              });
-              const page = await browser.newPage();
-              await page.setViewport({ width: 1280, height: 720, deviceScaleFactor: 1 });
-              await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
-
-              page.on('framenavigated', () => log('🔄 ناوبری تشخیص داده شد.'));
-
-              try {
-                await page.goto(TARGET_URL, { waitUntil: 'networkidle2', timeout: 30000 });
-                log('✅ Groq Playground باز شد.');
-              } catch (e) {
-                err('بارگذاری Groq ناموفق:', e.message);
-                await browser.close();
-                xrayProc.kill();
+              if (!proxyFound || !browser || !page) {
+                err('❌ هیچ پروکسی سالمی یافت نشد.');
+                if (browser) { try { await browser.close(); } catch(_) {} }
+                if (xrayProc) { xrayProc.kill(); }
                 process.exit(1);
               }
 
-              if (OWNER) await sendMessage(OWNER, '🟢 ربات Groq آماده.');
+              // ربات آماده به کار
+              if (OWNER) await sendMessage(OWNER, '🟢 ربات Groq با پروکسی سالم آماده شد.');
               else log('⚠️ OWNER_CHAT_ID ندارد.');
 
               // پاک‌سازی تاریخچه
@@ -465,6 +504,7 @@ jobs:
                 else break;
               }
 
+              // اسکرین‌شات اولیه
               if (OWNER) await updateScreenshot(page, OWNER);
 
               let consecutiveErrors = 0;
@@ -513,7 +553,7 @@ jobs:
                                 continue;
                               }
                               await updateScreenshot(page, chatId);
-                              const sMsg = await sendMessage(chatId, `🔢 ${count} عنصر (شامل iframe و مدال) نشانه‌گذاری شد. شماره را بفرستید.`);
+                              const sMsg = await sendMessage(chatId, `🔢 ${count} عنصر (iframe/مدال). شماره را بفرستید.`);
                               if (sMsg?.data?.message_id) state.tempMessageIds.push(sMsg.data.message_id);
                               break;
 
