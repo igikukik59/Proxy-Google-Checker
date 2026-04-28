@@ -1,4 +1,4 @@
-name: 🌐 مرورگر راه دور (نسخه نهایی با پاکسازی خودکار)
+name: 🌐 مرورگر راه دور (حرفه‌ای - DuckDuckGo)
 
 on:
   workflow_dispatch:
@@ -24,13 +24,13 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🧹 پاکسازی حافظه رانر (قبل از شروع)
+      - name: 🧹 پاک‌سازی حافظه
         run: |
           echo "پاکسازی فایل‌های موقت..."
           rm -rf /tmp/downloaded_videos /tmp/downloaded_images /tmp/downloaded_files /tmp/video_chunks_* /tmp/xray_*.json /tmp/shot_* /tmp/sel_* /tmp/vid_* /tmp/img_* /tmp/scroll_* /tmp/fullshot_* /tmp/page_* 2>/dev/null
           df -h /tmp
 
-      - name: 🤖 اجرای ربات (نسخه نهایی با تمام قابلیت‌ها)
+      - name: 🤖 اجرای ربات (نسخه نهایی کامل)
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           RUBIKA_OWNER_CHAT_ID: ${{ secrets.RUBIKA_OWNER_CHAT_ID }}
@@ -44,7 +44,7 @@ jobs:
           puppeteer.use(StealthPlugin());
 
           const PROXY_FILE = 'کانفیگ های خوب.txt';
-          const TARGET_URL = 'https://console.groq.com/playground';
+          const TARGET_URL = 'https://duckduckgo.com';
 
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
           function log(...args) { console.log(`[${ts()}]`, ...args); }
@@ -205,7 +205,7 @@ jobs:
             return !!msgId;
           }
 
-          // ======================== تقسیم هوشمند ویدیو (2 دقیقه‌ای) ========================
+          // ======================== تقسیم هوشمند ویدیو ========================
           async function splitAndSendVideo(chatId, videoPath, baseName, keypad) {
             const stats = fs.statSync(videoPath);
             const sizeMB = (stats.size / (1024 * 1024)).toFixed(1);
@@ -291,7 +291,7 @@ jobs:
             return true;
           }
 
-          // ======================== کی‌پد کنترلی (مرتب شده) ========================
+          // ======================== کی‌پد کنترلی ========================
           function buildControlKeypad() {
             return {
               rows: [
@@ -337,7 +337,7 @@ jobs:
             };
           }
 
-          // ======================== انتخاب هوشمند با شماره (Shadow DOM و iframe) ========================
+          // ======================== انتخاب هوشمند ========================
           async function highlightClickableElements(page) {
             return await page.evaluate(() => {
               document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
@@ -360,12 +360,8 @@ jobs:
 
               const elements = new Set();
               function collect(root) {
-                try {
-                  root.querySelectorAll(baseSelectors.join(',')).forEach(el => elements.add(el));
-                } catch(e) {}
-                root.querySelectorAll('*').forEach(node => {
-                  if (node.shadowRoot) collect(node.shadowRoot);
-                });
+                try { root.querySelectorAll(baseSelectors.join(',')).forEach(el => elements.add(el)); } catch(e) {}
+                root.querySelectorAll('*').forEach(node => { if (node.shadowRoot) collect(node.shadowRoot); });
                 root.querySelectorAll('iframe').forEach(iframe => {
                   try {
                     const doc = iframe.contentDocument || iframe.contentWindow.document;
@@ -435,7 +431,7 @@ jobs:
             } catch(e) { log('⚠️ مدیریت ناوبری کلیک'); await sleep(2000); return true; }
           }
 
-          // ======================== اسکرول هوشمند چندناحیه‌ای ========================
+          // ======================== اسکرول هوشمند ========================
           async function highlightScrollableAreas(page) {
             return await page.evaluate(() => {
               document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
@@ -510,7 +506,7 @@ jobs:
             });
           }
 
-          // ======================== ویدیوهای صفحه (اصلاح‌شده) ========================
+          // ======================== ویدیوهای صفحه ========================
           async function highlightVideoElements(page) {
             const pageUrl = page.url();
             const videoData = await page.evaluate(() => {
@@ -542,7 +538,6 @@ jobs:
                   }
                 }
               });
-              // Deduplicate by src
               const unique = [];
               const seen = new Set();
               for (const r of results) {
@@ -553,7 +548,6 @@ jobs:
               return unique.map(r => ({ src: r.src, type: r.type, platform: r.platform || null }));
             });
 
-            // نشانه‌گذاری روی صفحه
             await page.evaluate((list) => {
               document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
               document.querySelectorAll('[data-rubika-video-id]').forEach(el => el.removeAttribute('data-rubika-video-id'));
@@ -590,7 +584,7 @@ jobs:
             });
           }
 
-          // ======================== تصاویر صفحه ========================
+          // ======================== تصاویر ========================
           async function highlightImages(page) {
             const pageUrl = page.url();
             const imageData = await page.evaluate(() => {
@@ -671,7 +665,7 @@ jobs:
             });
           }
 
-          // ======================== استخراج متن قابل مشاهده با فرمت مارک‌داون ========================
+          // ======================== استخراج متن با مارک‌داون ========================
           async function extractVisibleText(page) {
             return await page.evaluate(() => {
               const walker = document.createTreeWalker(
@@ -701,7 +695,7 @@ jobs:
                 if (parent.tagName === 'EM' || parent.tagName === 'I') text = `*${text}*`;
                 lines.push(prefix + text);
               }
-              return lines.join('\n').substring(0, 4000); // محدودیت طول پیام
+              return lines.join('\n').substring(0, 4000);
             });
           }
 
@@ -730,19 +724,24 @@ jobs:
             const dir = '/tmp/downloaded_videos';
             if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
             const timestamp = Date.now();
-          
-            // yt-dlp fallback for blob URLs
+
+            const ytDlpBase = [
+              '--no-playlist',
+              '--merge-output-format', 'mp4',
+              '--force-ipv4',
+              '--user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+              '--extractor-args', 'youtube:player_client=web',
+              '--proxy', 'socks5://127.0.0.1:10808'
+            ];
+
             if (type === 'direct' && url.startsWith('blob:')) {
               const outPath = path.join(dir, `video_${timestamp}_page.mp4`);
               try {
-                execSync(
-                  `yt-dlp --no-playlist --merge-output-format mp4 --proxy socks5://127.0.0.1:10808 -o "${outPath}" "${pageUrl}"`,
-                  { stdio: 'inherit', timeout: 600000 }
-                );
+                execSync(`yt-dlp ${ytDlpBase.join(' ')} -o "${outPath}" "${pageUrl}"`, { stdio: 'inherit', timeout: 600000 });
                 return { ok: true, path: outPath };
               } catch(e) { err('yt-dlp blob failed:', e.message); return { ok: false }; }
             }
-          
+
             if (type === 'direct') {
               const outPath = path.join(dir, `video_${timestamp}_${path.basename(new URL(url).pathname) || 'video.mp4'}`);
               try {
@@ -752,28 +751,21 @@ jobs:
                 log('دانلود مستقیم شکست، تلاش با yt-dlp...');
                 const fallbackPath = path.join(dir, `video_${timestamp}_page.mp4`);
                 try {
-                  execSync(
-                    `yt-dlp --no-playlist --merge-output-format mp4 --proxy socks5://127.0.0.1:10808 -o "${fallbackPath}" "${pageUrl}"`,
-                    { stdio: 'inherit', timeout: 600000 }
-                  );
+                  execSync(`yt-dlp ${ytDlpBase.join(' ')} -o "${fallbackPath}" "${pageUrl}"`, { stdio: 'inherit', timeout: 600000 });
                   return { ok: true, path: fallbackPath };
                 } catch(e2) { err('yt-dlp نیز شکست:', e2.message); return { ok: false }; }
               }
             } else if (type === 'embed') {
               const outPath = path.join(dir, `video_${timestamp}_${platform || 'embed'}.mp4`);
               try {
-                execSync(
-                  `yt-dlp --no-playlist --merge-output-format mp4 --proxy socks5://127.0.0.1:10808 -o "${outPath}" "${url}"`,
-                  { stdio: 'inherit', timeout: 600000 }
-                );
+                execSync(`yt-dlp ${ytDlpBase.join(' ')} -o "${outPath}" "${url}"`, { stdio: 'inherit', timeout: 600000 });
                 return { ok: true, path: outPath };
               } catch(e) { err('yt-dlp embed شکست:', e.message); return { ok: false }; }
             }
             return { ok: false };
           }
 
-
-          // ======================== Full Page Screenshot & PDF ========================
+          // ======================== اسکرین‌شات کامل و PDF ========================
           async function takeFullPageScreenshot(page, chatId, keypad) {
             const shotPath = `/tmp/fullshot_${chatId}_${Date.now()}.png`;
             await page.screenshot({ path: shotPath, fullPage: true });
@@ -835,7 +827,6 @@ jobs:
             state.tempMessageIds = [];
           }
 
-          // تابع کلی برای ریست کردن همه حالت‌ها
           function resetAllStates(state) {
             Object.assign(state, {
               typingMode: false,
@@ -1030,11 +1021,17 @@ jobs:
                   await sendMessage(chatId, '🠔 به صفحه قبل بازگشتیم.');
                 } catch(e) { err('بازگشت خطا:', e.message); await sendMessage(chatId, '❌ امکان بازگشت وجود ندارد.'); }
                 break;
-              case 'CHANGE_PROXY':
+              case 'CHANGE_PROXY': {
                 const switched = await browserManager.switchProxy();
-                if (switched) await sendMessage(chatId, '🔁 پروکسی تغییر کرد.');
-                else { await sendMessage(chatId, '❌ هیچ پروکسی سالمی یافت نشد.'); process.exit(1); }
+                if (switched) {
+                  await sendMessage(chatId, '🔁 پروکسی تغییر کرد.');
+                  // variable page in main loop will be updated
+                } else {
+                  await sendMessage(chatId, '❌ هیچ پروکسی سالمی یافت نشد.');
+                  process.exit(1);
+                }
                 return;
+              }
               case 'HELP':
                 await sendMessage(chatId, '🎮 راهنما:\n⬆️⬇️ اسکرول هوشمند\n⌨️ تایپ\n🌐 آدرس جدید\n🔍 انتخاب با شماره\n📋 متن قابل مشاهده\n🎥 ویدیوها\n🖼️ تصاویر\n📁 فایل‌ها\n🖼️ اسکرین‌شات کامل\n📄 PDF\n🔍 زوم +/-\n📸 اسکرین‌شات\n↵ Enter\n🔄 رفرش\n🠔 عقب\n🔁 پروکسی\n✖️ لغو');
                 await updateScreenshot(page, chatId);
@@ -1289,7 +1286,7 @@ jobs:
               const found = await browserManager.findWorkingProxy();
               if (!found) { err('هیچ پروکسی سالمی یافت نشد.'); process.exit(1); }
 
-              const page = browserManager.page;
+              let page = browserManager.page;
               if (OWNER) await sendMessage(OWNER, '🟢 ربات روشن شد.');
               else log('⚠️ OWNER_CHAT_ID تنظیم نشده.');
 
@@ -1310,9 +1307,9 @@ jobs:
 
               if (OWNER) await updateScreenshot(page, OWNER);
 
-              // تنظیم یک اینتروال برای پاکسازی فایل‌های موقت هر ۳۰ دقیقه
+              // پاکسازی دوره‌ای هر ۳۰ دقیقه
               const cleanupInterval = setInterval(() => {
-                log('🧹 پاکسازی فایل‌های موقت...');
+                log('🧹 پاکسازی خودکار فایل‌های موقت...');
                 execSync('rm -rf /tmp/downloaded_* /tmp/video_chunks_* /tmp/xray_*.json /tmp/shot_* /tmp/sel_* /tmp/vid_* /tmp/img_* /tmp/scroll_* /tmp/fullshot_* /tmp/page_* 2>/dev/null');
                 execSync('rm -rf /tmp/.org.chromium.Chromium.* /tmp/.X11-unix 2>/dev/null');
               }, 30 * 60 * 1000);
@@ -1359,8 +1356,10 @@ jobs:
                         const st = getState(chatId);
                         resetAllStates(st);
                         await sendMessage(chatId, '⚠️ خطا. حالت‌ها ریست شد.');
-                        await updateScreenshot(page, chatId);
+                        try { await updateScreenshot(page, chatId); } catch(e) {}
                       }
+                      // به‌روزرسانی page بعد از هر عملیات (مثلاً تعویض پروکسی)
+                      page = browserManager.page;
                     }
                     if (upRes.data?.next_offset_id) offset = upRes.data.next_offset_id;
                   }
