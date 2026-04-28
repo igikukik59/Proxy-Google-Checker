@@ -1,16 +1,16 @@
-name: 🕵️ Proxy Google Checker (Anti-Captcha)
+name: 📸 Groq Playground Snapshot Checker
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */6 * * *'   # هر ۶ ساعت
+    - cron: '0 */6 * * *'
 
 jobs:
-  proxy-check:
+  groq-check:
     runs-on: ubuntu-latest
     timeout-minutes: 290
     permissions:
-      contents: write          # برای Commit کردن فایل خروجی
+      contents: write
 
     steps:
       - name: 📥 دریافت کد
@@ -23,10 +23,11 @@ jobs:
           unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
+          mkdir -p groq_screenshots
 
-      - name: 🤖 اجرای تستر پروکسی‌ها (با تشخیص "I'm not a robot")
+      - name: 🤖 اجرای اسکرین‌شات‌گیر از Groq Playground
         run: |
-          cat > tester.cjs << 'ENDSCRIPT'
+          cat > agent.cjs << 'ENDSCRIPT'
           const { spawn } = require('child_process');
           const fs = require('fs');
           const path = require('path');
@@ -34,8 +35,9 @@ jobs:
           const StealthPlugin = require('puppeteer-extra-plugin-stealth');
           puppeteer.use(StealthPlugin());
 
-          const GOOD_PROXIES_FILE = 'google_good.txt';
-          const SEARCH_QUERY = 'ایران';
+          const SCREENSHOT_DIR = 'groq_screenshots';
+          const TARGET_URL = 'https://console.groq.com/playground';
+          const TIMEOUT_PAGE_LOAD = 45000;  // ۴۵ ثانیه صبر برای لود کامل
 
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
           function log(...args) { console.log(`[${ts()}]`, ...args); }
@@ -105,11 +107,11 @@ jobs:
             return xray;
           }
 
-          function testCurl(port) {
+          function testCurl(port, url) {
             try {
               require('child_process').execSync(
-                `curl --socks5 127.0.0.1:${port} --max-time 8 -s https://www.google.com`,
-                { encoding: 'utf8', stdio: 'pipe', timeout: 10000 }
+                `curl --socks5 127.0.0.1:${port} --max-time 8 -s -o /dev/null -w "%{http_code}" ${url}`,
+                { encoding: 'utf8', stdio: 'pipe', timeout: 12000 }
               );
               return true;
             } catch(e) {
@@ -119,37 +121,17 @@ jobs:
 
           const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-          // =============== ذخیره فوری یک پروکسی ===============
-          function saveGoodProxy(uri) {
-            // جلوگیری از ذخیره تکراری
-            let existing = [];
-            if (fs.existsSync(GOOD_PROXIES_FILE)) {
-              existing = fs.readFileSync(GOOD_PROXIES_FILE, 'utf8')
-                .split('\n')
-                .map(l => l.trim())
-                .filter(l => l.length > 0);
-            }
-            if (!existing.includes(uri)) {
-              fs.appendFileSync(GOOD_PROXIES_FILE, uri + '\n');
-              log('💾 پروکسی بلافاصله ذخیره شد:', uri.substring(0, 70) + '...');
-            } else {
-              log('⏭️ پروکسی قبلاً در لیست وجود دارد.');
-            }
-          }
-
-          // =============== تست Google با تشخیص هوشمند کپچا ===============
-          async function testGoogleWithProxy(uri) {
-            // راه‌اندازی Xray برای این پروکسی
-            const xrayProc = await startXray(uri, 0);
+          // =============== اسکرین‌شات از Groq ===============
+          async function takeGroqScreenshot(uri, proxyIndex) {
+            const xrayProc = await startXray(uri, proxyIndex);
             if (!xrayProc) return false;
 
-            // تست اولیه با curl
-            if (!testCurl(10808)) {
-              log('پروکسی در تست curl مردود شد');
+            // تست سریع با curl (به خود سایت Groq)
+            if (!testCurl(10808, 'https://console.groq.com')) {
+              log('پروکسی در تست curl به groq.com رد شد.');
               xrayProc.kill();
               return false;
             }
-            log('✅ تست اولیه curl موفق بود، حالا بررسی گوگل...');
 
             let browser;
             try {
@@ -171,80 +153,49 @@ jobs:
                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
               );
 
-              // رفتن به گوگل
-              await page.goto('https://www.google.com', { waitUntil: 'networkidle2', timeout: 30000 });
-              await sleep(1000);
-
-              // بررسی وجود فیلد جستجو
-              const searchInput = await page.$('input[name="q"], textarea[name="q"]');
-              if (!searchInput) {
-                log('فیلد جستجوی گوگل پیدا نشد. احتمالاً صفحه مسدود یا کپچا.');
-                await browser.close();
-                xrayProc.kill();
-                return false;
-              }
-
-              // تایپ عبارت جستجو
-              await searchInput.click({ clickCount: 3 });
-              await page.keyboard.type(SEARCH_QUERY, { delay: 60 });
-              await sleep(300);
-
-              // زدن Enter و انتظار برای صفحه نتایج
-              await Promise.all([
-                page.keyboard.press('Enter'),
-                page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 15000 }).catch(() => null)
-              ]);
-              await sleep(2000);
-
-              const currentUrl = page.url();
-              log(`آدرس بعد از جستجو: ${currentUrl}`);
-
-              // 1. چک کردن اینکه در صفحه نتایج هستیم
-              if (!currentUrl.includes('/search') && !currentUrl.includes('?q=')) {
-                log('به صفحه نتایج هدایت نشدیم.');
-                await browser.close();
-                xrayProc.kill();
-                return false;
-              }
-
-              // 2. تشخیص کپچا / I'm not a robot / Sorry
-              const isBlocked = await page.evaluate(() => {
-                // الف: iframe ریکپچا
-                const recaptchaIframe = document.querySelector('iframe[src*="recaptcha"], iframe[src*="google.com/recaptcha"]');
-                if (recaptchaIframe) return true;
-
-                // ب: فرم Sorry گوگل
-                const sorryForm = document.querySelector('form[action*="sorry"]');
-                if (sorryForm) return true;
-
-                // پ: عنوان صفحه شامل "sorry"
-                if (document.title.toLowerCase().includes('sorry')) return true;
-
-                // ت: متن «I'm not a robot» یا «من ربات نیستم» (گاه با ترجمه)
-                const bodyText = document.body.innerText.toLowerCase();
-                if (bodyText.includes("i'm not a robot") || bodyText.includes('من ربات نیستم')) return true;
-
-                // ث: عبارت «unusual traffic» (ترافیک غیرعادی)
-                if (bodyText.includes('unusual traffic') && bodyText.includes('automated')) return true;
-
-                return false;
+              log(`🌐 در حال بارگذاری ${TARGET_URL} ...`);
+              await page.goto(TARGET_URL, {
+                waitUntil: 'networkidle2',
+                timeout: TIMEOUT_PAGE_LOAD
               });
+              await sleep(2000); // کمی صبر برای انیمیشن‌ها
 
-              if (isBlocked) {
-                log('🚫 کپچا / I′m not a robot تشخیص داده شد. پروکسی رد شد.');
+              // تشخیص اینکه واقعاً وارد Playground شدیم یا نه
+              const pageTitle = await page.title();
+              const bodyText = await page.evaluate(() => document.body.innerText.substring(0, 200));
+
+              // اگر صفحه شامل "Playground" یا "Groq" یا فرم چت باشد، موفق محسوب می‌شود
+              if (
+                pageTitle.includes('Groq') ||
+                bodyText.includes('Playground') ||
+                bodyText.includes('console.groq.com')
+              ) {
+                const screenshotPath = path.join(SCREENSHOT_DIR, `proxy_${proxyIndex + 1}.png`);
+                await page.screenshot({ path: screenshotPath, fullPage: false });
+                log(`📸 اسکرین‌شات ذخیره شد: ${screenshotPath}`);
+                await browser.close();
+                xrayProc.kill();
+                return true;
+              } else {
+                log('صفحه لود شد ولی محتوای مورد انتظار دیده نشد.');
+                // در هر حال عکس می‌گیریم (برای بررسی بعدی)
+                const screenshotPath = path.join(SCREENSHOT_DIR, `proxy_${proxyIndex + 1}_failed.png`);
+                await page.screenshot({ path: screenshotPath, fullPage: false });
+                log(`⚠️ اسکرین‌شات مشکوک ذخیره شد: ${screenshotPath}`);
                 await browser.close();
                 xrayProc.kill();
                 return false;
               }
-
-              // اگر به اینجا رسیدیم: نتایج واقعی جستجو
-              log('✅ صفحه نتایج گوگل بدون هیچ مسدودی. پروکسی تأیید شد.');
-              await browser.close();
-              xrayProc.kill();
-              return true;
-
             } catch (e) {
-              err('خطا در تست گوگل:', e.message);
+              err('خطا در بارگذاری صفحه:', e.message);
+              try {
+                // سعی می‌کنیم عکس صفحه خطا را هم بگیریم
+                if (browser && page) {
+                  const screenshotPath = path.join(SCREENSHOT_DIR, `proxy_${proxyIndex + 1}_error.png`);
+                  await page.screenshot({ path: screenshotPath, fullPage: false });
+                  log(`🆘 اسکرین‌شات خطا ذخیره شد: ${screenshotPath}`);
+                }
+              } catch(_) {}
               try { await browser.close(); } catch(_) {}
               xrayProc.kill();
               return false;
@@ -254,7 +205,7 @@ jobs:
           // =============== روند اصلی ===============
           (async () => {
             if (!fs.existsSync('proxies.txt')) {
-              err('فایل proxies.txt پیدا نشد. یک فایل در ریشه ریپو بسازید.');
+              err('فایل proxies.txt پیدا نشد.');
               process.exit(1);
             }
 
@@ -263,42 +214,37 @@ jobs:
               .map(l => l.trim())
               .filter(l => l.startsWith('vless://') || l.startsWith('trojan://') || l.startsWith('ss://') || l.startsWith('vmess://'));
 
-            log(`${proxies.length} پروکسی برای بررسی بارگذاری شد.`);
+            log(`تعداد ${proxies.length} پروکسی برای بررسی بارگذاری شد.`);
 
-            let goodCount = 0;
-
+            let successCount = 0;
             for (let i = 0; i < proxies.length; i++) {
               const uri = proxies[i];
               log(`\n--- تست ${i+1}/${proxies.length} ---`);
               log(`پروکسی: ${uri.substring(0, 80)}...`);
 
-              const isGood = await testGoogleWithProxy(uri);
-              if (isGood) {
-                log('🎉 این پروکسی گوگل را بدون کپچا باز کرد.');
-                saveGoodProxy(uri);   // ذخیره فوری
-                goodCount++;
+              const ok = await takeGroqScreenshot(uri, i);
+              if (ok) {
+                log('✅ اسکرین‌شات با موفقیت گرفته شد.');
+                successCount++;
               } else {
-                log('❌ پروکسی مناسب نیست (کپچا/مسدود/خطا).');
+                log('❌ اسکرین‌شات نگرفتیم یا صفحه مشکل داشت.');
               }
 
-              // فاصله بین تست‌ها
-              await sleep(3000);
+              await sleep(2000); // فاصله کوتاه
             }
 
-            log(`\n✅ ${goodCount} پروکسی جدید تأیید و ذخیره شد.`);
-            log(`📁 فایل ${GOOD_PROXIES_FILE} بروز است.`);
-
+            log(`\n🎉 پایان. اسکرین‌شات‌های موفق: ${successCount}/${proxies.length}`);
             process.exit(0);
           })();
           ENDSCRIPT
 
-          timeout 17400 node tester.cjs
+          timeout 17400 node agent.cjs
 
-      - name: 📤 ذخیره و Commit فایل پروکسی‌های خوب
+      - name: 📤 ارسال اسکرین‌شات‌ها به ریپو
         if: success()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add google_good.txt
-          git commit -m "✅ بروزرسانی پروکسی‌های بدون کپچا - $(date +'%Y-%m-%d %H:%M')" || echo "بدون تغییر"
+          git add groq_screenshots/
+          git commit -m "📸 بروزرسانی اسکرین‌شات‌های Groq Playground - $(date +'%Y-%m-%d %H:%M')" || echo "بدون تغییر"
           git push
