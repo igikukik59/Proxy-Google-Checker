@@ -1,4 +1,4 @@
-name: 🌐 مرورگر راه دور (دانلود ویدیو + پروکسی)
+name: 🌐 مرورگر راه دور (دانلود ویدیو پیشرفته)
 
 on:
   workflow_dispatch:
@@ -17,13 +17,14 @@ jobs:
 
       - name: 🧰 نصب ابزارها
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y curl unzip
+          sudo apt-get update -qq && sudo apt-get install -y curl unzip python3-pip
+          pip install yt-dlp
           wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
           unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای ربات (نسخه نهایی با دانلود ویدیو)
+      - name: 🤖 اجرای ربات (نسخه نهایی با دانلود ویدیو و انتخاب پیشرفته)
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           RUBIKA_OWNER_CHAT_ID: ${{ secrets.RUBIKA_OWNER_CHAT_ID }}
@@ -175,13 +176,13 @@ jobs:
             return sendRes?.data?.message_id || null;
           }
 
-          // ======================== هایلایت عناصر کلیکی (برای انتخاب با شماره) ========================
+          // ======================== انتخاب هوشمند با شماره (پیشرفته) ========================
           async function highlightClickableElements(page) {
             return await page.evaluate(() => {
               document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
               document.querySelectorAll('[data-rubika-sel-id]').forEach(el => el.removeAttribute('data-rubika-sel-id'));
 
-              const selectors = [
+              const baseSelectors = [
                 'a', 'button', 'input', 'select', 'textarea', 'area', 'summary', 'details', 'label',
                 '[onclick]',
                 '[role="button"]', '[role="menuitem"]', '[role="option"]', '[role="tab"]',
@@ -190,19 +191,53 @@ jobs:
                 '[role="switch"]', '[role="checkbox"]', '[role="radio"]', '[role="textbox"]',
                 '[role="searchbox"]', '[role="spinbutton"]', '[role="slider"]', '[role="separator"]',
                 '[tabindex]:not([tabindex="-1"])', '[contenteditable="true"]',
-                'div[role]', 'span[role]', 'li[role]'
+                'div[role]', 'span[role]', 'li[role]',
+                '[class*="play"]', '[class*="pause"]', '[class*="control"]',
+                '[class*="forward"]', '[class*="back"]', '[class*="next"]', '[class*="prev"]',
+                '[aria-label*="Play"]', '[aria-label*="Pause"]', '[aria-label*="Mute"]'
               ];
 
-              const all = document.querySelectorAll(selectors.join(','));
+              const clickableElements = [];
+
+              function collectElements(root) {
+                try {
+                  const els = root.querySelectorAll(baseSelectors.join(','));
+                  els.forEach(el => clickableElements.push(el));
+                } catch(e) {}
+                // Shadow DOM recursion
+                const allNodes = root.querySelectorAll('*');
+                for (const node of allNodes) {
+                  if (node.shadowRoot) {
+                    collectElements(node.shadowRoot);
+                  }
+                }
+                // Same-origin iframes
+                const iframes = root.querySelectorAll('iframe');
+                for (const iframe of iframes) {
+                  try {
+                    const doc = iframe.contentDocument || iframe.contentWindow.document;
+                    if (doc) collectElements(doc);
+                  } catch(e) {}
+                }
+              }
+
+              collectElements(document);
+              // Deduplicate
+              const uniqueMap = new Map();
+              for (const el of clickableElements) {
+                if (!uniqueMap.has(el)) uniqueMap.set(el, true);
+              }
+              const uniqueElements = Array.from(uniqueMap.keys());
+
               const visible = [];
-              all.forEach(el => {
+              for (const el of uniqueElements) {
                 const rect = el.getBoundingClientRect();
                 if (rect.width > 0 && rect.height > 0 &&
                     rect.bottom > 0 && rect.top < window.innerHeight &&
                     rect.right > 0 && rect.left < window.innerWidth) {
                   visible.push({el, rect});
                 }
-              });
+              }
 
               visible.sort((a,b) => {
                 if (Math.abs(a.rect.top - b.rect.top) < 5) return a.rect.left - b.rect.left;
@@ -212,7 +247,6 @@ jobs:
               visible.forEach(({el, rect}, idx) => {
                 const num = idx + 1;
                 el.setAttribute('data-rubika-sel-id', num);
-
                 const overlay = document.createElement('div');
                 overlay.className = 'rubika-hl-overlay';
                 overlay.style.position = 'fixed';
@@ -288,40 +322,77 @@ jobs:
             }
           }
 
-          // ======================== ویدیوهای صفحه ========================
+          // ======================== ویدیوهای صفحه (پیشرفته) ========================
           async function highlightVideoElements(page) {
-            return await page.evaluate(() => {
-              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
-              document.querySelectorAll('[data-rubika-video-id]').forEach(el => el.removeAttribute('data-rubika-video-id'));
-
+            const pageUrl = page.url();
+            const videoData = await page.evaluate(() => {
               const results = [];
-              // جمع‌آوری تگ‌های ویدیو
+              // تگ‌های video
               const videos = document.querySelectorAll('video');
               videos.forEach(v => {
-                const rect = v.getBoundingClientRect();
-                if (rect.width > 0 && rect.height > 0) {
-                  results.push({ el: v, src: v.currentSrc || v.querySelector('source')?.src || '' });
-                }
+                const src = v.currentSrc || v.querySelector('source')?.src || '';
+                if (src) results.push({ src, type: 'direct' });
               });
-              // لینک‌های مستقیم به ویدیو
-              const links = document.querySelectorAll('a[href$=".mp4"], a[href$=".webm"], a[href$=".ogg"], a[href$=".mov"]');
+              // لینک‌های مستقیم
+              const extensions = ['mp4', 'webm', 'ogg', 'mov', 'mkv', 'avi', 'flv'];
+              const links = document.querySelectorAll('a');
               links.forEach(a => {
-                const rect = a.getBoundingClientRect();
-                if (rect.width > 0 && rect.height > 0) {
-                  results.push({ el: a, src: a.href });
+                const href = a.href;
+                const ext = href.split('.').pop().split('?')[0].toLowerCase();
+                if (extensions.includes(ext)) results.push({ src: href, type: 'direct' });
+              });
+              // iframe های ویدیویی معروف
+              const iframes = document.querySelectorAll('iframe');
+              const embedPatterns = [
+                { pattern: /youtube\.com\/embed\/([\w-]+)/, platform: 'youtube' },
+                { pattern: /player\.vimeo\.com\/video\/(\d+)/, platform: 'vimeo' },
+                { pattern: /dailymotion\.com\/embed\/video\/([\w]+)/, platform: 'dailymotion' },
+                { pattern: /instagram\.com\/.*\/embed/, platform: 'instagram' }
+              ];
+              iframes.forEach(iframe => {
+                const src = iframe.src;
+                if (!src) return;
+                for (const {pattern, platform} of embedPatterns) {
+                  const match = src.match(pattern);
+                  if (match) {
+                    results.push({ src: src, type: 'embed', platform });
+                    break;
+                  }
                 }
               });
-
-              // حذف تکراری‌ها
+              // حذف تکراری
               const unique = [];
               const seen = new Set();
               for (const r of results) {
-                if (!r.src || seen.has(r.src)) continue;
+                if (seen.has(r.src)) continue;
                 seen.add(r.src);
                 unique.push(r);
               }
+              return unique;
+            });
 
-              unique.forEach(({el, src}, idx) => {
+            // نشانه‌گذاری بصری
+            await page.evaluate((list) => {
+              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
+              document.querySelectorAll('[data-rubika-video-id]').forEach(el => el.removeAttribute('data-rubika-video-id'));
+
+              list.forEach((item, idx) => {
+                let el = null;
+                if (item.type === 'direct') {
+                  // اولویت با self video یا a
+                  const v = document.querySelector(`video[src="${item.src}"], video source[src="${item.src}"]`);
+                  if (v) el = v.closest('video') || v;
+                  else {
+                    const a = document.querySelector(`a[href="${item.src}"]`);
+                    if (a) el = a;
+                  }
+                } else {
+                  // برای iframe، خود iframe را نشانه‌گذاری کن
+                  const iframe = document.querySelector(`iframe[src="${item.src}"]`);
+                  if (iframe) el = iframe;
+                }
+
+                if (!el) return;
                 const num = idx + 1;
                 el.setAttribute('data-rubika-video-id', num);
                 const rect = el.getBoundingClientRect();
@@ -358,9 +429,9 @@ jobs:
                 badge.textContent = num;
                 document.body.appendChild(badge);
               });
+            }, videoData);
 
-              return unique.map(u => u.src);
-            });
+            return { videos: videoData, pageUrl };
           }
 
           async function removeVideoHighlights(page) {
@@ -370,19 +441,48 @@ jobs:
             });
           }
 
-          async function downloadAndCommit(url, fileName) {
+          async function downloadVideo(url, type, referer, platform) {
             const dir = 'downloaded_videos';
             if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-            const outPath = path.join(dir, fileName);
-            log(`📥 دانلود ویدیو: ${url} -> ${outPath}`);
+            const timestamp = Date.now();
+            let fileName;
+
+            if (type === 'direct') {
+              const parsed = new URL(url);
+              const base = path.basename(parsed.pathname) || 'video.mp4';
+              fileName = `video_${timestamp}_${base}`;
+              const outPath = path.join(dir, fileName);
+              log(`📥 دانلود مستقیم: ${url}`);
+              try {
+                execSync(`curl --socks5 127.0.0.1:10808 -L -e "${referer}" -A "Mozilla/5.0" -o "${outPath}" "${url}"`, { stdio: 'inherit', timeout: 600000 });
+                return { ok: true, path: outPath, name: fileName };
+              } catch(e) {
+                err('خطا در دانلود مستقیم:', e.message);
+                return { ok: false, error: e.message };
+              }
+            } else if (type === 'embed') {
+              // استفاده از yt-dlp
+              fileName = `video_${timestamp}_${platform || 'embed'}.mp4`;
+              const outPath = path.join(dir, fileName);
+              log(`📥 دانلود از embed با yt-dlp: ${url}`);
+              try {
+                execSync(`yt-dlp --proxy socks5://127.0.0.1:10808 -o "${outPath}" "${url}"`, { stdio: 'inherit', timeout: 600000 });
+                return { ok: true, path: outPath, name: fileName };
+              } catch(e) {
+                err('خطا در yt-dlp:', e.message);
+                return { ok: false, error: e.message };
+              }
+            }
+            return { ok: false, error: 'نوع نامشخص' };
+          }
+
+          async function commitFile(filePath) {
             try {
-              execSync(`curl --socks5 127.0.0.1:10808 -L -o "${outPath}" "${url}"`, { stdio: 'inherit', timeout: 600000 });
-              // commit فایل
               execSync(`git config user.name "github-actions" && git config user.email "actions@github.com"`, { stdio: 'inherit' });
-              execSync(`git add "${outPath}" && git commit -m "دانلود ویدیو ${fileName}" && git push`, { stdio: 'inherit' });
+              execSync(`git add "${filePath}" && git commit -m "دانلود ویدیو ${path.basename(filePath)}" && git push`, { stdio: 'inherit' });
               return true;
             } catch(e) {
-              err('خطا در دانلود/commit:', e.message);
+              err('خطا در commit:', e.message);
               return false;
             }
           }
@@ -427,7 +527,8 @@ jobs:
                 scrollMode: null,
                 selectionMode: false,
                 videoMode: false,
-                videoUrls: [],
+                videoData: null,
+                pageUrlAtVideo: '',
                 lastScreenshotMsgId: null,
                 tempMessageIds: []
               });
@@ -451,7 +552,6 @@ jobs:
             if (state.lastScreenshotMsgId) {
               try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
             }
-
             const keypad = buildControlKeypad();
             const newMsgId = await uploadAndSendFile(chatId, shotPath, 'Image', keypad);
             if (newMsgId) state.lastScreenshotMsgId = newMsgId;
@@ -466,7 +566,7 @@ jobs:
             state.scrollMode = null;
             state.selectionMode = false;
             state.videoMode = false;
-            state.videoUrls = [];
+            state.videoData = null;
 
             switch(buttonId) {
               case 'SCROLL_UP':
@@ -495,34 +595,31 @@ jobs:
                 }
                 const shotPath = `/tmp/sel_${chatId}_${Date.now()}.png`;
                 await page.screenshot({ path: shotPath, fullPage: false });
-                if (state.lastScreenshotMsgId) {
-                  try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
-                }
+                if (state.lastScreenshotMsgId) try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
                 const keypad = buildControlKeypad();
                 const newMsgId = await uploadAndSendFile(chatId, shotPath, 'Image', keypad);
                 if (newMsgId) state.lastScreenshotMsgId = newMsgId;
                 try { fs.unlinkSync(shotPath); } catch(e) {}
-                await sendMessage(chatId, `🔢 ${count} عنصر نشانه‌گذاری شد. شماره را وارد کنید.`);
+                await sendMessage(chatId, `🔢 ${count} عنصر (از جمله دکمه‌های پلیر) نشانه‌گذاری شد. شماره را وارد کنید.`);
                 return;
               case 'VIDEOS':
                 state.videoMode = true;
-                const urls = await highlightVideoElements(page);
-                if (urls.length === 0) {
+                const { videos, pageUrl } = await highlightVideoElements(page);
+                state.videoData = videos;
+                state.pageUrlAtVideo = pageUrl;
+                if (videos.length === 0) {
                   await sendMessage(chatId, '❌ هیچ ویدیویی در صفحه پیدا نشد.');
                   state.videoMode = false;
                   return;
                 }
-                state.videoUrls = urls;
                 const vidShotPath = `/tmp/vid_${chatId}_${Date.now()}.png`;
                 await page.screenshot({ path: vidShotPath, fullPage: false });
-                if (state.lastScreenshotMsgId) {
-                  try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
-                }
+                if (state.lastScreenshotMsgId) try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
                 const vidKeypad = buildControlKeypad();
                 const vidMsgId = await uploadAndSendFile(chatId, vidShotPath, 'Image', vidKeypad);
                 if (vidMsgId) state.lastScreenshotMsgId = vidMsgId;
                 try { fs.unlinkSync(vidShotPath); } catch(e) {}
-                await sendMessage(chatId, `🎥 ${urls.length} ویدیو با رنگ آبی نشانه‌گذاری شد.\nشماره مورد نظر را برای دانلود بفرستید.`);
+                await sendMessage(chatId, `🎥 ${videos.length} ویدیو با رنگ آبی نشانه‌گذاری شد.\nشماره مورد نظر را برای دانلود بفرستید.`);
                 return;
               case 'ENTER':
                 try {
@@ -549,9 +646,9 @@ jobs:
               case 'CHANGE_PROXY':
                 const switched = await browserManager.switchProxy();
                 if (switched) {
-                  await sendMessage(chatId, '🔁 پروکسی با موفقیت تغییر کرد. صفحه به Groq بازگردانده شد.');
+                  await sendMessage(chatId, '🔁 پروکسی با موفقیت تغییر کرد.');
                 } else {
-                  await sendMessage(chatId, '❌ هیچ پروکسی سالمی پیدا نشد. ربات متوقف می‌شود.');
+                  await sendMessage(chatId, '❌ هیچ پروکسی سالمی یافت نشد.');
                   process.exit(1);
                 }
                 return;
@@ -573,9 +670,7 @@ jobs:
               return;
             }
             const sign = state.scrollMode === 'up' ? -1 : 1;
-            await page.evaluate(({sign, amount}) => {
-              window.scrollBy(0, sign * amount);
-            }, {sign, amount});
+            await page.evaluate(({sign, amount}) => { window.scrollBy(0, sign * amount); }, {sign, amount});
             await sleep(300);
             state.scrollMode = null;
             const msg = await sendMessage(chatId, `✅ اسکرول ${sign > 0 ? 'پایین' : 'بالا'} به اندازه ${amount}px`);
@@ -607,23 +702,29 @@ jobs:
           async function handleVideoSelection(page, chatId, numberText) {
             const state = getState(chatId);
             const num = parseInt(numberText);
-            if (isNaN(num) || num < 1 || num > state.videoUrls.length) {
+            const videos = state.videoData;
+            if (isNaN(num) || num < 1 || num > videos.length) {
               const msg = await sendMessage(chatId, '❌ شماره نامعتبر.');
               state.tempMessageIds.push(msg?.data?.message_id);
               return;
             }
-            const url = state.videoUrls[num-1];
-            await sendMessage(chatId, `📥 در حال دانلود ویدیوی شماره ${num}...`);
-            const fileName = `video_${Date.now()}_${path.basename(new URL(url).pathname) || 'video.mp4'}`;
-            const ok = await downloadAndCommit(url, fileName);
-            if (ok) {
-              await sendMessage(chatId, `✅ ویدیو با نام \`${fileName}\` دانلود و در ریپو ذخیره شد.`);
+            const selected = videos[num-1];
+            await sendMessage(chatId, `📥 در حال دانلود ویدیوی شماره ${num} ...`);
+            const result = await downloadVideo(selected.src, selected.type, state.pageUrlAtVideo, selected.platform);
+            if (result.ok) {
+              const committed = await commitFile(result.path);
+              if (committed) {
+                await sendMessage(chatId, `✅ ویدیو با نام \`${result.name}\` دانلود و در ریپو ذخیره شد.`);
+              } else {
+                await sendMessage(chatId, `⚠️ ویدیو دانلود شد اما commit ناموفق بود.`);
+              }
             } else {
-              await sendMessage(chatId, '❌ خطا در دانلود یا commit ویدیو.');
+              await sendMessage(chatId, `❌ خطا در دانلود: ${result.error || 'نامشخص'}`);
             }
             await removeVideoHighlights(page);
             state.videoMode = false;
-            state.videoUrls = [];
+            state.videoData = null;
+            state.pageUrlAtVideo = '';
             await sleep(300);
             await updateScreenshot(page, chatId);
           }
@@ -643,7 +744,7 @@ jobs:
               if (this.browser) { try { await this.browser.close(); } catch(_) {} }
 
               const uri = this.proxies[index];
-              log(`🔌 تست پروکسی ${index+1}/${this.proxies.length}: ${uri.substring(0, 60)}...`);
+              log(`🔌 تست پروکسی ${index+1}/${this.proxies.length}: ${uri.substring(0,60)}...`);
               this.xrayProc = await startXray(uri, index);
               if (!this.xrayProc) throw new Error('Xray start failed');
               if (!testCurl(10808)) throw new Error('Curl failed');
@@ -672,16 +773,11 @@ jobs:
                     const bodyText = document.body.innerText.toLowerCase();
                     return ['access denied', 'you have been blocked', 'cloudflare', 'attention required'].some(t => bodyText.includes(t));
                   });
-                  if (blocked) {
-                    log('⛔ پروکسی بلاک دارد. بعدی.');
-                    continue;
-                  }
+                  if (blocked) { log('⛔ پروکسی بلاک دارد. بعدی.'); continue; }
                   this.currentProxyIndex = i;
                   log('✅ اتصال موفق.');
                   return true;
-                } catch(e) {
-                  err('خطا در تست پروکسی:', e.message);
-                }
+                } catch(e) { err('خطا در تست پروکسی:', e.message); }
               }
               return false;
             }
@@ -697,19 +793,12 @@ jobs:
                     const bodyText = document.body.innerText.toLowerCase();
                     return ['access denied', 'you have been blocked', 'cloudflare', 'attention required'].some(t => bodyText.includes(t));
                   });
-                  if (blocked) {
-                    log('پروکسی جدید بلاک دارد، بعدی...');
-                    newIdx = (newIdx + 1) % this.proxies.length;
-                    continue;
-                  }
+                  if (blocked) { log('پروکسی جدید بلاک دارد، بعدی...'); newIdx = (newIdx + 1) % this.proxies.length; continue; }
                   this.currentProxyIndex = newIdx;
                   log(`✅ پروکسی به شماره ${newIdx+1} تغییر کرد.`);
                   if (OWNER) await updateScreenshot(this.page, OWNER);
                   return true;
-                } catch(e) {
-                  log('خطا با پروکسی:', e.message);
-                  newIdx = (newIdx + 1) % this.proxies.length;
-                }
+                } catch(e) { log('خطا با پروکسی:', e.message); newIdx = (newIdx + 1) % this.proxies.length; }
               }
               return false;
             }
@@ -735,18 +824,14 @@ jobs:
 
               const browserManager = new BrowserManager(proxies);
               const found = await browserManager.findWorkingProxy();
-              if (!found) {
-                err('هیچ پروکسی سالمی یافت نشد.');
-                process.exit(1);
-              }
+              if (!found) { err('هیچ پروکسی سالمی یافت نشد.'); process.exit(1); }
 
               const page = browserManager.page;
               if (OWNER) await sendMessage(OWNER, '🟢 ربات روشن شد.');
               else log('⚠️ OWNER_CHAT_ID تنظیم نشده.');
 
               log('🧹 پاک‌سازی تاریخچه...');
-              let offset = null;
-              let flushed = 0;
+              let offset = null, flushed = 0;
               while (true) {
                 const params = { limit: 10 };
                 if (offset !== null) params.offset_id = offset;
@@ -823,17 +908,15 @@ jobs:
                             await page.goto(text, { waitUntil: 'networkidle2', timeout: 30000 });
                             await sleep(2000);
                             await updateScreenshot(page, chatId);
-                          } catch (e) {
+                          } catch(e) {
                             err('بارگذاری ناموفق:', e.message);
                             await sendMessage(chatId, `❌ خطا در باز کردن آدرس: ${e.message}`);
                           }
                         }
                       }
                       else if (text === '/start') {
-                        await sendMessage(chatId, '🟢 ربات آماده است. از دکمه‌ها استفاده کنید.');
-                        if (!state.lastScreenshotMsgId) {
-                          await updateScreenshot(page, chatId);
-                        }
+                        await sendMessage(chatId, '🟢 ربات آماده است.');
+                        if (!state.lastScreenshotMsgId) await updateScreenshot(page, chatId);
                       } else if (text === 'help') {
                         await sendMessage(chatId, '🎮 دکمه‌ها:\n⬆️⬇️ اسکرول\n⌨️ تایپ\n🌐 آدرس جدید\n🔍 انتخاب با شماره\n🎥 ویدیوهای صفحه\n↵ Enter\n📸 اسکرین‌شات\n🔄 رفرش\n🔁 عوض کردن پروکسی');
                       }
