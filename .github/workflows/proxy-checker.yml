@@ -1,4 +1,4 @@
-name: 🌐 Groq Ultra Remote Browser
+name: 🌐 Groq Ultra Smart Browser (Human‑like clicks)
 
 on:
   workflow_dispatch:
@@ -23,7 +23,7 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای ربات کامل
+      - name: 🤖 اجرای ربات با کلیک‌های طبیعی و تشخیص چالش
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           RUBIKA_OWNER_CHAT_ID: ${{ secrets.RUBIKA_OWNER_CHAT_ID }}
@@ -48,7 +48,9 @@ jobs:
             'i am not a robot',
             'recaptcha',
             'sorry, you have been blocked',
-            'just a moment'
+            'just a moment',
+            'verify you are human',
+            'cf-challenge'
           ];
 
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
@@ -57,7 +59,7 @@ jobs:
 
           const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-          // ======================== Xray Helpers ========================
+          // ------------------ Xray Helpers ------------------
           function parseURI(uri) {
             try {
               const u = new URL(uri);
@@ -128,7 +130,7 @@ jobs:
             } catch(e) { return false; }
           }
 
-          // ======================== Rubika API ========================
+          // ------------------ Rubika API ------------------
           const TOKEN = process.env.RUBIKA_BOT_TOKEN;
           const OWNER = process.env.RUBIKA_OWNER_CHAT_ID || '';
           const BASE = `https://botapi.rubika.ir/v3/${TOKEN}`;
@@ -188,7 +190,7 @@ jobs:
             return sendRes?.data?.message_id || null;
           }
 
-          // ======================== Safe Evaluate ========================
+          // ------------------ Safe Evaluate ------------------
           async function safeEvaluate(page, fn, ...args) {
             const maxRetries = 4;
             let lastError;
@@ -211,7 +213,7 @@ jobs:
             throw lastError;
           }
 
-          // ======================== تشخیص بلاک ========================
+          // ------------------ تشخیص بلاک ------------------
           async function isPageBlocked(page) {
             try {
               return await safeEvaluate(page, (patterns) => {
@@ -222,16 +224,94 @@ jobs:
                 }
                 return false;
               }, BLOCKED_PATTERNS);
+            } catch(e) { return false; }
+          }
+
+          // ------------------ Human‑like mouse movement ------------------
+          async function humanClick(page, x, y) {
+            // Move mouse with slight human curve
+            const steps = 10;
+            const startX = Math.random() * 200;
+            const startY = Math.random() * 200;
+            await page.mouse.move(startX, startY);
+            await sleep(100);
+            for (let i = 1; i <= steps; i++) {
+              const curX = startX + (x - startX) * (i / steps) + (Math.random() - 0.5) * 4;
+              const curY = startY + (y - startY) * (i / steps) + (Math.random() - 0.5) * 4;
+              await page.mouse.move(curX, curY);
+              await sleep(20 + Math.random() * 10);
+            }
+            await page.mouse.move(x, y);
+            await sleep(150 + Math.random() * 100);
+            await page.mouse.click(x, y);
+            await sleep(300 + Math.random() * 200);
+          }
+
+          // ------------------ کلیک پیشرفته با تشخیص چالش ------------------
+          async function clickByNumber(page, number) {
+            try {
+              const info = await safeEvaluate(page, (num) => {
+                const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
+                if (!el) return null;
+                el.scrollIntoView({ block: 'center', inline: 'center' });
+                const rect = el.getBoundingClientRect();
+                return {
+                  tag: el.tagName,
+                  isIframe: el.getAttribute('data-rubika-is-iframe') === '1',
+                  x: rect.x + rect.width / 2,
+                  y: rect.y + rect.height / 2,
+                  width: rect.width,
+                  height: rect.height,
+                  id: el.id || '',
+                  className: el.className || ''
+                };
+              }, number);
+
+              if (!info) return false;
+
+              const navPromise = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 5000 }).catch(() => null);
+
+              if (info.tag === 'IFRAME' || info.isIframe) {
+                log(`🖱️ کلیک شبیه‌سازی شده روی iframe شماره ${number} در (${info.x.toFixed(0)},${info.y.toFixed(0)})`);
+                await humanClick(page, info.x, info.y);
+                // After clicking iframe, wait for potential challenge resolution
+                await sleep(2000);
+                // Check if challenge disappeared
+                if (await isPageBlocked(page)) {
+                  // Try a second click slightly lower (some checkboxes need precise click)
+                  log('چالش هنوز باقی است، کلیک دوم در مرکز iframe...');
+                  await page.mouse.click(info.x, info.y + 5);
+                  await sleep(2000);
+                }
+              } else {
+                // Normal element: click via DOM then mouse for safety
+                await safeEvaluate(page, (num) => {
+                  const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
+                  if (el) el.click();
+                }, number);
+                // Also move mouse there for realism
+                await humanClick(page, info.x, info.y);
+              }
+
+              await navPromise;
+              await sleep(800);
+
+              // Additional check: if page now shows target URL content, challenge solved
+              const currentUrl = page.url();
+              if (currentUrl.includes('console.groq.com') && !await isPageBlocked(page)) {
+                log('✅ چالش حل شد و به صفحه اصلی Groq رسیدیم.');
+              }
+              return true;
             } catch(e) {
-              log('⚠️ بررسی بلاک با خطا مواجه شد:', e.message);
-              return false;
+              log('⚠️ مدیریت ناوبری پس از کلیک');
+              await sleep(2000);
+              return true;
             }
           }
 
-          // ======================== پیشرفته: انتخاب هوشمند عناصر (شامل shadow DOM و کوکی) ========================
+          // ------------------ Ultra‑smart highlighter ------------------
           async function highlightClickableElements(page) {
             return await safeEvaluate(page, () => {
-              // پاک‌سازی قبلی
               document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
               document.querySelectorAll('[data-rubika-sel-id]').forEach(el => el.removeAttribute('data-rubika-sel-id'));
 
@@ -251,13 +331,11 @@ jobs:
                 'div[role]', 'span[role]', 'li[role]'
               ];
 
-              // کمک برای جستجو در shadow root
               function getElements(root) {
                 return Array.from(root.querySelectorAll(selectors.join(',')));
               }
 
               let all = getElements(document);
-              // پیمایش shadow DOM
               document.querySelectorAll('*').forEach(el => {
                 if (el.shadowRoot) {
                   const inside = getElements(el.shadowRoot);
@@ -265,7 +343,6 @@ jobs:
                 }
               });
 
-              // فیلتر عناصر قابل مشاهده
               const visible = [];
               all.forEach(el => {
                 const rect = el.getBoundingClientRect();
@@ -276,7 +353,6 @@ jobs:
                 }
               });
 
-              // مرتب‌سازی بالا به پایین، چپ به راست
               visible.sort((a, b) => {
                 const ra = a.getBoundingClientRect();
                 const rb = b.getBoundingClientRect();
@@ -284,7 +360,6 @@ jobs:
                 return ra.top - rb.top;
               });
 
-              // نشانه‌گذاری
               visible.forEach((el, idx) => {
                 const num = idx + 1;
                 el.setAttribute('data-rubika-sel-id', num);
@@ -336,44 +411,7 @@ jobs:
             });
           }
 
-          async function clickByNumber(page, number) {
-            try {
-              const info = await safeEvaluate(page, (num) => {
-                const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
-                if (!el) return null;
-                el.scrollIntoView({ block: 'center', inline: 'center' });
-                el.focus({ preventScroll: true });
-                const rect = el.getBoundingClientRect();
-                return {
-                  tag: el.tagName,
-                  isIframe: el.getAttribute('data-rubika-is-iframe') === '1',
-                  x: rect.x + rect.width / 2,
-                  y: rect.y + rect.height / 2
-                };
-              }, number);
-              if (!info) return false;
-
-              const navPromise = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 5000 }).catch(() => null);
-              if (info.tag === 'IFRAME' || info.isIframe) {
-                log(`🖱️ کلیک موس روی iframe شماره ${number} در (${info.x.toFixed(0)},${info.y.toFixed(0)})`);
-                await page.mouse.click(info.x, info.y);
-              } else {
-                await safeEvaluate(page, (num) => {
-                  const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
-                  if (el) el.click();
-                }, number);
-              }
-              await navPromise;
-              await sleep(800);
-              return true;
-            } catch(e) {
-              log('⚠️ مدیریت ناوبری پس از کلیک');
-              await sleep(2000);
-              return true;
-            }
-          }
-
-          // ======================== کی‌پد با دکمه‌های جدید ========================
+          // ------------------ Keypad ------------------
           function buildControlKeypad() {
             return {
               rows: [
@@ -389,7 +427,7 @@ jobs:
             };
           }
 
-          // ======================== مدیریت حالت ========================
+          // ------------------ State Management ------------------
           const chatStates = new Map();
           function getState(chatId) {
             if (!chatStates.has(chatId)) {
@@ -428,7 +466,7 @@ jobs:
             try { fs.unlinkSync(shotPath); } catch(e) {}
           }
 
-          // ======================== اجرای اصلی با تعویض هوشمند پروکسی ========================
+          // ------------------ Main Loop ------------------
           (async () => {
             try {
               const me = await api('getMe');
@@ -444,7 +482,7 @@ jobs:
               const proxies = fs.readFileSync(PROXY_FILE, 'utf8')
                 .split('\n').map(l => l.trim())
                 .filter(l => /^(vless|trojan|ss|vmess):\/\//.test(l));
-              log(`${proxies.length} کانفیگ خوب از فایل بارگذاری شد.`);
+              log(`${proxies.length} کانفیگ خوب.`);
 
               let browser = null;
               let page = null;
@@ -452,7 +490,6 @@ jobs:
               let currentProxyIndex = -1;
               let proxyFound = false;
 
-              // تابع کمکی برای راه‌اندازی مرورگر با یک پروکسی خاص
               async function startBrowserWithProxy(index) {
                 if (xrayProc) { xrayProc.kill(); await sleep(500); }
                 if (browser) { try { await browser.close(); } catch(_) {} }
@@ -477,14 +514,13 @@ jobs:
                 await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
               }
 
-              // پیدا کردن اولین پروکسی سالم
               for (let i = 0; i < proxies.length; i++) {
                 try {
                   await startBrowserWithProxy(i);
                   await page.goto(TARGET_URL, { waitUntil: 'networkidle2', timeout: 30000 });
                   await sleep(2000);
                   if (await isPageBlocked(page)) {
-                    log('⛔ این پروکسی پیام بلاک دارد. امتحان بعدی.');
+                    log('⛔ پیام بلاک دارد.');
                     continue;
                   }
                   proxyFound = true;
@@ -492,21 +528,18 @@ jobs:
                   log('✅ اتصال موفق.');
                   break;
                 } catch(e) {
-                  err('خطا در تست پروکسی:', e.message);
+                  err('خطا:', e.message);
                 }
               }
 
               if (!proxyFound || !browser || !page) {
                 err('هیچ پروکسی سالمی یافت نشد.');
-                if (browser) try { await browser.close(); } catch(_) {}
-                if (xrayProc) xrayProc.kill();
                 process.exit(1);
               }
 
               if (OWNER) await sendMessage(OWNER, '🟢 ربات روی Groq با پروکسی سالم آماده شد.');
               else log('⚠️ OWNER_CHAT_ID ندارد.');
 
-              // پاک‌سازی تاریخچه روبیکا
               let offset = null;
               while (true) {
                 const params = { limit: 10 };
@@ -519,7 +552,6 @@ jobs:
                 else break;
               }
 
-              // اسکرین‌شات اولیه
               if (OWNER) await updateScreenshot(page, OWNER);
 
               let consecutiveErrors = 0;
@@ -568,7 +600,7 @@ jobs:
                                 continue;
                               }
                               await updateScreenshot(page, chatId);
-                              const sMsg = await sendMessage(chatId, `🔢 ${count} عنصر (شامل کوکی و پاپ‌آپ) نشانه‌گذاری شد. شماره را بفرستید.`);
+                              const sMsg = await sendMessage(chatId, `🔢 ${count} عنصر (iframe/مدال/کوکی) نشانه‌گذاری شد. شماره را بفرستید.`);
                               if (sMsg?.data?.message_id) state.tempMessageIds.push(sMsg.data.message_id);
                               break;
 
@@ -594,13 +626,12 @@ jobs:
                               await page.reload({ waitUntil: 'networkidle2', timeout: 30000 });
                               await sleep(1000);
                               if (await isPageBlocked(page)) {
-                                await sendMessage(chatId, '⚠️ بعد از رفرش صفحه بلاک شد. پروکسی را عوض کنید.');
+                                await sendMessage(chatId, '⚠️ بعد از رفرش صفحه همچنان بلاک است.');
                               }
                               await updateScreenshot(page, chatId);
                               break;
 
                             case 'CHANGE_PROXY':
-                              // تغییر به پروکسی بعدی
                               let newIdx = (currentProxyIndex + 1) % proxies.length;
                               let switched = false;
                               for (let attempts = 0; attempts < proxies.length; attempts++) {
@@ -609,7 +640,7 @@ jobs:
                                   await page.goto(TARGET_URL, { waitUntil: 'networkidle2', timeout: 30000 });
                                   await sleep(2000);
                                   if (await isPageBlocked(page)) {
-                                    log('پروکسی جدید همچنان بلاک دارد، تلاش بعدی...');
+                                    log('پروکسی جدید بلاک دارد.');
                                     newIdx = (newIdx + 1) % proxies.length;
                                     continue;
                                   }
@@ -617,7 +648,6 @@ jobs:
                                   currentProxyIndex = newIdx;
                                   break;
                                 } catch(e) {
-                                  log('خطا با این پروکسی:', e.message);
                                   newIdx = (newIdx + 1) % proxies.length;
                                 }
                               }
@@ -625,17 +655,16 @@ jobs:
                                 await sendMessage(chatId, `🔁 پروکسی به شماره ${currentProxyIndex+1} تغییر کرد.`);
                                 await updateScreenshot(page, chatId);
                               } else {
-                                await sendMessage(chatId, '❌ هیچ پروکسی قابل استفاده‌ای پیدا نشد.');
+                                await sendMessage(chatId, '❌ هیچ پروکسی سالمی یافت نشد.');
                                 process.exit(1);
                               }
                               break;
                           }
                         } catch(e) {
-                          err('خطا در اجرای دکمه:', e.message);
+                          err('خطای دکمه:', e.message);
                           await updateScreenshot(page, chatId);
                         }
                       }
-                      // پردازش ورودی متنی
                       else if (state.selectionMode && text) {
                         const num = parseInt(text);
                         if (isNaN(num) || num <= 0) {
