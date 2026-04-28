@@ -1,80 +1,558 @@
-name: 🧹 استخراج کانفیگ‌های خوب از اسکرین‌شات‌ها
+name: 🌐 مرورگر راه دور (کنترل ساده Groq)
 
 on:
-  workflow_dispatch:        # دستی اجرا کن
+  workflow_dispatch:
   schedule:
-    - cron: '30 */6 * * *'  # نیم ساعت بعد از تست اصلی (اختیاری)
+    - cron: '0 */5 * * *'
 
 jobs:
-  extract-good-proxies:
+  remote-browser:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 290
     permissions:
       contents: write
-
     steps:
-      - name: 📥 دریافت ریپو
+      - name: 📥 دریافت کد
         uses: actions/checkout@v4
 
-      - name: 🧠 پردازش اسکرین‌شات‌ها و ساخت فایل کانفیگ‌های خوب
+      - name: 🧰 نصب ابزارها
         run: |
-          cat > extract.js << 'EOF'
+          sudo apt-get update -qq && sudo apt-get install -y curl unzip
+          wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
+          unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
+          npm init -y
+          npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
+
+      - name: 🤖 اجرای ربات (فقط انتخاب، تایپ، اینتر و اسکرین‌شات)
+        env:
+          RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
+          RUBIKA_OWNER_CHAT_ID: ${{ secrets.RUBIKA_OWNER_CHAT_ID }}
+        run: |
+          cat > agent.cjs << 'ENDSCRIPT'
+          const { spawn } = require('child_process');
           const fs = require('fs');
           const path = require('path');
+          const puppeteer = require('puppeteer-extra');
+          const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+          puppeteer.use(StealthPlugin());
 
-          const SCREENSHOT_DIR = 'groq_screenshots';
-          const PROXIES_FILE = 'proxies.txt';
-          const OUTPUT_FILE = 'کانفیگ های خوب.txt';
+          const PROXY_FILE = 'کانفیگ های خوب.txt';
+          const TARGET_URL = 'https://console.groq.com/playground';
 
-          if (!fs.existsSync(PROXIES_FILE)) {
-            console.error('❌ proxies.txt پیدا نشد.');
-            process.exit(1);
+          function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
+          function log(...args) { console.log(`[${ts()}]`, ...args); }
+          function err(...args) { console.error(`[${ts()}] ❌`, ...args); }
+
+          // ======================== Xray Helpers ========================
+          function parseURI(uri) {
+            try {
+              const u = new URL(uri);
+              return {
+                protocol: u.protocol.replace(':',''),
+                uuid: u.username,
+                address: u.hostname,
+                port: u.port,
+                params: Object.fromEntries(u.searchParams.entries())
+              };
+            } catch(e) { return null; }
           }
 
-          const proxies = fs.readFileSync(PROXIES_FILE, 'utf8')
-            .split('\n')
-            .map(l => l.trim())
-            .filter(l => l.length > 0 && (l.startsWith('vless://') || l.startsWith('trojan://') || l.startsWith('ss://') || l.startsWith('vmess://')));
-
-          if (!fs.existsSync(SCREENSHOT_DIR)) {
-            console.error('❌ پوشه groq_screenshots وجود ندارد.');
-            process.exit(1);
-          }
-
-          const files = fs.readdirSync(SCREENSHOT_DIR);
-
-          // فایل‌های موفق: proxy_NUMBER.png
-          const successIndices = new Set();
-          files.forEach(file => {
-            const match = file.match(/^proxy_(\d+)\.png$/);
-            if (match) {
-              const index = parseInt(match[1]) - 1; // چون از ۱ شروع کردیم
-              if (index >= 0 && index < proxies.length) {
-                successIndices.add(index);
-              }
+          function generateXrayConfig(uri) {
+            const p = parseURI(uri);
+            if (!p) return null;
+            const inbound = { port: 10808, protocol: 'socks', settings: { auth: 'noauth', udp: true } };
+            let outbound = {
+              protocol: p.protocol,
+              settings: p.protocol === 'trojan' ? {
+                servers: [{ address: p.address, port: parseInt(p.port), password: p.uuid }]
+              } : {
+                vnext: [{ address: p.address, port: parseInt(p.port), users: [{ id: p.uuid, encryption: p.params.encryption || 'none', flow: p.params.flow || '' }] }]
+              },
+              streamSettings: { network: p.params.type || 'tcp' }
+            };
+            const network = p.params.type || 'tcp';
+            outbound.streamSettings.network = network;
+            if (network === 'ws') {
+              outbound.streamSettings.wsSettings = {
+                path: p.params.path || '/',
+                headers: p.params.host ? { Host: p.params.host } : {}
+              };
             }
-          });
-
-          if (successIndices.size === 0) {
-            console.log('⚠️ هیچ اسکرین‌شات موفقی پیدا نشد.');
-            // فایل خالی هم می‌نویسیم که وضعیت مشخص باشه
-            fs.writeFileSync(OUTPUT_FILE, '');
-          } else {
-            const goodProxies = [];
-            successIndices.forEach(idx => {
-              goodProxies.push(proxies[idx]);
-            });
-            fs.writeFileSync(OUTPUT_FILE, goodProxies.join('\n') + '\n');
-            console.log(`✅ ${goodProxies.length} کانفیگ خوب در فایل ذخیره شد.`);
+            const security = p.params.security || 'none';
+            if (security === 'tls' || security === 'reality') {
+              outbound.streamSettings.security = security;
+              const tls = { serverName: p.params.sni || p.address };
+              if (security === 'reality') {
+                tls.fingerprint = p.params.fp || 'chrome';
+                tls.publicKey = p.params.pbk || '';
+                tls.shortId = p.params.sid || '';
+                tls.spiderX = '';
+              }
+              if (p.params.allowInsecure === '1') tls.allowInsecure = true;
+              if (p.params.alpn) tls.alpn = p.params.alpn.split(',');
+              outbound.streamSettings.tlsSettings = tls;
+            } else {
+              outbound.streamSettings.security = 'none';
+            }
+            return { inbounds: [inbound], outbounds: [outbound] };
           }
-          EOF
 
-          node extract.js
+          async function startXray(uri, idx) {
+            const config = generateXrayConfig(uri);
+            if (!config) return null;
+            const cfgPath = `/tmp/xray_${idx}.json`;
+            fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
+            const xray = spawn(path.join(process.cwd(), 'xray', 'xray'), ['run', '-config', cfgPath], { stdio: 'pipe' });
+            await new Promise(r => setTimeout(r, 4000));
+            return xray;
+          }
 
-      - name: 📤 کامیت فایل کانفیگ‌های خوب
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add "کانفیگ های خوب.txt"
-          git commit -m "📋 استخراج کانفیگ‌های موفق از Groq - $(date +'%Y-%m-%d %H:%M')" || echo "بدون تغییر"
-          git push
+          function testCurl(port) {
+            try {
+              require('child_process').execSync(`curl --socks5 127.0.0.1:${port} --max-time 5 -s http://ip-api.com/json`, { encoding: 'utf8' });
+              return true;
+            } catch(e) { return false; }
+          }
+
+          const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+          // ======================== Rubika API ========================
+          const TOKEN = process.env.RUBIKA_BOT_TOKEN;
+          const OWNER = process.env.RUBIKA_OWNER_CHAT_ID || '';
+          const BASE = `https://botapi.rubika.ir/v3/${TOKEN}`;
+
+          async function api(method, body = {}) {
+            const url = `${BASE}/${method}`;
+            try {
+              const res = await fetch(url, {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify(body)
+              });
+              const text = await res.text();
+              let data;
+              try { data = JSON.parse(text); } catch(e) {
+                err(`⚠️ پاسخ ${method} JSON نیست:`, text.substring(0, 300));
+                return { error: true, raw: text };
+              }
+              return data;
+            } catch(e) {
+              err(`🚨 خطای شبکه در ${method}:`, e.message);
+              return { error: true, message: e.message };
+            }
+          }
+
+          async function sendMessage(chatId, text, extra = {}) {
+            return await api('sendMessage', { chat_id: chatId, text, ...extra });
+          }
+
+          async function deleteMessage(chatId, messageId) {
+            if (!messageId) return;
+            return await api('deleteMessage', { chat_id: chatId, message_id: messageId });
+          }
+
+          async function uploadAndSendFile(chatId, filePath, fileType, keypad = null) {
+            const reqRes = await api('requestSendFile', { type: fileType });
+            const uploadUrl = reqRes?.data?.upload_url;
+            if (!uploadUrl) { err('upload_url دریافت نشد'); return null; }
+
+            const buf = fs.readFileSync(filePath);
+            const form = new FormData();
+            form.append('file', new Blob([buf], { type: 'application/octet-stream' }), path.basename(filePath));
+
+            const upRes = await fetch(uploadUrl, { method: 'POST', body: form });
+            const upText = await upRes.text();
+            let upJson = {};
+            try { upJson = JSON.parse(upText); } catch(e) {}
+            const fileId = upJson?.file_id || upJson?.data?.file_id;
+            if (!fileId) { err('file_id یافت نشد'); return null; }
+
+            const sendBody = { chat_id: chatId, file_id: fileId, text: '' };
+            if (keypad) {
+              sendBody.chat_keypad = keypad;
+              sendBody.chat_keypad_type = 'New';
+            }
+            const sendRes = await api('sendFile', sendBody);
+            return sendRes?.data?.message_id || null;
+          }
+
+          // ======================== انتخاب هوشمند با شماره ========================
+          async function highlightClickableElements(page) {
+            return await page.evaluate(() => {
+              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
+              document.querySelectorAll('[data-rubika-sel-id]').forEach(el => el.removeAttribute('data-rubika-sel-id'));
+
+              const selectors = [
+                'a', 'button', 'input', 'select', 'textarea', 'area', 'summary', 'details', 'label',
+                '[onclick]',
+                '[role="button"]', '[role="menuitem"]', '[role="option"]', '[role="tab"]',
+                '[role="link"]', '[role="listbox"]', '[role="combobox"]', '[role="menu"]',
+                '[role="menubar"]', '[role="treeitem"]', '[role="gridcell"]', '[role="row"]',
+                '[role="switch"]', '[role="checkbox"]', '[role="radio"]', '[role="textbox"]',
+                '[role="searchbox"]', '[role="spinbutton"]', '[role="slider"]', '[role="separator"]',
+                '[tabindex]:not([tabindex="-1"])', '[contenteditable="true"]',
+                'div[role]', 'span[role]', 'li[role]'
+              ];
+
+              const all = document.querySelectorAll(selectors.join(','));
+              const visible = [];
+              all.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.width > 0 && rect.height > 0 &&
+                    rect.bottom > 0 && rect.top < window.innerHeight &&
+                    rect.right > 0 && rect.left < window.innerWidth) {
+                  visible.push({el, rect});
+                }
+              });
+
+              visible.sort((a,b) => {
+                if (Math.abs(a.rect.top - b.rect.top) < 5) return a.rect.left - b.rect.left;
+                return a.rect.top - b.rect.top;
+              });
+
+              visible.forEach(({el, rect}, idx) => {
+                const num = idx + 1;
+                el.setAttribute('data-rubika-sel-id', num);
+
+                const overlay = document.createElement('div');
+                overlay.className = 'rubika-hl-overlay';
+                overlay.style.position = 'fixed';
+                overlay.style.top = Math.max(0, rect.top) + 'px';
+                overlay.style.left = Math.max(0, rect.left) + 'px';
+                overlay.style.width = Math.min(rect.width, window.innerWidth - rect.left) + 'px';
+                overlay.style.height = Math.min(rect.height, window.innerHeight - rect.top) + 'px';
+                overlay.style.background = 'rgba(255,0,0,0.1)';
+                overlay.style.border = '2px dashed red';
+                overlay.style.zIndex = '999996';
+                overlay.style.pointerEvents = 'none';
+                overlay.style.boxSizing = 'border-box';
+                document.body.appendChild(overlay);
+
+                const badge = document.createElement('div');
+                badge.className = 'rubika-hl-badge';
+                badge.style.position = 'fixed';
+                badge.style.top = Math.max(2, rect.top - 6) + 'px';
+                badge.style.left = Math.max(2, rect.left - 6) + 'px';
+                badge.style.background = 'black';
+                badge.style.color = 'white';
+                badge.style.borderRadius = '50%';
+                badge.style.width = '20px';
+                badge.style.height = '20px';
+                badge.style.fontSize = '11px';
+                badge.style.lineHeight = '20px';
+                badge.style.textAlign = 'center';
+                badge.style.fontWeight = 'bold';
+                badge.style.zIndex = '999999';
+                badge.style.pointerEvents = 'none';
+                badge.style.boxShadow = '0 0 4px rgba(0,0,0,0.5)';
+                badge.textContent = num;
+                document.body.appendChild(badge);
+              });
+
+              return visible.length;
+            });
+          }
+
+          async function removeHighlights(page) {
+            await page.evaluate(() => {
+              document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
+              document.querySelectorAll('[data-rubika-sel-id]').forEach(el => el.removeAttribute('data-rubika-sel-id'));
+            });
+          }
+
+          async function clickByNumber(page, number) {
+            try {
+              const found = await page.evaluate((num) => {
+                const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
+                if (!el) return false;
+                el.scrollIntoView({ block: 'center', inline: 'center' });
+                el.focus({ preventScroll: true });
+                return true;
+              }, number);
+              if (!found) return false;
+
+              const navigationPromise = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 3000 }).catch(() => null);
+              await page.evaluate((num) => {
+                const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
+                if (el) el.click();
+              }, number);
+              await navigationPromise;
+              await sleep(500);
+              return true;
+            } catch(e) {
+              log('⚠️ مدیریت ناوبری پس از کلیک');
+              await sleep(2000);
+              return true;
+            }
+          }
+
+          // ======================== کی‌پد ساده ========================
+          function buildControlKeypad() {
+            return {
+              rows: [
+                { buttons: [
+                    { id: "SELECT",    type: "Simple", button_text: "🔍 انتخاب با شماره" }
+                ]},
+                { buttons: [
+                    { id: "TYPE",      type: "Simple", button_text: "⌨️ تایپ" }
+                ]},
+                { buttons: [
+                    { id: "ENTER",     type: "Simple", button_text: "↵ Enter" }
+                ]},
+                { buttons: [
+                    { id: "SCREENSHOT", type: "Simple", button_text: "📸 اسکرین‌شات" }
+                ]}
+              ],
+              resize_keyboard: true,
+              one_time_keyboard: false
+            };
+          }
+
+          // ======================== مدیریت حالت ========================
+          const chatStates = new Map();
+          function getState(chatId) {
+            if (!chatStates.has(chatId)) {
+              chatStates.set(chatId, {
+                typingMode: false,
+                selectionMode: false,
+                lastScreenshotMsgId: null,
+                tempMessageIds: []
+              });
+            }
+            return chatStates.get(chatId);
+          }
+
+          async function deleteTempMessages(chatId) {
+            const state = getState(chatId);
+            for (const msgId of state.tempMessageIds) {
+              try { await deleteMessage(chatId, msgId); } catch(e) {}
+            }
+            state.tempMessageIds = [];
+          }
+
+          async function updateScreenshot(page, chatId) {
+            const state = getState(chatId);
+            const shotPath = `/tmp/shot_${chatId}_${Date.now()}.png`;
+            await page.screenshot({ path: shotPath, fullPage: false });
+
+            if (state.lastScreenshotMsgId) {
+              try { await deleteMessage(chatId, state.lastScreenshotMsgId); } catch(e) {}
+            }
+
+            const keypad = buildControlKeypad();
+            const newMsgId = await uploadAndSendFile(chatId, shotPath, 'Image', keypad);
+            if (newMsgId) {
+              state.lastScreenshotMsgId = newMsgId;
+            }
+            try { fs.unlinkSync(shotPath); } catch(e) {}
+          }
+
+          // ======================== اجرای اصلی ========================
+          (async () => {
+            try {
+              const me = await api('getMe');
+              const bot = me?.data?.bot;
+              if (!bot?.username) { err('توکن نامعتبر'); process.exit(1); }
+              log('✅ ربات:', bot.username);
+
+              if (!fs.existsSync(PROXY_FILE)) {
+                err(`فایل ${PROXY_FILE} یافت نشد.`);
+                process.exit(1);
+              }
+
+              const proxies = fs.readFileSync(PROXY_FILE, 'utf8')
+                .split('\n').map(l => l.trim())
+                .filter(l => /^(vless|trojan|ss|vmess):\/\//.test(l));
+              log(`${proxies.length} کانفیگ خوب از فایل بارگذاری شد.`);
+
+              let xrayProc = null;
+              for (let i = 0; i < proxies.length; i++) {
+                const uri = proxies[i];
+                log(`تست اتصال ${i+1}/${proxies.length}: ${uri.substring(0,70)}...`);
+                xrayProc = await startXray(uri, i);
+                if (!xrayProc) continue;
+                if (!testCurl(10808)) { err('تست curl ناموفق'); xrayProc.kill(); continue; }
+                log('✅ اتصال برقرار شد.');
+                break;
+              }
+              if (!xrayProc) { err('هیچ کانفیگی وصل نشد'); process.exit(1); }
+
+              const browser = await puppeteer.launch({
+                headless: 'new',
+                args: [
+                  '--no-sandbox','--disable-setuid-sandbox',
+                  '--proxy-server=socks5://127.0.0.1:10808',
+                  '--disable-dev-shm-usage','--window-size=1280,720'
+                ],
+                defaultViewport: null
+              });
+              const page = await browser.newPage();
+              await page.setViewport({ width: 1280, height: 720, deviceScaleFactor: 1 });
+              await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
+              log('🌍 مرورگر آماده شد.');
+
+              // رفتن به Groq Playground
+              try {
+                await page.goto(TARGET_URL, { waitUntil: 'networkidle2', timeout: 30000 });
+                log('✅ وارد Groq Playground شدیم.');
+              } catch (e) {
+                err('باز کردن Groq ناموفق:', e.message);
+                await browser.close();
+                xrayProc.kill();
+                process.exit(1);
+              }
+
+              if (OWNER) await sendMessage(OWNER, '🟢 ربات روی Groq آماده شد.');
+              else log('⚠️ OWNER_CHAT_ID تنظیم نشده.');
+
+              log('🧹 پاک‌سازی تاریخچه...');
+              let offset = null;
+              let flushed = 0;
+              while (true) {
+                const params = { limit: 10 };
+                if (offset !== null) params.offset_id = offset;
+                const upRes = await api('getUpdates', params);
+                if (upRes.error) break;
+                const updates = upRes?.data?.updates;
+                if (!updates || updates.length === 0) break;
+                flushed += updates.length;
+                if (upRes.data?.next_offset_id) {
+                  offset = upRes.data.next_offset_id;
+                } else {
+                  break;
+                }
+              }
+              log(`✅ تاریخچه پاک شد (${flushed} آپدیت).`);
+
+              // ارسال اولین اسکرین‌شات
+              if (OWNER) await updateScreenshot(page, OWNER);
+
+              let consecutiveErrors = 0;
+              const END_TIME = Date.now() + 17380 * 1000;
+
+              while (Date.now() < END_TIME) {
+                try {
+                  const params = { limit: 10 };
+                  if (offset !== null) params.offset_id = offset;
+                  const upRes = await api('getUpdates', params);
+                  if (upRes.error) {
+                    consecutiveErrors++;
+                    if (consecutiveErrors >= 3) { offset = null; consecutiveErrors = 0; }
+                    await sleep(5000);
+                    continue;
+                  }
+                  consecutiveErrors = 0;
+                  const updates = upRes?.data?.updates;
+
+                  if (updates?.length) {
+                    for (const upd of updates) {
+                      if (upd.type !== 'NewMessage') continue;
+                      const chatId = upd.chat_id;
+                      const msg = upd.new_message;
+                      if (!msg) continue;
+
+                      const state = getState(chatId);
+                      const buttonId = msg.aux_data?.button_id;
+                      const text = (msg.text || '').trim();
+
+                      await deleteTempMessages(chatId);
+
+                      if (buttonId) {
+                        log(`🔘 دکمه ${buttonId} از ${chatId}`);
+                        // بازنشانی حالت‌های موقت
+                        state.typingMode = false;
+                        state.selectionMode = false;
+
+                        switch(buttonId) {
+                          case 'SELECT':
+                            state.selectionMode = true;
+                            const count = await highlightClickableElements(page);
+                            if (count === 0) {
+                              await sendMessage(chatId, '⚠️ هیچ عنصر قابل کلیکی یافت نشد.');
+                              state.selectionMode = false;
+                              continue;
+                            }
+                            // ارسال اسکرین‌شات با شماره‌ها
+                            await updateScreenshot(page, chatId);
+                            const msgId = await sendMessage(chatId, `🔢 ${count} عنصر نشانه‌گذاری شد. شماره را ارسال کنید.`);
+                            if (msgId?.data?.message_id) state.tempMessageIds.push(msgId.data.message_id);
+                            break;
+
+                          case 'TYPE':
+                            state.typingMode = true;
+                            const tMsg = await sendMessage(chatId, '⌨️ متن را ارسال کنید:');
+                            if (tMsg?.data?.message_id) state.tempMessageIds.push(tMsg.data.message_id);
+                            break;
+
+                          case 'ENTER':
+                            try {
+                              const navPromise = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 3000 }).catch(() => null);
+                              await page.keyboard.press('Enter');
+                              await navPromise;
+                              await sleep(1000);
+                            } catch(e) {
+                              await sleep(1500);
+                            }
+                            await updateScreenshot(page, chatId);
+                            break;
+
+                          case 'SCREENSHOT':
+                            await updateScreenshot(page, chatId);
+                            break;
+                        }
+                      }
+                      // پردازش ورودی متنی
+                      else if (state.selectionMode && text) {
+                        const num = parseInt(text);
+                        if (isNaN(num) || num <= 0) {
+                          const errMsg = await sendMessage(chatId, '❌ لطفاً یک عدد معتبر وارد کنید.');
+                          if (errMsg?.data?.message_id) state.tempMessageIds.push(errMsg.data.message_id);
+                          continue;
+                        }
+                        const clicked = await clickByNumber(page, num);
+                        if (!clicked) {
+                          const errMsg = await sendMessage(chatId, `❌ عنصری با شماره ${num} یافت نشد.`);
+                          if (errMsg?.data?.message_id) state.tempMessageIds.push(errMsg.data.message_id);
+                        } else {
+                          log(`✅ کلیک روی عنصر ${num} موفق`);
+                        }
+                        await removeHighlights(page);
+                        state.selectionMode = false;
+                        await updateScreenshot(page, chatId);
+                      }
+                      else if (state.typingMode && text) {
+                        state.typingMode = false;
+                        log(`⌨️ تایپ "${text}" در ${chatId}`);
+                        await page.keyboard.type(text, { delay: 50 });
+                        await sleep(300);
+                        await updateScreenshot(page, chatId);
+                      }
+                      else if (text === '/start') {
+                        await sendMessage(chatId, '🟢 ربات روی Groq Playground آماده است.');
+                        if (!state.lastScreenshotMsgId) {
+                          await updateScreenshot(page, chatId);
+                        }
+                      }
+                    }
+                    if (upRes.data?.next_offset_id) offset = upRes.data.next_offset_id;
+                  }
+                } catch(e) {
+                  err('خطای حلقه اصلی:', e.message);
+                  await sleep(5000);
+                }
+                await sleep(4000);
+              }
+
+              log('⏰ خاموشی خودکار.');
+              await browser.close();
+              xrayProc.kill();
+              if (OWNER) await sendMessage(OWNER, '⏹️ ربات خاموش شد.');
+            } catch(fatalError) {
+              err('🚨 خطای مرگبار:', fatalError.message);
+              console.error(fatalError);
+              process.exit(1);
+            }
+          })();
+          ENDSCRIPT
+
+          timeout 17400 node agent.cjs
