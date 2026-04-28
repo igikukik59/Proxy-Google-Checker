@@ -731,7 +731,7 @@ jobs:
             const timestamp = Date.now();
 
             // دستور yt-dlp با User-Agent درون ' '
-            const ytDlpCmd = `yt-dlp --no-playlist --merge-output-format mp4 --force-ipv4 --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36' --extractor-args youtube:player_client=web --proxy socks5://127.0.0.1:10808`;
+            const ytDlpCmd = `yt-dlp --no-playlist --merge-output-format mp4 --force-ipv4 --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36' --extractor-args 'youtube:player_client=android_vr' youtube:player_client=web --proxy socks5://127.0.0.1:10808`;
 
             if (type === 'direct' && url.startsWith('blob:')) {
               const outPath = path.join(dir, `video_${timestamp}_page.mp4`);
