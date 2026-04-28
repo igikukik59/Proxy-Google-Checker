@@ -1,4 +1,4 @@
-name: 🌐 Groq Ultra Smart Browser (Human‑like clicks)
+name: 🌐 Groq Ultimate Smart Browser (Challenge Solver)
 
 on:
   workflow_dispatch:
@@ -23,7 +23,7 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای ربات با کلیک‌های طبیعی و تشخیص چالش
+      - name: 🤖 اجرای ربات نهایی
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           RUBIKA_OWNER_CHAT_ID: ${{ secrets.RUBIKA_OWNER_CHAT_ID }}
@@ -39,18 +39,11 @@ jobs:
           const PROXY_FILE = 'کانفیگ های خوب.txt';
           const TARGET_URL = 'https://console.groq.com/playground';
           const BLOCKED_PATTERNS = [
-            'access denied',
-            'please check your network settings',
-            'you have been blocked',
-            'request blocked',
-            'cloudflare',
-            'attention required',
-            'i am not a robot',
-            'recaptcha',
-            'sorry, you have been blocked',
-            'just a moment',
-            'verify you are human',
-            'cf-challenge'
+            'access denied', 'please check your network settings',
+            'you have been blocked', 'request blocked', 'cloudflare',
+            'attention required', 'i am not a robot', 'recaptcha',
+            'sorry, you have been blocked', 'just a moment',
+            'verify you are human', 'cf-challenge'
           ];
 
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
@@ -59,7 +52,7 @@ jobs:
 
           const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-          // ------------------ Xray Helpers ------------------
+          // ======================== Xray Helpers ========================
           function parseURI(uri) {
             try {
               const u = new URL(uri);
@@ -130,7 +123,7 @@ jobs:
             } catch(e) { return false; }
           }
 
-          // ------------------ Rubika API ------------------
+          // ======================== Rubika API ========================
           const TOKEN = process.env.RUBIKA_BOT_TOKEN;
           const OWNER = process.env.RUBIKA_OWNER_CHAT_ID || '';
           const BASE = `https://botapi.rubika.ir/v3/${TOKEN}`;
@@ -190,7 +183,7 @@ jobs:
             return sendRes?.data?.message_id || null;
           }
 
-          // ------------------ Safe Evaluate ------------------
+          // ======================== Safe Evaluate ========================
           async function safeEvaluate(page, fn, ...args) {
             const maxRetries = 4;
             let lastError;
@@ -213,7 +206,7 @@ jobs:
             throw lastError;
           }
 
-          // ------------------ تشخیص بلاک ------------------
+          // ======================== تشخیص بلاک ========================
           async function isPageBlocked(page) {
             try {
               return await safeEvaluate(page, (patterns) => {
@@ -227,9 +220,8 @@ jobs:
             } catch(e) { return false; }
           }
 
-          // ------------------ Human‑like mouse movement ------------------
+          // ======================== کلیک طبیعی انسانی ========================
           async function humanClick(page, x, y) {
-            // Move mouse with slight human curve
             const steps = 10;
             const startX = Math.random() * 200;
             const startY = Math.random() * 200;
@@ -247,69 +239,61 @@ jobs:
             await sleep(300 + Math.random() * 200);
           }
 
-          // ------------------ کلیک پیشرفته با تشخیص چالش ------------------
-          async function clickByNumber(page, number) {
-            try {
-              const info = await safeEvaluate(page, (num) => {
-                const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
-                if (!el) return null;
-                el.scrollIntoView({ block: 'center', inline: 'center' });
-                const rect = el.getBoundingClientRect();
-                return {
-                  tag: el.tagName,
-                  isIframe: el.getAttribute('data-rubika-is-iframe') === '1',
-                  x: rect.x + rect.width / 2,
-                  y: rect.y + rect.height / 2,
-                  width: rect.width,
-                  height: rect.height,
-                  id: el.id || '',
-                  className: el.className || ''
-                };
-              }, number);
-
-              if (!info) return false;
-
-              const navPromise = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 5000 }).catch(() => null);
-
-              if (info.tag === 'IFRAME' || info.isIframe) {
-                log(`🖱️ کلیک شبیه‌سازی شده روی iframe شماره ${number} در (${info.x.toFixed(0)},${info.y.toFixed(0)})`);
-                await humanClick(page, info.x, info.y);
-                // After clicking iframe, wait for potential challenge resolution
-                await sleep(2000);
-                // Check if challenge disappeared
-                if (await isPageBlocked(page)) {
-                  // Try a second click slightly lower (some checkboxes need precise click)
-                  log('چالش هنوز باقی است، کلیک دوم در مرکز iframe...');
-                  await page.mouse.click(info.x, info.y + 5);
-                  await sleep(2000);
+          // ======================== حل چالش کلاودفلر ========================
+          async function solveChallengeAction(page) {
+            log('🔍 جستجوی چالش کلاودفلر...');
+            // ابتدا چک کنیم آی فریم چالش وجود دارد
+            const challengeInfo = await safeEvaluate(page, () => {
+              // انواع مختلف آی فریم چالش
+              const iframes = Array.from(document.querySelectorAll('iframe'));
+              for (const iframe of iframes) {
+                const src = iframe.src.toLowerCase();
+                if (src.includes('challenge') || src.includes('cloudflare') || src.includes('recaptcha') || src.includes('cf-')) {
+                  const rect = iframe.getBoundingClientRect();
+                  if (rect.width > 0 && rect.height > 0) {
+                    return { type: 'iframe', x: rect.x + rect.width/2, y: rect.y + rect.height/2 };
+                  }
                 }
-              } else {
-                // Normal element: click via DOM then mouse for safety
-                await safeEvaluate(page, (num) => {
-                  const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
-                  if (el) el.click();
-                }, number);
-                // Also move mouse there for realism
-                await humanClick(page, info.x, info.y);
               }
-
-              await navPromise;
-              await sleep(800);
-
-              // Additional check: if page now shows target URL content, challenge solved
-              const currentUrl = page.url();
-              if (currentUrl.includes('console.groq.com') && !await isPageBlocked(page)) {
-                log('✅ چالش حل شد و به صفحه اصلی Groq رسیدیم.');
+              // اگر آی فریم پیدا نشد، بررسی المان‌های چالش
+              const checkDivs = document.querySelectorAll('div[class*="challenge"], div[id*="challenge"], input[type="checkbox"]');
+              for (const el of checkDivs) {
+                if (el.offsetParent !== null) {
+                  const rect = el.getBoundingClientRect();
+                  if (rect.width > 0 && rect.height > 0) {
+                    return { type: 'element', x: rect.x + rect.width/2, y: rect.y + rect.height/2 };
+                  }
+                }
               }
-              return true;
-            } catch(e) {
-              log('⚠️ مدیریت ناوبری پس از کلیک');
+              return null;
+            });
+
+            if (!challengeInfo) {
+              return { success: false, message: 'چالشی پیدا نشد' };
+            }
+
+            log(`🎯 چالش یافت شد در (${challengeInfo.x.toFixed(0)}, ${challengeInfo.y.toFixed(0)})`);
+            // کلیک انسانی روی نقطه مرکز
+            await humanClick(page, challengeInfo.x, challengeInfo.y);
+            await sleep(2000);
+
+            // اگر هنوز مسدود است، کلیک دوم با جابجایی کم
+            if (await isPageBlocked(page)) {
+              log('🔄 کلیک دوم در محل کمی پایین‌تر...');
+              await page.mouse.click(challengeInfo.x, challengeInfo.y + 5);
               await sleep(2000);
-              return true;
+            }
+
+            // بررسی نهایی
+            const blocked = await isPageBlocked(page);
+            if (!blocked) {
+              return { success: true, message: 'چالش با موفقیت حل شد' };
+            } else {
+              return { success: false, message: 'چالش هنوز باقی است' };
             }
           }
 
-          // ------------------ Ultra‑smart highlighter ------------------
+          // ======================== انتخاب هوشمند عناصر ========================
           async function highlightClickableElements(page) {
             return await safeEvaluate(page, () => {
               document.querySelectorAll('.rubika-hl-badge, .rubika-hl-overlay').forEach(el => el.remove());
@@ -411,23 +395,66 @@ jobs:
             });
           }
 
-          // ------------------ Keypad ------------------
+          async function clickByNumber(page, number) {
+            try {
+              const info = await safeEvaluate(page, (num) => {
+                const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
+                if (!el) return null;
+                el.scrollIntoView({ block: 'center', inline: 'center' });
+                const rect = el.getBoundingClientRect();
+                return {
+                  tag: el.tagName,
+                  isIframe: el.getAttribute('data-rubika-is-iframe') === '1',
+                  x: rect.x + rect.width/2,
+                  y: rect.y + rect.height/2
+                };
+              }, number);
+              if (!info) return false;
+
+              const navPromise = page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 5000 }).catch(() => null);
+
+              if (info.tag === 'IFRAME' || info.isIframe) {
+                await humanClick(page, info.x, info.y);
+                if (await isPageBlocked(page)) {
+                  await page.mouse.click(info.x, info.y + 5);
+                  await sleep(2000);
+                }
+              } else {
+                await safeEvaluate(page, (num) => {
+                  const el = document.querySelector(`[data-rubika-sel-id="${num}"]`);
+                  if (el) el.click();
+                }, number);
+                await humanClick(page, info.x, info.y); // برای طبیعی‌سازی
+              }
+
+              await navPromise;
+              await sleep(800);
+              return true;
+            } catch(e) {
+              log('⚠️ مدیریت ناوبری پس از کلیک');
+              await sleep(2000);
+              return true;
+            }
+          }
+
+          // ======================== کی‌پد با دکمه چالش ========================
           function buildControlKeypad() {
             return {
               rows: [
-                { buttons: [{ id: "SELECT",        type: "Simple", button_text: "🔍 انتخاب با شماره" }] },
-                { buttons: [{ id: "TYPE",          type: "Simple", button_text: "⌨️ تایپ" }] },
-                { buttons: [{ id: "ENTER",         type: "Simple", button_text: "↵ Enter" }] },
-                { buttons: [{ id: "SCREENSHOT",    type: "Simple", button_text: "📸 اسکرین‌شات" }] },
-                { buttons: [{ id: "REFRESH",       type: "Simple", button_text: "🔄 رفرش صفحه" }] },
-                { buttons: [{ id: "CHANGE_PROXY",  type: "Simple", button_text: "🔁 عوض کردن پروکسی" }] }
+                { buttons: [{ id: "SELECT",         type: "Simple", button_text: "🔍 انتخاب با شماره" }] },
+                { buttons: [{ id: "TYPE",           type: "Simple", button_text: "⌨️ تایپ" }] },
+                { buttons: [{ id: "ENTER",          type: "Simple", button_text: "↵ Enter" }] },
+                { buttons: [{ id: "SCREENSHOT",     type: "Simple", button_text: "📸 اسکرین‌شات" }] },
+                { buttons: [{ id: "REFRESH",        type: "Simple", button_text: "🔄 رفرش صفحه" }] },
+                { buttons: [{ id: "CHANGE_PROXY",   type: "Simple", button_text: "🔁 عوض کردن پروکسی" }] },
+                { buttons: [{ id: "SOLVE_CHALLENGE",type: "Simple", button_text: "🧩 حل چالش" }] }
               ],
               resize_keyboard: true,
               one_time_keyboard: false
             };
           }
 
-          // ------------------ State Management ------------------
+          // ======================== مدیریت حالت ========================
           const chatStates = new Map();
           function getState(chatId) {
             if (!chatStates.has(chatId)) {
@@ -466,7 +493,7 @@ jobs:
             try { fs.unlinkSync(shotPath); } catch(e) {}
           }
 
-          // ------------------ Main Loop ------------------
+          // ======================== اجرای اصلی ========================
           (async () => {
             try {
               const me = await api('getMe');
@@ -537,7 +564,7 @@ jobs:
                 process.exit(1);
               }
 
-              if (OWNER) await sendMessage(OWNER, '🟢 ربات روی Groq با پروکسی سالم آماده شد.');
+              if (OWNER) await sendMessage(OWNER, '🟢 ربات روی Groq با پروکسی سالم آماده شد (دکمه حل چالش موجود).');
               else log('⚠️ OWNER_CHAT_ID ندارد.');
 
               let offset = null;
@@ -600,7 +627,7 @@ jobs:
                                 continue;
                               }
                               await updateScreenshot(page, chatId);
-                              const sMsg = await sendMessage(chatId, `🔢 ${count} عنصر (iframe/مدال/کوکی) نشانه‌گذاری شد. شماره را بفرستید.`);
+                              const sMsg = await sendMessage(chatId, `🔢 ${count} عنصر (شامل پاپ‌آپ و چالش) نشانه‌گذاری شد. شماره را بفرستید.`);
                               if (sMsg?.data?.message_id) state.tempMessageIds.push(sMsg.data.message_id);
                               break;
 
@@ -659,12 +686,25 @@ jobs:
                                 process.exit(1);
                               }
                               break;
+
+                            case 'SOLVE_CHALLENGE':
+                              const result = await solveChallengeAction(page);
+                              await sendMessage(chatId, result.message);
+                              if (!result.success) {
+                                // اگر حل نشد، باز هم اسکرین‌شات بگیر تا کاربر ببیند
+                                await updateScreenshot(page, chatId);
+                              } else {
+                                await sleep(1000);
+                                await updateScreenshot(page, chatId);
+                              }
+                              break;
                           }
                         } catch(e) {
                           err('خطای دکمه:', e.message);
                           await updateScreenshot(page, chatId);
                         }
                       }
+                      // ورودی‌های متنی
                       else if (state.selectionMode && text) {
                         const num = parseInt(text);
                         if (isNaN(num) || num <= 0) {
@@ -690,7 +730,7 @@ jobs:
                         await updateScreenshot(page, chatId);
                       }
                       else if (text === '/start') {
-                        await sendMessage(chatId, '🟢 ربات Groq آماده.');
+                        await sendMessage(chatId, '🟢 ربات Groq با دکمه حل چالش آماده.');
                         if (!state.lastScreenshotMsgId) {
                           await updateScreenshot(page, chatId);
                         }
