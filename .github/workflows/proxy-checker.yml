@@ -1,28 +1,35 @@
-name: 🚀 تست سرعت سنگین و هم‌زمان
+name: 🎬 ربات یوتیوب (۴۸۰p، قطعه‌قطعه هوشمند)
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 */5 * * *'
 
 jobs:
-  heavy-test:
+  bot:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 290
+    permissions:
+      contents: write
     steps:
       - name: 📥 دریافت کد
         uses: actions/checkout@v4
 
       - name: 🧰 نصب پیش‌نیازها
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y curl unzip ffmpeg python3-pip
+          sudo apt-get update -qq && sudo apt-get install -y curl unzip python3-pip ffmpeg
           pip install yt-dlp
           wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
           unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 تست دانلود تکی و هم‌زمان
+      - name: 🤖 اجرای ربات
+        env:
+          RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
+          RUBIKA_OWNER_CHAT_ID: ${{ secrets.RUBIKA_OWNER_CHAT_ID }}
         run: |
-          cat > run.cjs << 'ENDSCRIPT'
+          cat > agent.cjs << 'ENDSCRIPT'
           const { spawn, execSync } = require('child_process');
           const fs = require('fs');
           const path = require('path');
@@ -31,17 +38,21 @@ jobs:
           puppeteer.use(StealthPlugin());
 
           const PROXY_FILE = 'کانفیگ های خوب.txt';
-          const VIDEO_URL = 'https://www.youtube.com/watch?v=5OLs1GWB4OA';
           const COOKIE_FILE = '/tmp/youtube_cookies.txt';
+          const TOKEN = process.env.RUBIKA_BOT_TOKEN;
+          const OWNER = process.env.RUBIKA_OWNER_CHAT_ID || '';
 
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
           function log(...args) { console.log(`[${ts()}]`, ...args); }
           function err(...args) { console.error(`[${ts()}] ❌`, ...args); }
           const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-          // ===================== Xray Functions =====================
+          // ======================== Xray ========================
           function parseURI(uri) {
-            try { const u = new URL(uri); return { protocol: u.protocol.replace(':',''), uuid: u.username, address: u.hostname, port: u.port, params: Object.fromEntries(u.searchParams.entries()) }; } catch(e) { return null; }
+            try {
+              const u = new URL(uri);
+              return { protocol: u.protocol.replace(':',''), uuid: u.username, address: u.hostname, port: u.port, params: Object.fromEntries(u.searchParams.entries()) };
+            } catch(_) { return null; }
           }
           function generateXrayConfig(uri) {
             const p = parseURI(uri); if (!p) return null;
@@ -49,12 +60,13 @@ jobs:
             let outbound = { protocol: p.protocol, streamSettings: { network: p.params.type || 'tcp' } };
             if (p.protocol === 'trojan') outbound.settings = { servers: [{ address: p.address, port: parseInt(p.port), password: p.uuid }] };
             else outbound.settings = { vnext: [{ address: p.address, port: parseInt(p.port), users: [{ id: p.uuid, encryption: p.params.encryption || 'none', flow: p.params.flow || '' }] }] };
-            const network = p.params.type || 'tcp'; outbound.streamSettings.network = network;
-            if (network === 'ws') outbound.streamSettings.wsSettings = { path: p.params.path || '/', headers: p.params.host ? { Host: p.params.host } : {} };
-            const security = p.params.security || 'none';
-            if (security === 'tls' || security === 'reality') {
-              outbound.streamSettings.security = security; const tls = { serverName: p.params.sni || p.address };
-              if (security === 'reality') { tls.fingerprint = p.params.fp || 'chrome'; tls.publicKey = p.params.pbk || ''; tls.shortId = p.params.sid || ''; tls.spiderX = ''; }
+            const net = p.params.type || 'tcp'; outbound.streamSettings.network = net;
+            if (net === 'ws') outbound.streamSettings.wsSettings = { path: p.params.path || '/', headers: p.params.host ? { Host: p.params.host } : {} };
+            const sec = p.params.security || 'none';
+            if (sec === 'tls' || sec === 'reality') {
+              outbound.streamSettings.security = sec;
+              const tls = { serverName: p.params.sni || p.address };
+              if (sec === 'reality') { tls.fingerprint = p.params.fp || 'chrome'; tls.publicKey = p.params.pbk || ''; tls.shortId = p.params.sid || ''; tls.spiderX = ''; }
               if (p.params.allowInsecure === '1') tls.allowInsecure = true;
               if (p.params.alpn) tls.alpn = p.params.alpn.split(',');
               outbound.streamSettings.tlsSettings = tls;
@@ -63,105 +75,288 @@ jobs:
           }
           async function startXray(uri, idx) {
             const config = generateXrayConfig(uri); if (!config) return null;
-            const cfgPath = `/tmp/xray_${idx}.json`; fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
-            const xray = spawn(path.join(process.cwd(), 'xray', 'xray'), ['run', '-config', cfgPath], { stdio: 'pipe' });
-            await new Promise(r => setTimeout(r, 4000)); return xray;
+            const cfgPath = `/tmp/xray_${idx}.json`;
+            fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
+            const proc = spawn(path.join(process.cwd(), 'xray', 'xray'), ['run', '-config', cfgPath], { stdio: 'pipe' });
+            await sleep(4000);
+            return proc;
           }
-          function testCurl(port) {
-            try { execSync(`curl --socks5 127.0.0.1:${port} --max-time 5 -s http://ip-api.com/json`, { encoding: 'utf8' }); return true; } catch(e) { return false; }
-          }
-          function cookiesToNetscape(cookies) {
-            let lines = ['# Netscape HTTP Cookie File', ''];
-            for (const c of cookies) {
-              const domain = c.domain.startsWith('.') ? c.domain : '.' + c.domain;
-              const flag = c.secure ? 'TRUE' : 'FALSE';
-              const expires = c.expires > 0 ? Math.floor(c.expires) : 0;
-              lines.push(`${domain}\tTRUE\t${c.path}\t${flag}\t${expires}\t${c.name}\t${c.value}`);
-            }
-            return lines.join('\n');
+          function testCurl() {
+            try { execSync('curl --socks5 127.0.0.1:10808 --max-time 5 -s http://ip-api.com/json', { encoding:'utf8' }); return true; }
+            catch(_) { return false; }
           }
 
-          async function downloadVideo(url, outputPath, cookieFile, label) {
+          // ======================== Rubika API ========================
+          const BASE = `https://botapi.rubika.ir/v3/${TOKEN}`;
+          async function api(method, body={}, retries=3) {
+            const url = `${BASE}/${method}`;
+            for (let a=0; a<retries; a++) {
+              try {
+                const ctrl = new AbortController(); const id = setTimeout(()=>ctrl.abort(),30000);
+                const res = await fetch(url, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:ctrl.signal});
+                clearTimeout(id);
+                const t = await res.text();
+                let d; try { d = JSON.parse(t); } catch(_) { if (a<retries-1) { await sleep(2000*(a+1)); continue; } return {error:true, raw:t}; }
+                return d;
+              } catch(e) { if (a<retries-1) { await sleep(2000*(a+1)); continue; } return {error:true, message:e.message}; }
+            }
+          }
+          async function sendMessage(chatId, text) { return await api('sendMessage', {chat_id:chatId, text}); }
+
+          async function uploadAndSendVideo(chatId, videoPath, caption='') {
+            const req = await api('requestSendFile', {type:'Video'});
+            const upUrl = req?.data?.upload_url;
+            if (!upUrl) { err('upload_url نگرفت'); return false; }
+            const buf = fs.readFileSync(videoPath);
+            const form = new FormData();
+            form.append('file', new Blob([buf], {type:'application/octet-stream'}), path.basename(videoPath));
+            const upRes = await fetch(upUrl, {method:'POST', body:form});
+            const upText = await upRes.text();
+            let j = {}; try { j = JSON.parse(upText); } catch(_){}
+            const fileId = j?.file_id || j?.data?.file_id;
+            if (!fileId) { err('file_id یافت نشد'); return false; }
+            const s = await api('sendFile', {chat_id:chatId, file_id:fileId, text:caption});
+            return !!s?.data?.message_id;
+          }
+
+          // ======================== استخراج کوکی یوتیوب ========================
+          async function grabCookies() {
+            let browser;
+            try {
+              browser = await puppeteer.launch({ headless:'new', args:['--no-sandbox','--disable-setuid-sandbox','--proxy-server=socks5://127.0.0.1:10808','--disable-dev-shm-usage'] });
+              const page = await browser.newPage();
+              await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
+              await page.goto('https://www.youtube.com/', { waitUntil:'networkidle2', timeout:60000 });
+              await sleep(5000);
+              const cookies = await page.cookies();
+              await browser.close();
+              if (cookies.length===0) return false;
+              const lines = ['# Netscape HTTP Cookie File', ''];
+              cookies.forEach(c => {
+                const domain = c.domain.startsWith('.') ? c.domain : '.' + c.domain;
+                const flag = c.secure ? 'TRUE' : 'FALSE';
+                const exp = c.expires>0 ? Math.floor(c.expires) : 0;
+                lines.push(`${domain}\tTRUE\t${c.path}\t${flag}\t${exp}\t${c.name}\t${c.value}`);
+              });
+              fs.writeFileSync(COOKIE_FILE, lines.join('\n'));
+              log('🍪 کوکی جدید دریافت شد');
+              return true;
+            } catch(e) { err('خطای کوکی:', e.message); if (browser) await browser.close().catch(()=>{}); return false; }
+          }
+
+          // ======================== تبدیل سریع به MP4 (فقط کپی) ========================
+          // اگر ویدیو MP4 با کدک h264+aac نیست، با ffmpeg -c copy به MP4 تبدیل کن (بدون افت کیفیت و سریع)
+          async function makeCompatible(inputPath) {
+            const probeExt = execSync(`ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 "${inputPath}"`, {encoding:'utf8'}).trim();
+            const audioExt = execSync(`ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of csv=p=0 "${inputPath}"`, {encoding:'utf8'}).trim();
+            const ext = path.extname(inputPath).toLowerCase();
+            if (ext === '.mp4' && probeExt==='h264' && audioExt==='aac') {
+              return inputPath; // از قبل سازگاره
+            }
+            log('🔄 تبدیل ظرف (فقط کپی) به MP4...');
+            const out = inputPath.replace(/\.\w+$/, '_ok.mp4');
+            execSync(`ffmpeg -i "${inputPath}" -c copy -movflags +faststart "${out}"`, {stdio:'inherit', timeout:300000});
+            return out;
+          }
+
+          // ======================== دانلود ویدیوی یوتیوب ========================
+          async function downloadYouTube(url) {
+            const out = '/tmp/video_raw.mp4';
+            // تلاش برای دریافت بهترین نسخه‌ی MP4 تا ۴۸۰p (حجم کمتر)
+            // اگر نبود، bestvideo+bestaudio (هر کیفیتی) و بعداً تبدیل ظرف انجام می‌شود
+            const fmt = `best[height<=480][ext=mp4] / best[height<=480]`;
             const start = Date.now();
-            log(`📥 ${label} شروع دانلود...`);
             try {
               execSync(
-                `yt-dlp --cookies ${cookieFile} --proxy socks5h://127.0.0.1:10808 ` +
+                `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 ` +
                 `-N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist ` +
-                `--format "bestvideo[height<=1080]+bestaudio/best[height<=1080]" --merge-output-format mp4 ` +
-                `--output "${outputPath}" "${url}"`,
-                { stdio: 'inherit', timeout: 600000 }
+                `--format "${fmt}" --merge-output-format mp4 --output "${out}" "${url}"`,
+                { stdio:'inherit', timeout:600000 }
               );
-              const elapsed = ((Date.now() - start) / 1000).toFixed(1);
-              log(`✅ ${label} تمام شد در ${elapsed} ثانیه`);
-              return { ok: true, elapsed };
-            } catch(e) {
-              err(`${label} شکست: ${e.message}`);
-              return { ok: false };
-            }
+              const t = ((Date.now()-start)/1000).toFixed(1);
+              log(`⬇️ دانلود در ${t} ثانیه`);
+              if (!fs.existsSync(out)) return null;
+              return { path: out, time: parseFloat(t) };
+            } catch(e) { err('دانلود شکست:', e.message); return null; }
           }
 
-          (async () => {
-            if (!fs.existsSync(PROXY_FILE)) { err('فایل پروکسی یافت نشد'); process.exit(1); }
-            const proxies = fs.readFileSync(PROXY_FILE, 'utf8').split('\n').map(l => l.trim()).filter(l => /^(vless|trojan|ss|vmess):\/\//.test(l));
-            log(`تعداد پروکسی‌ها: ${proxies.length}`);
+          // ======================== قطعه‌قطعه کردن و ارسال ========================
+          function splitAndSendSequential(chatId, videoPath, baseName, notificationCallback) {
+            return new Promise(async (resolve) => {
+              const stats = fs.statSync(videoPath);
+              const sizeMB = (stats.size/(1024*1024)).toFixed(1);
+              log(`✂️ شروع تقسیم ${baseName} (${sizeMB}MB)`);
+              await sendMessage(chatId, `📦 ویدیو حجمش ${sizeMB}MB است و به قطعات زیر ۵۰MB تقسیم می‌شود.`);
 
-            let xrayProc = null, browser;
-            for (let i = 0; i < proxies.length; i++) {
-              const uri = proxies[i];
-              log(`\n🔌 تست پروکسی ${i+1}/${proxies.length}...`);
-              xrayProc = await startXray(uri, i);
-              if (!xrayProc || !testCurl(10808)) { if (xrayProc) xrayProc.kill(); continue; }
-              try {
-                browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox','--disable-setuid-sandbox','--proxy-server=socks5://127.0.0.1:10808','--disable-dev-shm-usage','--window-size=1280,720'] });
-                const page = await browser.newPage();
-                await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
-                await page.goto('https://www.youtube.com/', { waitUntil: 'networkidle2', timeout: 60000 });
-                await sleep(5000);
-                const cookies = await page.cookies();
-                if (cookies.length === 0) { await browser.close(); xrayProc.kill(); continue; }
-                fs.writeFileSync(COOKIE_FILE, cookiesToNetscape(cookies));
-                await browser.close();
-                log('🍪 کوکی‌ها ذخیره شد.');
+              let segmentTime = 120; // شروع از ۲ دقیقه
+              let success = false;
 
-                // ===== تست تک دانلود =====
-                log('\n===== 📹 تست تکی =====');
-                await downloadVideo(VIDEO_URL, '/tmp/single_test.mp4', COOKIE_FILE, 'تکی');
+              while (segmentTime >= 30 && !success) {
+                const chunkDir = `/tmp/chunks_${Date.now()}`;
+                fs.mkdirSync(chunkDir, {recursive:true});
+                const pattern = path.join(chunkDir, 'part_%03d.mp4');
 
-                // ===== تست سه دانلود هم‌زمان =====
-                log('\n===== 🔁 تست هم‌زمان (۳ بار) =====');
-                const concurrentDownloads = [
-                  downloadVideo(VIDEO_URL, '/tmp/multi_1.mp4', COOKIE_FILE, 'موازی ۱'),
-                  downloadVideo(VIDEO_URL, '/tmp/multi_2.mp4', COOKIE_FILE, 'موازی ۲'),
-                  downloadVideo(VIDEO_URL, '/tmp/multi_3.mp4', COOKIE_FILE, 'موازی ۳'),
-                ];
-                const results = await Promise.all(concurrentDownloads);
-                const successCount = results.filter(r => r.ok).length;
-                log(`\n🎯 هم‌زمان: ${successCount}/3 موفق بودند.`);
-                if (successCount === 3) {
-                  const times = results.map(r => r.elapsed);
-                  log(`زمان‌ها: ${times.join(', ')} ثانیه | میانگین: ${(times.reduce((a,b)=>a+b,0)/3).toFixed(1)}`);
+                // تقسیم سریع (فقط کپی)
+                execSync(`ffmpeg -i "${videoPath}" -c copy -f segment -segment_time ${segmentTime} -reset_timestamps 1 "${pattern}"`, {stdio:'pipe', timeout:600000});
+
+                const chunks = fs.readdirSync(chunkDir).filter(f=>f.endsWith('.mp4')).sort((a,b)=>{
+                  const na = parseInt(a.match(/\d+/)[0]), nb = parseInt(b.match(/\d+/)[0]);
+                  return na - nb;
+                });
+                if (chunks.length===0) { fs.rmdirSync(chunkDir,{recursive:true}); resolve(false); return; }
+
+                const tooLarge = chunks.some(f=>fs.statSync(path.join(chunkDir,f)).size > 50*1024*1024);
+                if (tooLarge) {
+                  log(`! یک قطعه >۵۰MB، کاهش segment_time به ${segmentTime/2}s`);
+                  fs.rmdirSync(chunkDir,{recursive:true});
+                  segmentTime = Math.floor(segmentTime / 2);
+                  continue;
                 }
 
-                xrayProc.kill();
-                return; // تست تمام شد
-              } catch(e) {
-                err(e.message);
-                if (browser) await browser.close().catch(()=>{});
-                xrayProc.kill();
+                // ارسال قطعه‌ها
+                const total = chunks.length;
+                for (let i=0; i<chunks.length; i++) {
+                  const chunkName = chunks[i];
+                  const chunkPath = path.join(chunkDir, chunkName);
+                  const chunkSize = (fs.statSync(chunkPath).size/(1024*1024)).toFixed(1);
+                  const newName = `${baseName}.part${String(i+1).padStart(2,'0')}.mp4`;
+                  const finalPath = path.join(chunkDir, newName);
+                  fs.renameSync(chunkPath, finalPath);
+
+                  const startUp = Date.now();
+                  const ok = await uploadAndSendVideo(chatId, finalPath, (i===total-1 ? `🎬 قسمت آخر ${baseName}` : `📦 ${newName} (${chunkSize}MB)`));
+                  const upTime = ((Date.now()-startUp)/1000).toFixed(1);
+                  log(`📤 قطعه ${i+1}/${total}: ${newName} آپلود در ${upTime}s`);
+                  if (typeof notificationCallback === 'function') {
+                    await notificationCallback(chatId, `📤 قطعه ${i+1}/${total} ارسال شد (${upTime}s) — ${chunkSize}MB`);
+                  }
+                  try { fs.unlinkSync(finalPath); } catch(_){}
+                  await sleep(500);
+                }
+                fs.rmdirSync(chunkDir,{recursive:true});
+                success = true;
               }
-              await sleep(2000);
+              resolve(success);
+            });
+          }
+
+          // ======================== اجرای اصلی ========================
+          (async () => {
+            const me = await api('getMe');
+            if (!me?.data?.bot?.username) { err('توکن نامعتبر'); process.exit(1); }
+            log('✅ ربات:', me.data.bot.username);
+
+            const proxies = fs.readFileSync(PROXY_FILE, 'utf8').split('\n').map(l=>l.trim()).filter(l=>/^(vless|trojan|ss|vmess):\/\//.test(l));
+            log(`${proxies.length} پروکسی خوب`);
+
+            let currentProxyIdx = -1;
+            let xrayProc = null;
+
+            async function ensureProxy() {
+              while (true) {
+                if (xrayProc && testCurl()) return true;
+                if (xrayProc) { xrayProc.kill(); await sleep(500); }
+                currentProxyIdx = (currentProxyIdx + 1) % proxies.length;
+                log(`🔁 تلاش پروکسی ${currentProxyIdx+1}...`);
+                xrayProc = await startXray(proxies[currentProxyIdx], currentProxyIdx);
+                await sleep(4000);
+                if (testCurl()) return true;
+              }
             }
-            err('هیچ پروکسی موفق نشد.');
-            process.exit(1);
+
+            await ensureProxy();
+            if (OWNER) await sendMessage(OWNER, '🟢 ربات روشن شد');
+
+            if (!(await grabCookies())) { err('❌ کوکی اولیه شکست'); process.exit(1); }
+
+            let offset = null;
+            const DEADLINE = Date.now() + 17380*1000;
+            while (Date.now() < DEADLINE) {
+              try {
+                const params = { limit: 10 };
+                if (offset !== null) params.offset_id = offset;
+                const upd = await api('getUpdates', params);
+                if (upd.error) { await sleep(5000); continue; }
+                const updates = upd?.data?.updates;
+                if (updates && updates.length) {
+                  for (const u of updates) {
+                    if (u.type !== 'NewMessage') continue;
+                    const chatId = u.chat_id;
+                    const msg = u.new_message;
+                    if (!msg?.text) continue;
+                    const text = msg.text.trim();
+
+                    const ytReg = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/;
+                    const m = text.match(ytReg);
+                    if (!m) {
+                      await sendMessage(chatId, '👋 سلام! لینک یوتیوب رو بفرست.');
+                      continue;
+                    }
+                    const videoUrl = m[0];
+                    log(`🎬 درخواست از ${chatId}: ${videoUrl}`);
+                    await sendMessage(chatId, '📥 در حال بررسی و دانلود...');
+
+                    // اطمینان از پروکسی و کوکی
+                    await ensureProxy();
+                    if (!(await grabCookies())) {
+                      await sendMessage(chatId, '❌ گرفتن کوکی جدید ممکن نشد.');
+                      continue;
+                    }
+
+                    // دانلود
+                    const dlResult = await downloadYouTube(videoUrl);
+                    if (!dlResult) {
+                      await sendMessage(chatId, '❌ دانلود ناموفق بود.');
+                      continue;
+                    }
+                    let videoPath = dlResult.path;
+                    const dlTime = dlResult.time;
+
+                    // تبدیل در صورت نیاز
+                    const compatPath = await makeCompatible(videoPath);
+                    if (compatPath !== videoPath) {
+                      try { fs.unlinkSync(videoPath); } catch(_){}
+                      videoPath = compatPath;
+                    }
+
+                    const finalSize = fs.statSync(videoPath).size;
+                    const finalMB = (finalSize / (1024*1024)).toFixed(1);
+
+                    // ارسال خلاصه
+                    await sendMessage(chatId, `✅ دانلود شد | حجم: ${finalMB}MB | زمان دانلود: ${dlTime}s`);
+
+                    if (finalSize <= 50*1024*1024) {
+                      const upStart = Date.now();
+                      const sent = await uploadAndSendVideo(chatId, videoPath, '🎬 ویدیوی شما');
+                      const upT = ((Date.now()-upStart)/1000).toFixed(1);
+                      log(`📤 ارسال یکباره در ${upT}s`);
+                      await sendMessage(chatId, `📤 ویدیو در ${upT} ثانیه ارسال شد.`);
+                    } else {
+                      // تقسیم و ارسال
+                      const baseName = path.basename(videoPath, path.extname(videoPath));
+                      const splitStart = Date.now();
+                      await splitAndSendSequential(chatId, videoPath, baseName, async (cid, txt) => {
+                        await sendMessage(cid, txt);
+                      });
+                      const totalSplitTime = ((Date.now()-splitStart)/1000).toFixed(1);
+                      await sendMessage(chatId, `⏱️ کل زمان تقسیم و ارسال: ${totalSplitTime} ثانیه`);
+                    }
+
+                    // پاکسازی فایل اصلی
+                    try { fs.unlinkSync(videoPath); } catch(_){}
+                  }
+                  if (upd.data?.next_offset_id) offset = upd.data.next_offset_id;
+                }
+              } catch(e) {
+                err('حلقه اصلی:', e.message);
+                await sleep(5000);
+              }
+              await sleep(4000);
+            }
+
+            if (xrayProc) xrayProc.kill();
+            if (OWNER) await sendMessage(OWNER, '⏹️ ربات خاموش شد');
           })();
           ENDSCRIPT
 
-          timeout 1200 node run.cjs
-
-      - name: 📊 نمایش فایل‌ها
-        run: |
-          echo "==========================================="
-          echo "فایل‌های دانلود شده:"
-          ls -lh /tmp/single_test.mp4 /tmp/multi_1.mp4 /tmp/multi_2.mp4 /tmp/multi_3.mp4 2>/dev/null || echo "برخی فایل‌ها وجود ندارند"
-          echo "==========================================="
+          timeout 17400 node agent.cjs
