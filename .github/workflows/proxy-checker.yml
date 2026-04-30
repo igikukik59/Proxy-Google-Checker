@@ -1,80 +1,167 @@
-name: 🖥️ Hardware Info
+name: 🖥️ Hardware Info + Save to Repo
 
 on:
-  workflow_dispatch:  # دستی اجرا کنید
+  workflow_dispatch:   # فقط دستی اجرا می‌شود
 
 jobs:
   gather-info:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # برای push کردن فایل لازم است
+
     steps:
-      - name: 📋 جمع‌آوری اطلاعات سخت‌افزاری
+      - name: 📥 دریافت کد مخزن
+        uses: actions/checkout@v4
+        # با توکن پیش‌فرض GITHUB_TOKEN کار می‌کند
+        # در صورت نیاز به توکن سفارشی، می‌توانید از یک Secret استفاده کنید:
+        # with:
+        #   token: ${{ secrets.GH_PAT }}
+
+      - name: 🔍 جمع‌آوری اطلاعات واقعی سخت‌افزار
         run: |
           echo "============================================"
-          echo "   🏷️  اطلاعات سیستم‌عامل"
+          echo "   🏷️  سیستم‌عامل و کرنل"
           echo "============================================"
-          cat /etc/os-release 2>/dev/null || cat /etc/*release 2>/dev/null
-          echo ""
+          cat /etc/os-release | grep PRETTY_NAME | cut -d '"' -f2
           uname -a
-
           echo ""
+
+          echo "============================================"
+          echo "   🧠 پردازنده (CPU)"
+          echo "============================================"
+          lscpu
+          echo ""
+          # جزئیات واقعی از /proc
+          echo "مدل CPU:"
+          cat /proc/cpuinfo | grep "model name" | head -1 | cut -d ':' -f2 | xargs
+          echo "معماری: $(uname -m)"
+          echo "تعداد هسته‌ها: $(nproc)"
+          echo "سرعت فعلی: $(cat /proc/cpuinfo | grep "cpu MHz" | head -1 | cut -d ':' -f2 | xargs) MHz"
+          echo "کش: $(lscpu | grep "L3 cache" | awk '{print $NF}') (در صورت وجود)"
+          echo ""
+
+          echo "============================================"
+          echo "   🧮 حافظه (RAM)"
+          echo "============================================"
+          free -h
+          echo ""
+          echo "جزئیات واقعی:"
+          cat /proc/meminfo | grep -E "MemTotal|MemFree|SwapTotal|MemAvailable|SwapFree" | sed 's/^/  /'
+          echo ""
+
+          echo "============================================"
+          echo "   💾 دیسک (Disk)"
+          echo "============================================"
+          df -h /
+          echo ""
+          lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,ROTA 2>/dev/null || echo "lsblk در دسترس نیست"
+          echo ""
+          # فضای موقت /tmp
+          echo "/tmp:"
+          df -h /tmp || true
+          echo ""
+
+          echo "============================================"
+          echo "   🌐 شبکه"
+          echo "============================================"
+          ip addr show 2>/dev/null | grep -E "inet " | head -5
+          echo ""
+          cat /etc/resolv.conf 2>/dev/null || true
+          echo ""
+
+          echo "============================================"
+          echo "   🔌 سخت‌افزار متصل (PCI)"
+          echo "============================================"
+          lspci 2>/dev/null || echo "lspci در دسترس نیست"
+
+          # ذخیره‌ی خروجی کامل در یک فایل
+          exec > hardware-info.txt 2>&1
+          # اجرای مجدد همه‌ی موارد بالا برای ورود به فایل
+          echo "============================================"
+          echo "   🏷️  سیستم‌عامل و کرنل"
+          echo "============================================"
+          cat /etc/os-release | grep PRETTY_NAME | cut -d '"' -f2
+          uname -a
+          echo ""
+
           echo "============================================"
           echo "   🧠 پردازنده (CPU)"
           echo "============================================"
           lscpu
           echo ""
           echo "مدل CPU:"
-          cat /proc/cpuinfo | grep "model name" | head -1
+          cat /proc/cpuinfo | grep "model name" | head -1 | cut -d ':' -f2 | xargs
+          echo "معماری: $(uname -m)"
           echo "تعداد هسته‌ها: $(nproc)"
-
+          echo "سرعت فعلی: $(cat /proc/cpuinfo | grep "cpu MHz" | head -1 | cut -d ':' -f2 | xargs) MHz"
           echo ""
+
           echo "============================================"
           echo "   🧮 حافظه (RAM)"
           echo "============================================"
           free -h
           echo ""
-          echo "جزئیات از /proc/meminfo:"
-          cat /proc/meminfo | grep -E "MemTotal|MemFree|SwapTotal" | head -3
-
+          cat /proc/meminfo | grep -E "MemTotal|MemFree|SwapTotal|MemAvailable|SwapFree" | sed 's/^/  /'
           echo ""
+
           echo "============================================"
           echo "   💾 دیسک (Disk)"
           echo "============================================"
           df -h /
           echo ""
-          lsblk -o NAME,SIZE,TYPE,MOUNTPOINT 2>/dev/null
-
+          lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,ROTA 2>/dev/null || true
           echo ""
+          df -h /tmp || true
+          echo ""
+
           echo "============================================"
-          echo "   📊 گزارش خلاصه (JSON)"
+          echo "   🌐 شبکه"
           echo "============================================"
-          CPU_MODEL=$(cat /proc/cpuinfo | grep "model name" | head -1 | cut -d ':' -f2 | xargs)
-          CORES=$(nproc)
-          MEM_TOTAL=$(free -h | awk '/^Mem:/{print $2}')
-          DISK_TOTAL=$(df -h / | awk 'NR==2{print $2}')
-          DISK_AVAIL=$(df -h / | awk 'NR==2{print $4}')
-          OS=$(cat /etc/os-release | grep PRETTY_NAME | cut -d '"' -f2)
+          ip addr show 2>/dev/null | grep -E "inet " | head -5
+          echo ""
+          cat /etc/resolv.conf 2>/dev/null || true
+          echo ""
 
-          JSON="{\"os\":\"$OS\", \"cpu\":\"$CPU_MODEL\", \"cores\":$CORES, \"memory\":\"$MEM_TOTAL\", \"disk_total\":\"$DISK_TOTAL\", \"disk_avail\":\"$DISK_AVAIL\"}"
-          echo "$JSON"
+          echo "============================================"
+          echo "   🔌 سخت‌افزار متصل (PCI)"
+          echo "============================================"
+          lspci 2>/dev/null || echo "lspci در دسترس نیست"
 
-          # ذخیره در فایل برای استفاده در گام بعدی
-          echo "$JSON" > /tmp/hwinfo.json
+        # حالا فایل hardware-info.txt در ریشه‌ی مخزن ایجاد شده است
 
-      - name: 📤 ارسال به روبیکا (اختیاری)
+      - name: 📄 نمایش فایل تولیدشده (جهت بررسی)
+        run: cat hardware-info.txt
+
+      - name: 💾 ذخیره و کامیت فایل در مخزن
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add hardware-info.txt
+          git commit -m "📊 به‌روزرسانی خودکار اطلاعات سخت‌افزار" || echo "تغییری برای کامیت وجود ندارد"
+          git push
+
+      # (اختیاری) ارسال خلاصه به روبیکا
+      - name: 📤 ارسال خلاصه به روبیکا (اختیاری)
+        if: env.TOKEN != '' && env.CHAT_ID != ''
         env:
           TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           CHAT_ID: ${{ secrets.RUBIKA_OWNER_CHAT_ID }}
-        if: env.TOKEN != '' && env.CHAT_ID != ''
         run: |
-          HW=$(cat /tmp/hwinfo.json)
-          MESSAGE="🖥️ مشخصات سرور گیت‌هاب امروز:"
-          MESSAGE+="\nسیستم‌عامل: $(echo $HW | jq -r '.os')"
-          MESSAGE+="\nپردازنده: $(echo $HW | jq -r '.cpu')"
-          MESSAGE+="\nتعداد هسته: $(echo $HW | jq -r '.cores')"
-          MESSAGE+="\nحافظه: $(echo $HW | jq -r '.memory')"
-          MESSAGE+="\nدیسک کل: $(echo $HW | jq -r '.disk_total')"
-          MESSAGE+="\nدیسک آزاد: $(echo $HW | jq -r '.disk_avail')"
+          HW=$(cat hardware-info.txt | head -30)  # خلاصه‌ای از ابتدای فایل
+          # استخراج مقادیر کلیدی
+          OS=$(grep "PRETTY_NAME" /etc/os-release | cut -d '"' -f2)
+          CPU=$(cat /proc/cpuinfo | grep "model name" | head -1 | cut -d ':' -f2 | xargs)
+          CORES=$(nproc)
+          RAM=$(free -h | awk '/^Mem:/{print $2}')
+          DISK=$(df -h / | awk 'NR==2{print $2}')
 
+          MESSAGE="🖥️ مشخصات سرور امروز:"
+          MESSAGE+="\nسیستم‌عامل: $OS"
+          MESSAGE+="\nپردازنده: $CPU"
+          MESSAGE+="\nتعداد هسته: $CORES"
+          MESSAGE+="\nحافظه: $RAM"
+          MESSAGE+="\nفضای دیسک کل: $DISK"
+          # ارسال پیام
           curl -s -X POST "https://botapi.rubika.ir/v3/${TOKEN}/sendMessage" \
             -H "Content-Type: application/json" \
             -d "{\"chat_id\":\"${CHAT_ID}\", \"text\":\"$MESSAGE\"}"
