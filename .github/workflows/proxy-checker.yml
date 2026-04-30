@@ -1,4 +1,4 @@
-name: 🚀 تست نهایی سرعت با ترفندها
+name: 🚀 تست نهایی سرعت (بدون aria2c)
 
 on:
   workflow_dispatch:
@@ -14,14 +14,14 @@ jobs:
       - name: 🧰 نصب پیش‌نیازها
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y curl unzip ffmpeg python3-pip aria2
+          sudo apt-get install -y curl unzip ffmpeg python3-pip
           pip install yt-dlp
           wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
           unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای خودکار (پروکسی ← کوکی ← دانلود سریع)
+      - name: 🤖 اجرای خودکار (پروکسی ← کوکی ← دانلود پرسرعت)
         run: |
           cat > run.cjs << 'ENDSCRIPT'
           const { spawn, execSync } = require('child_process');
@@ -41,7 +41,7 @@ jobs:
           function err(...args) { console.error(`[${ts()}] ❌`, ...args); }
           const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-          // ===================== Xray (کامل) =====================
+          // ===================== Xray =====================
           function parseURI(uri) {
             try {
               const u = new URL(uri);
@@ -120,9 +120,8 @@ jobs:
             } catch(e) { return false; }
           }
 
-          // ===================== Netscape Cookie Formatter =====================
           function cookiesToNetscape(cookies) {
-            const lines = ['# Netscape HTTP Cookie File', '']; // خط اول اجباری
+            const lines = ['# Netscape HTTP Cookie File', ''];
             for (const c of cookies) {
               const domain = c.domain.startsWith('.') ? c.domain : '.' + c.domain;
               const flag = c.secure ? 'TRUE' : 'FALSE';
@@ -132,7 +131,6 @@ jobs:
             return lines.join('\n');
           }
 
-          // ===================== تابع اصلی =====================
           (async () => {
             if (!fs.existsSync(PROXY_FILE)) {
               err(`فایل ${PROXY_FILE} یافت نشد.`);
@@ -165,7 +163,7 @@ jobs:
 
               let browser;
               try {
-                // 🍪 مرحله ۱: استخراج کوکی
+                // 🍪 استخراج کوکی
                 browser = await puppeteer.launch({
                   headless: 'new',
                   args: [
@@ -194,23 +192,18 @@ jobs:
                 await browser.close();
                 log('✅ کوکی‌ها ذخیره شدند.');
 
-                // 🚀 مرحله ۲: دانلود با ترفندهای سرعت
-                log('📥 شروع دانلود سریع...');
+                // 🚀 دانلود با حداکثر سرعت (داخلی yt-dlp)
+                log('📥 شروع دانلود سریع با yt-dlp...');
                 const startTime = Date.now();
-
-                // تنظیمات aria2 برای حداکثر سرعت
-                const ariaArgs = ' -x 16 -s 16 -k 1M --file-allocation=none --max-connection-per-server=16 --min-split-size=1M --summary-interval=0 ';
 
                 try {
                   execSync(
                     `yt-dlp ` +
                     `--cookies ${COOKIE_FILE} ` +
                     `--proxy socks5h://127.0.0.1:10808 ` +
-                    `--downloader aria2c ` +
-                    `--downloader-args "aria2c:${ariaArgs}" ` +
-                    `-N 8 ` +                         // چندین قطعه موازی
-                    `--concurrent-fragments 8 ` +      // قطعات DASH همزمان
-                    `--buffer-size 1024K ` +
+                    `-N 16 ` +                         // 16 thread
+                    `--concurrent-fragments 16 ` +      // قطعات همزمان
+                    `--buffer-size 2048K ` +
                     `--no-playlist ` +
                     `--format "bestvideo[height<=1080]+bestaudio/best[height<=1080]" ` +
                     `--merge-output-format mp4 ` +
@@ -222,11 +215,10 @@ jobs:
                   log(`🎉 دانلود در ${elapsed} ثانیه کامل شد.`);
                   success = true;
                   xrayProc.kill();
-                  break; // از حلقه بیرون برو
+                  break;
                 } catch(dlErr) {
                   err('خطا در دانلود:', dlErr.message);
                   xrayProc.kill();
-                  // پروکسی بعدی را امتحان کن
                 }
               } catch(e) {
                 err('خطای کلی:', e.message);
