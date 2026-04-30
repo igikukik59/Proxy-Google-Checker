@@ -1,27 +1,26 @@
-name: 🚀 تست نهایی سرعت (بدون aria2c)
+name: 🚀 تست سرعت سنگین و هم‌زمان
 
 on:
   workflow_dispatch:
 
 jobs:
-  final-test:
+  heavy-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: 📥 دریافت کد
         uses: actions/checkout@v4
 
       - name: 🧰 نصب پیش‌نیازها
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y curl unzip ffmpeg python3-pip
+          sudo apt-get update -qq && sudo apt-get install -y curl unzip ffmpeg python3-pip
           pip install yt-dlp
           wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
           unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای خودکار (پروکسی ← کوکی ← دانلود پرسرعت)
+      - name: 🤖 تست دانلود تکی و هم‌زمان
         run: |
           cat > run.cjs << 'ENDSCRIPT'
           const { spawn, execSync } = require('child_process');
@@ -32,96 +31,47 @@ jobs:
           puppeteer.use(StealthPlugin());
 
           const PROXY_FILE = 'کانفیگ های خوب.txt';
-          const YT_VIDEO = 'https://www.youtube.com/watch?v=esJOOQG42r0';
+          const VIDEO_URL = 'https://www.youtube.com/watch?v=5OLs1GWB4OA';
           const COOKIE_FILE = '/tmp/youtube_cookies.txt';
-          const OUTPUT_VIDEO = '/tmp/test_video.mp4';
 
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
           function log(...args) { console.log(`[${ts()}]`, ...args); }
           function err(...args) { console.error(`[${ts()}] ❌`, ...args); }
           const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-          // ===================== Xray =====================
+          // ===================== Xray Functions =====================
           function parseURI(uri) {
-            try {
-              const u = new URL(uri);
-              return {
-                protocol: u.protocol.replace(':',''),
-                uuid: u.username,
-                address: u.hostname,
-                port: u.port,
-                params: Object.fromEntries(u.searchParams.entries())
-              };
-            } catch(e) { return null; }
+            try { const u = new URL(uri); return { protocol: u.protocol.replace(':',''), uuid: u.username, address: u.hostname, port: u.port, params: Object.fromEntries(u.searchParams.entries()) }; } catch(e) { return null; }
           }
-
           function generateXrayConfig(uri) {
-            const p = parseURI(uri);
-            if (!p) return null;
+            const p = parseURI(uri); if (!p) return null;
             const inbound = { port: 10808, protocol: 'socks', settings: { auth: 'noauth', udp: true } };
-            let outbound = {
-              protocol: p.protocol,
-              streamSettings: { network: p.params.type || 'tcp' }
-            };
-            if (p.protocol === 'trojan') {
-              outbound.settings = {
-                servers: [{ address: p.address, port: parseInt(p.port), password: p.uuid }]
-              };
-            } else {
-              outbound.settings = {
-                vnext: [{
-                  address: p.address,
-                  port: parseInt(p.port),
-                  users: [{ id: p.uuid, encryption: p.params.encryption || 'none', flow: p.params.flow || '' }]
-                }]
-              };
-            }
-            const network = p.params.type || 'tcp';
-            outbound.streamSettings.network = network;
-            if (network === 'ws') {
-              outbound.streamSettings.wsSettings = {
-                path: p.params.path || '/',
-                headers: p.params.host ? { Host: p.params.host } : {}
-              };
-            }
+            let outbound = { protocol: p.protocol, streamSettings: { network: p.params.type || 'tcp' } };
+            if (p.protocol === 'trojan') outbound.settings = { servers: [{ address: p.address, port: parseInt(p.port), password: p.uuid }] };
+            else outbound.settings = { vnext: [{ address: p.address, port: parseInt(p.port), users: [{ id: p.uuid, encryption: p.params.encryption || 'none', flow: p.params.flow || '' }] }] };
+            const network = p.params.type || 'tcp'; outbound.streamSettings.network = network;
+            if (network === 'ws') outbound.streamSettings.wsSettings = { path: p.params.path || '/', headers: p.params.host ? { Host: p.params.host } : {} };
             const security = p.params.security || 'none';
             if (security === 'tls' || security === 'reality') {
-              outbound.streamSettings.security = security;
-              const tls = { serverName: p.params.sni || p.address };
-              if (security === 'reality') {
-                tls.fingerprint = p.params.fp || 'chrome';
-                tls.publicKey = p.params.pbk || '';
-                tls.shortId = p.params.sid || '';
-                tls.spiderX = '';
-              }
+              outbound.streamSettings.security = security; const tls = { serverName: p.params.sni || p.address };
+              if (security === 'reality') { tls.fingerprint = p.params.fp || 'chrome'; tls.publicKey = p.params.pbk || ''; tls.shortId = p.params.sid || ''; tls.spiderX = ''; }
               if (p.params.allowInsecure === '1') tls.allowInsecure = true;
               if (p.params.alpn) tls.alpn = p.params.alpn.split(',');
               outbound.streamSettings.tlsSettings = tls;
-            } else {
-              outbound.streamSettings.security = 'none';
-            }
+            } else outbound.streamSettings.security = 'none';
             return { inbounds: [inbound], outbounds: [outbound] };
           }
-
           async function startXray(uri, idx) {
-            const config = generateXrayConfig(uri);
-            if (!config) return null;
-            const cfgPath = `/tmp/xray_${idx}.json`;
-            fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
+            const config = generateXrayConfig(uri); if (!config) return null;
+            const cfgPath = `/tmp/xray_${idx}.json`; fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
             const xray = spawn(path.join(process.cwd(), 'xray', 'xray'), ['run', '-config', cfgPath], { stdio: 'pipe' });
-            await new Promise(r => setTimeout(r, 4000));
-            return xray;
+            await new Promise(r => setTimeout(r, 4000)); return xray;
           }
-
           function testCurl(port) {
-            try {
-              execSync(`curl --socks5 127.0.0.1:${port} --max-time 5 -s http://ip-api.com/json`, { encoding: 'utf8' });
-              return true;
-            } catch(e) { return false; }
+            try { execSync(`curl --socks5 127.0.0.1:${port} --max-time 5 -s http://ip-api.com/json`, { encoding: 'utf8' }); return true; } catch(e) { return false; }
           }
-
           function cookiesToNetscape(cookies) {
-            const lines = ['# Netscape HTTP Cookie File', ''];
+            let lines = ['# Netscape HTTP Cookie File', ''];
             for (const c of cookies) {
               const domain = c.domain.startsWith('.') ? c.domain : '.' + c.domain;
               const flag = c.secure ? 'TRUE' : 'FALSE';
@@ -131,115 +81,87 @@ jobs:
             return lines.join('\n');
           }
 
-          (async () => {
-            if (!fs.existsSync(PROXY_FILE)) {
-              err(`فایل ${PROXY_FILE} یافت نشد.`);
-              process.exit(1);
+          async function downloadVideo(url, outputPath, cookieFile, label) {
+            const start = Date.now();
+            log(`📥 ${label} شروع دانلود...`);
+            try {
+              execSync(
+                `yt-dlp --cookies ${cookieFile} --proxy socks5h://127.0.0.1:10808 ` +
+                `-N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist ` +
+                `--format "bestvideo[height<=1080]+bestaudio/best[height<=1080]" --merge-output-format mp4 ` +
+                `--output "${outputPath}" "${url}"`,
+                { stdio: 'inherit', timeout: 600000 }
+              );
+              const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+              log(`✅ ${label} تمام شد در ${elapsed} ثانیه`);
+              return { ok: true, elapsed };
+            } catch(e) {
+              err(`${label} شکست: ${e.message}`);
+              return { ok: false };
             }
+          }
 
-            const proxies = fs.readFileSync(PROXY_FILE, 'utf8')
-              .split('\n').map(l => l.trim())
-              .filter(l => /^(vless|trojan|ss|vmess):\/\//.test(l));
+          (async () => {
+            if (!fs.existsSync(PROXY_FILE)) { err('فایل پروکسی یافت نشد'); process.exit(1); }
+            const proxies = fs.readFileSync(PROXY_FILE, 'utf8').split('\n').map(l => l.trim()).filter(l => /^(vless|trojan|ss|vmess):\/\//.test(l));
             log(`تعداد پروکسی‌ها: ${proxies.length}`);
 
-            let xrayProc = null;
-            let success = false;
-
+            let xrayProc = null, browser;
             for (let i = 0; i < proxies.length; i++) {
               const uri = proxies[i];
-              log(`\n🔌 تست پروکسی ${i+1}/${proxies.length}: ${uri.substring(0,60)}...`);
-
+              log(`\n🔌 تست پروکسی ${i+1}/${proxies.length}...`);
               xrayProc = await startXray(uri, i);
-              if (!xrayProc) {
-                err('خطا در اجرای Xray');
-                continue;
-              }
-              if (!testCurl(10808)) {
-                err('پروکسی کار نمی‌کند');
-                xrayProc.kill();
-                await sleep(1000);
-                continue;
-              }
-
-              let browser;
+              if (!xrayProc || !testCurl(10808)) { if (xrayProc) xrayProc.kill(); continue; }
               try {
-                // 🍪 استخراج کوکی
-                browser = await puppeteer.launch({
-                  headless: 'new',
-                  args: [
-                    '--no-sandbox','--disable-setuid-sandbox',
-                    '--proxy-server=socks5://127.0.0.1:10808',
-                    '--disable-dev-shm-usage','--window-size=1280,720'
-                  ]
-                });
+                browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox','--disable-setuid-sandbox','--proxy-server=socks5://127.0.0.1:10808','--disable-dev-shm-usage','--window-size=1280,720'] });
                 const page = await browser.newPage();
                 await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
-
-                log('🌐 باز کردن یوتیوب...');
                 await page.goto('https://www.youtube.com/', { waitUntil: 'networkidle2', timeout: 60000 });
                 await sleep(5000);
-
                 const cookies = await page.cookies();
-                log(`🍪 ${cookies.length} کوکی دریافت شد.`);
-                if (cookies.length === 0) {
-                  await browser.close();
-                  xrayProc.kill();
-                  continue;
-                }
-
-                const netscapeContent = cookiesToNetscape(cookies);
-                fs.writeFileSync(COOKIE_FILE, netscapeContent);
+                if (cookies.length === 0) { await browser.close(); xrayProc.kill(); continue; }
+                fs.writeFileSync(COOKIE_FILE, cookiesToNetscape(cookies));
                 await browser.close();
-                log('✅ کوکی‌ها ذخیره شدند.');
+                log('🍪 کوکی‌ها ذخیره شد.');
 
-                // 🚀 دانلود با حداکثر سرعت (داخلی yt-dlp)
-                log('📥 شروع دانلود سریع با yt-dlp...');
-                const startTime = Date.now();
+                // ===== تست تک دانلود =====
+                log('\n===== 📹 تست تکی =====');
+                await downloadVideo(VIDEO_URL, '/tmp/single_test.mp4', COOKIE_FILE, 'تکی');
 
-                try {
-                  execSync(
-                    `yt-dlp ` +
-                    `--cookies ${COOKIE_FILE} ` +
-                    `--proxy socks5h://127.0.0.1:10808 ` +
-                    `-N 16 ` +                         // 16 thread
-                    `--concurrent-fragments 16 ` +      // قطعات همزمان
-                    `--buffer-size 2048K ` +
-                    `--no-playlist ` +
-                    `--format "bestvideo[height<=1080]+bestaudio/best[height<=1080]" ` +
-                    `--merge-output-format mp4 ` +
-                    `--output "${OUTPUT_VIDEO}" ` +
-                    `"${YT_VIDEO}"`,
-                    { stdio: 'inherit', timeout: 600000 }
-                  );
-                  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-                  log(`🎉 دانلود در ${elapsed} ثانیه کامل شد.`);
-                  success = true;
-                  xrayProc.kill();
-                  break;
-                } catch(dlErr) {
-                  err('خطا در دانلود:', dlErr.message);
-                  xrayProc.kill();
+                // ===== تست سه دانلود هم‌زمان =====
+                log('\n===== 🔁 تست هم‌زمان (۳ بار) =====');
+                const concurrentDownloads = [
+                  downloadVideo(VIDEO_URL, '/tmp/multi_1.mp4', COOKIE_FILE, 'موازی ۱'),
+                  downloadVideo(VIDEO_URL, '/tmp/multi_2.mp4', COOKIE_FILE, 'موازی ۲'),
+                  downloadVideo(VIDEO_URL, '/tmp/multi_3.mp4', COOKIE_FILE, 'موازی ۳'),
+                ];
+                const results = await Promise.all(concurrentDownloads);
+                const successCount = results.filter(r => r.ok).length;
+                log(`\n🎯 هم‌زمان: ${successCount}/3 موفق بودند.`);
+                if (successCount === 3) {
+                  const times = results.map(r => r.elapsed);
+                  log(`زمان‌ها: ${times.join(', ')} ثانیه | میانگین: ${(times.reduce((a,b)=>a+b,0)/3).toFixed(1)}`);
                 }
+
+                xrayProc.kill();
+                return; // تست تمام شد
               } catch(e) {
-                err('خطای کلی:', e.message);
+                err(e.message);
                 if (browser) await browser.close().catch(()=>{});
                 xrayProc.kill();
               }
               await sleep(2000);
             }
-
-            if (!success) {
-              err('❌ هیچ پروکسی موفق به دانلود نشد.');
-              process.exit(1);
-            }
+            err('هیچ پروکسی موفق نشد.');
+            process.exit(1);
           })();
           ENDSCRIPT
 
-          timeout 900 node run.cjs
+          timeout 1200 node run.cjs
 
-      - name: 📊 نمایش نتیجه
+      - name: 📊 نمایش فایل‌ها
         run: |
           echo "==========================================="
-          echo "📁 فایل دانلود شده:"
-          ls -lh /tmp/test_video.mp4 2>/dev/null || echo "❌ فایل دانلود وجود ندارد."
+          echo "فایل‌های دانلود شده:"
+          ls -lh /tmp/single_test.mp4 /tmp/multi_1.mp4 /tmp/multi_2.mp4 /tmp/multi_3.mp4 2>/dev/null || echo "برخی فایل‌ها وجود ندارند"
           echo "==========================================="
