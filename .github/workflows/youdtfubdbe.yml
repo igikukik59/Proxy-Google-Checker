@@ -209,7 +209,7 @@ jobs:
               if (stats.failures >= 3 && Date.now() - stats.lastUsed < 15*60*1000) return false;
               return true;
             });
-            if (available.length === 0) return getRandomInt(proxies.length);
+            if (available.length === 0) return proxies[Math.floor(Math.random() * proxies.length)];
             const weights = available.map(p => {
               const stats = proxyStats.get(p);
               if (stats && stats.speeds.length > 0) {
@@ -232,7 +232,6 @@ jobs:
             }
             return available[available.length-1];
           }
-          function getRandomInt(max) { return Math.floor(Math.random() * max); }
           async function switchToBestProxy() {
             if (xrayProc) { xrayProc.kill(); await sleep(500); xrayProc = null; }
             currentProxy = null;
@@ -244,7 +243,9 @@ jobs:
               await sleep(4000);
               if (testCurl()) {
                 currentProxy = candidate;
-                proxyStats.set(candidate, proxyStats.get(candidate) || { speeds: [], failures: 0, lastUsed: Date.now() });
+                if (!proxyStats.has(candidate)) {
+                  proxyStats.set(candidate, { speeds: [], failures: 0, lastUsed: Date.now() });
+                }
                 return true;
               } else {
                 if (xrayProc) { xrayProc.kill(); await sleep(500); xrayProc = null; }
@@ -279,12 +280,39 @@ jobs:
             } catch(e) { err('خطای کوکی:', e.message); if (browser) await browser.close().catch(()=>{}); return false; }
           }
 
-          // ======================== نرمال‌سازی لینک ========================
+          // ======================== نرمال‌سازی لینک (با پشتیبانی از share.google) ========================
           function normalizeYouTubeUrl(input) {
-            const regex = /(?:https?:\/\/)?(?:www\.|m\.|music\.)?(?:youtube\.com\/(?:watch\?.*v=|embed\/|shorts\/)|youtu\.be\/|share\.google\/)([a-zA-Z0-9_-]{11})/;
+            const regex = /(?:https?:\/\/)?(?:www\.|m\.|music\.)?(?:youtube\.com\/(?:watch\?.*v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
             const m = input.match(regex);
-            if (!m) return null;
-            return `https://www.youtube.com/watch?v=${m[1]}`;
+            if (m) return `https://www.youtube.com/watch?v=${m[1]}`;
+            return null;
+          }
+
+          // تابع تبدیل لینک share.google به لینک نهایی یوتیوب
+          async function resolveShareGoogleUrl(shortUrl) {
+            if (!shortUrl.startsWith('https://share.google/')) {
+              return shortUrl;
+            }
+            let browser = null;
+            try {
+              log('🔗 در حال باز کردن لینک کوتاه share.google...');
+              browser = await puppeteer.launch({
+                headless: 'new',
+                args: ['--no-sandbox', '--disable-setuid-sandbox', '--proxy-server=socks5://127.0.0.1:10808', '--disable-dev-shm-usage']
+              });
+              const page = await browser.newPage();
+              await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
+              await page.goto(shortUrl, { waitUntil: 'networkidle2', timeout: 30000 });
+              await sleep(3000);
+              const finalUrl = page.url();
+              log(`✅ لینک نهایی: ${finalUrl}`);
+              await browser.close();
+              return finalUrl;
+            } catch(e) {
+              err('خطا در باز کردن لینک کوتاه:', e.message);
+              if (browser) await browser.close().catch(()=>{});
+              return null;
+            }
           }
 
           // ======================== دریافت غیرهمگام اطلاعات ویدیو ========================
@@ -430,7 +458,10 @@ jobs:
               queueLength: queue.length,
               currentProxy: currentProxy ? currentProxy.substring(0,40) : 'none'
             };
-            try { fs.writeFileSync(STATS_FILE, JSON.stringify(data, null, 2)); } catch(e) { err('خطای ذخیره آمار'); }
+            try {
+              fs.writeFileSync(STATS_FILE, JSON.stringify(data, null, 2));
+              log('📊 آمار به‌روزرسانی شد');
+            } catch(e) { err('خطای ذخیره آمار'); }
           }
           let gitPushInterval;
           function gitPushAll() {
@@ -456,11 +487,11 @@ jobs:
             const startAll = Date.now();
             let success = false;
             let finalSize = 0;
+            let dlResult = null;   // تعریف در سطح تابع برای دسترسی در finally
             try {
               await sleep(Math.floor(Math.random() * 4000) + 1000);
 
               // تلاش با پروکسی‌های مختلف (تا ۳ بار)
-              let dlResult = null;
               for (let attempt = 0; attempt < MAX_PROXY_RETRIES; attempt++) {
                 if (attempt > 0) {
                   log(`🔄 تلاش مجدد (${attempt+1}/${MAX_PROXY_RETRIES})...`);
@@ -648,6 +679,11 @@ jobs:
             log('✅ تاریخچه پاک شد');
 
             const sentHelp = new Set();
+            // ایجاد فایل آمار اولیه در صورت عدم وجود
+            if (!fs.existsSync(STATS_FILE)) {
+              saveStatsToFile();
+              gitPushAll();
+            }
             gitPushInterval = setInterval(() => {
               saveStatsToFile();
               gitPushAll();
@@ -678,11 +714,20 @@ jobs:
                   }
 
                   if (!msg?.text) continue;
-                  const text = msg.text.trim();
+                  let text = msg.text.trim();
 
-                  const ytReg = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|share\.google\/)([\w-]+)/;
-                  const m = text.match(ytReg);
-                  if (!m) {
+                  // بررسی لینک share.google و تبدیل آن
+                  if (text.includes('share.google/')) {
+                    const resolved = await resolveShareGoogleUrl(text);
+                    if (!resolved) {
+                      await sendMessage(chatId, '⚠️ نتوانستم لینک کوتاه را باز کنم. لطفاً دوباره امتحان کنید.');
+                      continue;
+                    }
+                    text = resolved;
+                  }
+
+                  const videoUrl = normalizeYouTubeUrl(text);
+                  if (!videoUrl) {
                     if (!sentHelp.has(chatId)) {
                       await sendMessage(chatId, '👋 سلام! لینک یوتیوب رو بفرست تا دانلود کنم. از دکمه‌های زیر کمک بگیر.', mainKeypad);
                       sentHelp.add(chatId);
@@ -690,13 +735,7 @@ jobs:
                     continue;
                   }
 
-                  let videoUrl = normalizeYouTubeUrl(text);
-                  if (!videoUrl) {
-                    await sendMessage(chatId, '⚠️ لینک معتبر یوتیوب نیست. دوباره امتحان کنید.');
-                    continue;
-                  }
-
-                  // بررسی لیست سیاه ویدیوهای ناموجود
+                  // بررسی لیست سیاه
                   const videoId = videoUrl.split('v=')[1];
                   if (blacklist.has(videoId) && Date.now() - blacklist.get(videoId) < 10*60*1000) {
                     await sendMessage(chatId, '⚠️ این ویدیو قبلاً بررسی شده و در حال حاضر قابل دانلود نیست.');
@@ -707,8 +746,6 @@ jobs:
 
                   const info = await getVideoInfo(videoUrl);
                   if (!info || !info.duration) {
-                    // اگر خطا از نوع "Video unavailable" بود، به لیست سیاه اضافه کن
-                    // (ساده‌سازی: هر خطای getVideoInfo را می‌توانیم موقتاً رد کنیم، اما منطق دقیق‌تر با regex خروجی yt-dlp ممکن است)
                     await sendMessage(chatId, '⚠️ نتوانستم اطلاعات این ویدیو را دریافت کنم. لطفاً دوباره امتحان کنید.');
                     continue;
                   }
