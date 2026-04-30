@@ -1,16 +1,16 @@
 name: 🍪 استخراج کوکی یوتیوب
 
 on:
-  workflow_dispatch:          # اجرای دستی
+  workflow_dispatch:
   schedule:
-    - cron: '0 0 */2 * *'    # هر ۲ روز یکبار (اختیاری)
+    - cron: '0 0 */2 * *'   # هر ۲ روز یکبار
 
 jobs:
   extract-cookies:
     runs-on: ubuntu-latest
-    timeout-minutes: 30       # حداکثر زمان
+    timeout-minutes: 30
     permissions:
-      contents: write         # برای پوش کردن فایل
+      contents: write
 
     steps:
       - name: 📥 دریافت کد مخزن
@@ -18,12 +18,11 @@ jobs:
 
       - name: 🧰 نصب ابزارها
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y curl unzip chromium-browser
+          sudo apt-get update -qq && sudo apt-get install -y curl unzip
           # Xray
           wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
           unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
-          # Node modules
+          # Node.js modules
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
@@ -41,19 +40,90 @@ jobs:
           const OUTPUT_FILE = 'youtube_cookies.txt';
           const YOUTUBE_URL = 'https://www.youtube.com/';
 
-          // ============ Helpers ============
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
           function log(...args) { console.log(`[${ts()}]`, ...args); }
           function err(...args) { console.error(`[${ts()}] ❌`, ...args); }
           const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-          // ============ Xray (تکراری از کد اصلی) ============
-          function parseURI(uri) { /* ... */ }
-          function generateXrayConfig(uri) { /* ... */ }
-          async function startXray(uri, idx) { /* ... */ }
-          function testCurl(port) { /* ... */ }
+          // ======================== Xray Helpers (کامل از ربات اصلی) ========================
+          function parseURI(uri) {
+            try {
+              const u = new URL(uri);
+              return {
+                protocol: u.protocol.replace(':',''),
+                uuid: u.username,
+                address: u.hostname,
+                port: u.port,
+                params: Object.fromEntries(u.searchParams.entries())
+              };
+            } catch(e) { return null; }
+          }
 
-          // ============ Netscape cookie formatter ============
+          function generateXrayConfig(uri) {
+            const p = parseURI(uri);
+            if (!p) return null;
+            const inbound = { port: 10808, protocol: 'socks', settings: { auth: 'noauth', udp: true } };
+            let outbound = {
+              protocol: p.protocol,
+              streamSettings: { network: p.params.type || 'tcp' }
+            };
+            if (p.protocol === 'trojan') {
+              outbound.settings = {
+                servers: [{ address: p.address, port: parseInt(p.port), password: p.uuid }]
+              };
+            } else {
+              outbound.settings = {
+                vnext: [{
+                  address: p.address,
+                  port: parseInt(p.port),
+                  users: [{ id: p.uuid, encryption: p.params.encryption || 'none', flow: p.params.flow || '' }]
+                }]
+              };
+            }
+            const network = p.params.type || 'tcp';
+            outbound.streamSettings.network = network;
+            if (network === 'ws') {
+              outbound.streamSettings.wsSettings = {
+                path: p.params.path || '/',
+                headers: p.params.host ? { Host: p.params.host } : {}
+              };
+            }
+            const security = p.params.security || 'none';
+            if (security === 'tls' || security === 'reality') {
+              outbound.streamSettings.security = security;
+              const tls = { serverName: p.params.sni || p.address };
+              if (security === 'reality') {
+                tls.fingerprint = p.params.fp || 'chrome';
+                tls.publicKey = p.params.pbk || '';
+                tls.shortId = p.params.sid || '';
+                tls.spiderX = '';
+              }
+              if (p.params.allowInsecure === '1') tls.allowInsecure = true;
+              if (p.params.alpn) tls.alpn = p.params.alpn.split(',');
+              outbound.streamSettings.tlsSettings = tls;
+            } else {
+              outbound.streamSettings.security = 'none';
+            }
+            return { inbounds: [inbound], outbounds: [outbound] };
+          }
+
+          async function startXray(uri, idx) {
+            const config = generateXrayConfig(uri);
+            if (!config) return null;
+            const cfgPath = `/tmp/xray_${idx}.json`;
+            fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
+            const xray = spawn(path.join(process.cwd(), 'xray', 'xray'), ['run', '-config', cfgPath], { stdio: 'pipe' });
+            await new Promise(r => setTimeout(r, 4000));
+            return xray;
+          }
+
+          function testCurl(port) {
+            try {
+              execSync(`curl --socks5 127.0.0.1:${port} --max-time 5 -s http://ip-api.com/json`, { encoding: 'utf8' });
+              return true;
+            } catch(e) { return false; }
+          }
+
           function cookiesToNetscape(cookies) {
             return cookies.map(c => {
               const domain = c.domain.startsWith('.') ? c.domain : '.' + c.domain;
@@ -63,7 +133,7 @@ jobs:
             }).join('\n');
           }
 
-          // ============ Main ============
+          // ======================== اجرای اصلی ========================
           (async () => {
             if (!fs.existsSync(PROXY_FILE)) {
               err(`فایل ${PROXY_FILE} یافت نشد.`);
@@ -82,7 +152,6 @@ jobs:
               const uri = proxies[i];
               log(`\n🔌 تست پروکسی ${i+1}/${proxies.length}: ${uri.substring(0,60)}...`);
 
-              // راه‌اندازی Xray
               const xrayProc = await startXray(uri, i);
               if (!xrayProc) {
                 err('خطا در اجرای Xray');
@@ -97,10 +166,8 @@ jobs:
 
               let browser;
               try {
-                // راه‌اندازی مرورگر با پروکسی
                 browser = await puppeteer.launch({
                   headless: 'new',
-                  executablePath: '/usr/bin/chromium-browser',
                   args: [
                     '--no-sandbox',
                     '--disable-setuid-sandbox',
@@ -112,12 +179,10 @@ jobs:
                 const page = await browser.newPage();
                 await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
 
-                // رفتن به یوتیوب
                 log('مرورگر باز شد، رفتن به یوتیوب...');
                 await page.goto(YOUTUBE_URL, { waitUntil: 'networkidle2', timeout: 60000 });
                 await sleep(5000);
 
-                // بررسی بلاک
                 const bodyText = await page.evaluate(() => document.body.innerText.toLowerCase());
                 const blocked = ['access denied', 'you have been blocked', 'cloudflare', 'attention required'].some(t => bodyText.includes(t));
                 if (blocked) {
@@ -127,13 +192,12 @@ jobs:
                   continue;
                 }
 
-                // استخراج کوکی‌ها
                 const cookies = await page.cookies();
                 log(`🍪 ${cookies.length} کوکی از این پروکسی دریافت شد.`);
 
                 if (cookies.length > 0) {
                   const netscape = cookiesToNetscape(cookies);
-                  allCookiesLines.push(`# Proxy ${i+1}: ${uri}\n${netscape}`);
+                  allCookiesLines.push(`# پروکسی ${i+1}: ${uri}\n${netscape}`);
                   successCount++;
                 }
 
@@ -148,7 +212,6 @@ jobs:
               await sleep(2000);
             }
 
-            // ذخیرهٔ فایل نهایی
             const finalContent = allCookiesLines.join('\n\n') + '\n';
             fs.writeFileSync(OUTPUT_FILE, finalContent);
             log(`\n📄 فایل ${OUTPUT_FILE} با ${successCount} پروکسی موفق ذخیره شد.`);
