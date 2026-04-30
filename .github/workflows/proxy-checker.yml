@@ -19,12 +19,18 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y curl unzip python3-pip ffmpeg
           pip install yt-dlp
+          pip install bgutil-ytdlp-pot-provider
           wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
           unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای ربات جدید
+      - name: 🚀 روشن کردن PO Token Server
+        run: |
+          bgutil-ytdlp-pot-provider --port 4416 &
+          sleep 5
+
+      - name: 🤖 اجرای ربات
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
         run: |
@@ -41,7 +47,7 @@ jobs:
           const TOKEN = process.env.RUBIKA_BOT_TOKEN;
           if (!TOKEN) { console.error('❌ RUBIKA_BOT_TOKEN تنظیم نشده'); process.exit(1); }
 
-          // ========== Logger ==========
+          // ========== Logger & Helpers ==========
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
           function log(...args) { console.log(`[${ts()}]`, ...args); }
           function err(...args) { console.error(`[${ts()}] ❌`, ...args); }
@@ -102,7 +108,6 @@ jobs:
             }
           }
           async function sendMessage(chatId, text) { return await api('sendMessage', {chat_id:chatId, text}); }
-
           async function uploadAndSendVideo(chatId, videoPath, caption='') {
             const start = Date.now();
             const req = await api('requestSendFile', {type:'Video'});
@@ -152,20 +157,27 @@ jobs:
             const probeExt = execSync(`ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 "${inputPath}"`, {encoding:'utf8'}).trim();
             const audioExt = execSync(`ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of csv=p=0 "${inputPath}"`, {encoding:'utf8'}).trim();
             const ext = path.extname(inputPath).toLowerCase();
-            if (ext === '.mp4' && probeExt==='h264' && audioExt==='aac') return inputPath; // سازگاره
+            if (ext === '.mp4' && probeExt==='h264' && audioExt==='aac') return inputPath;
             log('🔄 تبدیل ظرف (فقط کپی) به MP4 سازگار...');
             const out = inputPath.replace(/\.\w+$/, '_ok.mp4');
             execSync(`ffmpeg -i "${inputPath}" -c copy -movflags +faststart "${out}"`, {stdio:'inherit', timeout:300000});
             return out;
           }
 
-          // ========== دانلود ویدیو ==========
+          // ========== دانلود ویدیو (با PO Token) ==========
           async function downloadYouTube(url) {
             const out = '/tmp/video_raw.mp4';
             const fmt = `best[height<=480][ext=mp4] / best[height<=480]`;
             const start = Date.now();
             try {
-              execSync(`yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "${fmt}" --merge-output-format mp4 --output "${out}" "${url}"`, {stdio:'inherit', timeout:600000});
+              execSync(
+                `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 ` +
+                `-N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist ` +
+                `--format "${fmt}" --merge-output-format mp4 --output "${out}" ` +
+                `--extractor-args "youtube:pot-server=http://127.0.0.1:4416" ` +
+                `"${url}"`,
+                {stdio:'inherit', timeout:600000}
+              );
               const t = ((Date.now()-start)/1000).toFixed(1);
               log(`⬇️ دانلود در ${t}s`);
               if (!fs.existsSync(out)) return null;
@@ -173,7 +185,7 @@ jobs:
             } catch(e) { err('دانلود شکست:', e.message); return null; }
           }
 
-          // ========== قطعه‌قطعه و ارسال (بر اساس حجم) ==========
+          // ========== قطعه‌قطعه و ارسال ==========
           async function splitAndSend(chatId, videoPath, baseName) {
             const stats = fs.statSync(videoPath);
             const sizeMB = (stats.size/(1024*1024)).toFixed(1);
@@ -184,7 +196,6 @@ jobs:
             fs.mkdirSync(chunkDir, {recursive:true});
             const pattern = path.join(chunkDir, 'part_%03d.mp4');
 
-            // تقسیم بر اساس حجم ۴۵ مگابایت
             execSync(`ffmpeg -i "${videoPath}" -c copy -f segment -segment_size 45M -reset_timestamps 1 "${pattern}"`, {stdio:'inherit', timeout:600000});
 
             const chunks = fs.readdirSync(chunkDir).filter(f=>f.endsWith('.mp4')).sort((a,b)=>{
@@ -217,6 +228,22 @@ jobs:
             return true;
           }
 
+          // ========== مدیریت پروکسی و تلاش مجدد ==========
+          let currentProxyIdx = -1;
+          let xrayProc = null;
+
+          async function ensureProxy() {
+            while (true) {
+              if (xrayProc && testCurl()) return true;
+              if (xrayProc) { xrayProc.kill(); await sleep(500); }
+              currentProxyIdx = (currentProxyIdx + 1) % proxies.length;
+              log(`🔁 تلاش پروکسی ${currentProxyIdx+1}...`);
+              xrayProc = await startXray(proxies[currentProxyIdx], currentProxyIdx);
+              await sleep(4000);
+              if (testCurl()) return true;
+            }
+          }
+
           // ========== حلقه اصلی ==========
           (async () => {
             const me = await api('getMe');
@@ -224,27 +251,13 @@ jobs:
             log('✅ ربات:', me.data.bot.username);
 
             const proxies = fs.readFileSync(PROXY_FILE, 'utf8').split('\n').map(l=>l.trim()).filter(l=>/^(vless|trojan|ss|vmess):\/\//.test(l));
+            if (proxies.length === 0) { err('هیچ پروکسی در فایل نیست'); process.exit(1); }
             log(`${proxies.length} پروکسی خوب`);
-
-            let currentProxyIdx = -1;
-            let xrayProc = null;
-
-            async function ensureProxy() {
-              while (true) {
-                if (xrayProc && testCurl()) return true;
-                if (xrayProc) { xrayProc.kill(); await sleep(500); }
-                currentProxyIdx = (currentProxyIdx + 1) % proxies.length;
-                log(`🔁 تلاش پروکسی ${currentProxyIdx+1}...`);
-                xrayProc = await startXray(proxies[currentProxyIdx], currentProxyIdx);
-                await sleep(4000);
-                if (testCurl()) return true;
-              }
-            }
 
             await ensureProxy();
             if (!(await grabCookies())) { err('❌ کوکی اولیه شکست'); process.exit(1); }
 
-            // ----- پاکسازی تاریخچه پیام‌های قدیمی -----
+            // پاکسازی تاریخچه
             log('🧹 پاکسازی پیام‌های قدیمی...');
             let offset = null;
             while (true) {
@@ -290,17 +303,30 @@ jobs:
                   log(`🎬 درخواست از ${chatId}: ${videoUrl}`);
                   await sendMessage(chatId, '📥 در حال دانلود...');
 
-                  await ensureProxy();
-                  if (!(await grabCookies())) {
-                    await sendMessage(chatId, '❌ گرفتن کوکی یوتیوب ناموفق.');
-                    continue;
+                  // --- حلقه تلاش مجدد با پروکسی‌های مختلف ---
+                  let dlResult = null;
+                  const maxTries = proxies.length;
+                  for (let tryNum = 0; tryNum < maxTries; tryNum++) {
+                    if (tryNum > 0) {
+                      log(`🔄 تلاش مجدد (${tryNum+1}/${maxTries}) با پروکسی جدید...`);
+                      await sendMessage(chatId, `🔄 تلاش مجدد با پروکسی جدید (${tryNum+1})...`);
+                      await ensureProxy(); // پروکسی بعدی
+                      if (!(await grabCookies())) {
+                        continue; // کوکی جدید نگرفت، پروکسی بعدی
+                      }
+                    }
+
+                    dlResult = await downloadYouTube(videoUrl);
+                    if (dlResult) break; // موفقیت
+                    else log('❌ دانلود با این پروکسی ناموفق، تعویض پروکسی...');
                   }
 
-                  const dlResult = await downloadYouTube(videoUrl);
                   if (!dlResult) {
-                    await sendMessage(chatId, '❌ دانلود ناموفق.');
+                    await sendMessage(chatId, '❌ همهٔ پروکسی‌ها شکست خوردند، دانلود ممکن نیست.');
                     continue;
                   }
+                  // --- پایان حلقه تلاش ---
+
                   let videoPath = dlResult.path;
                   const dlTime = dlResult.time;
 
