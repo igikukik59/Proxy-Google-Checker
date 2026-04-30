@@ -1,4 +1,4 @@
-name: 🎬 ربات یوتیوب (۴۸۰p، تقسیم هوشمند پویا)
+name: 🎬 ربات یوتیوب (480p، صف هوشمند + دکمه وضعیت)
 
 on:
   workflow_dispatch:
@@ -24,7 +24,7 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای ربات هوشمند
+      - name: 🤖 اجرای ربات (نسخهٔ صف‌دار)
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
         run: |
@@ -102,7 +102,14 @@ jobs:
               } catch(e) { if (a<retries-1) { await sleep(2000*(a+1)); continue; } return {error:true, message:e.message}; }
             }
           }
-          async function sendMessage(chatId, text) { return await api('sendMessage', {chat_id:chatId, text}); }
+          async function sendMessage(chatId, text, keypad = null) {
+            const body = { chat_id: chatId, text };
+            if (keypad) {
+              body.chat_keypad = keypad;
+              body.chat_keypad_type = 'New';
+            }
+            return await api('sendMessage', body);
+          }
           async function uploadAndSendVideo(chatId, videoPath, caption='') {
             const start = Date.now();
             const req = await api('requestSendFile', {type:'Video'});
@@ -147,7 +154,7 @@ jobs:
             } catch(e) { err('خطای کوکی:', e.message); if (browser) await browser.close().catch(()=>{}); return false; }
           }
 
-          // ======================== تبدیل سریع ظرف ========================
+          // ======================== تبدیل سریع ========================
           async function makeCompatible(inputPath) {
             const probeExt = execSync(`ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 "${inputPath}"`, {encoding:'utf8'}).trim();
             const audioExt = execSync(`ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of csv=p=0 "${inputPath}"`, {encoding:'utf8'}).trim();
@@ -179,73 +186,61 @@ jobs:
             } catch(e) { err('دانلود شکست:', e.message); return null; }
           }
 
-          // ======================== تقسیم‌کنندهٔ هوشمند پویا ========================
+          // ======================== تقسیم‌کنندهٔ پویا ========================
           async function splitAndSend(chatId, videoPath, baseName) {
             const stats = fs.statSync(videoPath);
             const sizeMB = (stats.size / (1024 * 1024)).toFixed(1);
-            log(`✂️ شروع تقسیم هوشمند ${baseName} (${sizeMB}MB)`);
-            await sendMessage(chatId, `📦 ویدیو ${sizeMB}MB است. در حال تقسیم هوشمند به کمترین قطعه ممکن...`);
+            log(`✂️ شروع تقسیم ${baseName} (${sizeMB}MB)`);
+            await sendMessage(chatId, `📦 ویدیو ${sizeMB}MB است. در حال تقسیم به کمترین قطعه ممکن...`);
 
-            // استخراج مدت زمان و بیت‌ریت با ffprobe
             const duration = parseFloat(
               execSync(`ffprobe -v error -show_entries format=duration -of csv=p=0 "${videoPath}"`, { encoding: 'utf8' }).trim()
             );
             const bitrate = parseFloat(
               execSync(`ffprobe -v error -show_entries format=bit_rate -of csv=p=0 "${videoPath}"`, { encoding: 'utf8' }).trim()
-            ); // بیت‌ریت کل (bps)
-
-            const maxChunkSizeBytes = 45 * 1024 * 1024; // ۴۵ مگابایت
-            // محاسبهٔ زمان هر قطعه بر اساس بیت‌ریت
-            let segmentTime = Math.floor((maxChunkSizeBytes * 8) / bitrate); // ثانیه
-            // محدودیت: حداقل ۳۰ ثانیه، حداکثر ۶۰۰ ثانیه (۱۰ دقیقه)
+            );
+            const maxChunkSizeBytes = 45 * 1024 * 1024;
+            let segmentTime = Math.floor((maxChunkSizeBytes * 8) / bitrate);
             segmentTime = Math.min(600, Math.max(30, segmentTime));
-
             log(`🎯 بیت‌ریت: ${(bitrate/1000).toFixed(0)}kbps | مدت: ${duration.toFixed(1)}s | زمان قطعه: ${segmentTime}s`);
 
-            // اگر کل ویدیو با این زمان‌بندی در یک قطعه جا بشه، مستقیم ارسال کن
             if (duration <= segmentTime + 10) {
-              await sendMessage(chatId, `📤 ویدیو به‌طور کامل زیر ۵۰MB است، مستقیم ارسال می‌شود.`);
+              await sendMessage(chatId, `📤 ویدیو زیر ۵۰MB، مستقیم ارسال می‌شود.`);
               return await uploadAndSendVideo(chatId, videoPath, `🎬 ${baseName}.mp4`);
             }
 
-            // تقسیم با segment_time محاسبه‌شده
             const chunkDir = `/tmp/chunks_${Date.now()}`;
             fs.mkdirSync(chunkDir, { recursive: true });
             const pattern = path.join(chunkDir, 'part_%03d.mp4');
             execSync(`ffmpeg -i "${videoPath}" -c copy -f segment -segment_time ${segmentTime} -reset_timestamps 1 "${pattern}"`, { stdio: 'inherit', timeout: 600000 });
 
-            const chunks = fs.readdirSync(chunkDir).filter(f => f.endsWith('.mp4')).sort((a, b) => {
+            const chunks = fs.readdirSync(chunkDir).filter(f => f.endsWith('.mp4')).sort((a,b) => {
               const na = parseInt(a.match(/\d+/)[0]), nb = parseInt(b.match(/\d+/)[0]);
               return na - nb;
             });
-
-            if (chunks.length === 0) {
-              fs.rmSync(chunkDir, { recursive: true });
-              await sendMessage(chatId, '❌ تقسیم ویدیو شکست خورد.');
-              return false;
-            }
+            if (chunks.length===0) { fs.rmSync(chunkDir, {recursive:true}); return false; }
 
             const total = chunks.length;
             let totalUpTime = 0;
-            for (let i = 0; i < chunks.length; i++) {
+            for (let i=0; i<chunks.length; i++) {
               const chunkName = chunks[i];
               const chunkPath = path.join(chunkDir, chunkName);
-              const chunkSize = (fs.statSync(chunkPath).size / (1024 * 1024)).toFixed(1);
-              const newName = `${baseName}.part${String(i + 1).padStart(2, '0')}.mp4`;
+              const chunkSize = (fs.statSync(chunkPath).size/(1024*1024)).toFixed(1);
+              const newName = `${baseName}.part${String(i+1).padStart(2,'0')}.mp4`;
               const finalPath = path.join(chunkDir, newName);
               fs.renameSync(chunkPath, finalPath);
 
               const startUp = Date.now();
               const ok = await uploadAndSendVideo(chatId, finalPath,
-                (i === total - 1 ? `🎬 قسمت آخر ${baseName}` : `📦 ${newName} (${chunkSize}MB)`));
-              const upTime = ((Date.now() - startUp) / 1000).toFixed(1);
+                (i===total-1 ? `🎬 قسمت آخر ${baseName}` : `📦 ${newName} (${chunkSize}MB)`));
+              const upTime = ((Date.now()-startUp)/1000).toFixed(1);
               totalUpTime += parseFloat(upTime);
-              log(`📤 قطعه ${i + 1}/${total}: ${newName} آپلود در ${upTime}s`);
-              await sendMessage(chatId, `📤 قطعه ${i + 1}/${total} ارسال شد (${upTime}s) — ${chunkSize}MB`);
-              try { fs.unlinkSync(finalPath); } catch (_) { }
+              log(`📤 قطعه ${i+1}/${total}: ${newName} آپلود در ${upTime}s`);
+              await sendMessage(chatId, `📤 قطعه ${i+1}/${total} ارسال شد (${upTime}s) — ${chunkSize}MB`);
+              try { fs.unlinkSync(finalPath); } catch(_){}
               await sleep(500);
             }
-            fs.rmSync(chunkDir, { recursive: true });
+            fs.rmSync(chunkDir, {recursive:true});
             log(`مجموع زمان آپلود قطعات: ${totalUpTime.toFixed(1)}s`);
             return true;
           }
@@ -253,7 +248,6 @@ jobs:
           // ======================== مدیریت پروکسی ========================
           let currentProxyIdx = -1;
           let xrayProc = null;
-
           async function ensureProxy() {
             while (true) {
               if (xrayProc && testCurl()) return true;
@@ -264,6 +258,152 @@ jobs:
               await sleep(4000);
               if (testCurl()) return true;
             }
+          }
+
+          // ======================== صف و پردازش هوشمند ========================
+          const queue = [];
+          let isProcessing = false;
+          const MAX_QUEUE = 200;
+          const recentTimes = []; // حداکثر ۵ زمان اخیر
+          const DEFAULT_TIME = 90; // ثانیه
+
+          function getAverageTime() {
+            if (recentTimes.length === 0) return DEFAULT_TIME;
+            return recentTimes.reduce((a,b)=>a+b, 0) / recentTimes.length;
+          }
+
+          async function processRequest(chatId, url) {
+            const startAll = Date.now();
+            let success = false;
+            try {
+              // تلاش با پروکسی‌های مختلف تا دانلود موفق
+              let dlResult = null;
+              for (let tryNum=0; tryNum<proxies.length; tryNum++) {
+                if (tryNum>0) {
+                  log(`🔄 تلاش مجدد (${tryNum+1}/${proxies.length}) با پروکسی جدید...`);
+                  await sendMessage(chatId, `🔄 تلاش با پروکسی جدید (${tryNum+1})...`);
+                  await ensureProxy();
+                  if (!(await grabCookies())) continue;
+                }
+                dlResult = await downloadYouTube(url);
+                if (dlResult) break;
+                else log('❌ دانلود با این پروکسی ناموفق، تعویض...');
+              }
+              if (!dlResult) {
+                await sendMessage(chatId, '❌ همهٔ پروکسی‌ها شکست خوردند، دانلود ممکن نیست.');
+                return;
+              }
+
+              let videoPath = dlResult.path;
+              const dlTime = dlResult.time;
+
+              const compatPath = await makeCompatible(videoPath);
+              if (compatPath !== videoPath) {
+                try { fs.unlinkSync(videoPath); } catch(_){}
+                videoPath = compatPath;
+              }
+
+              const finalSize = fs.statSync(videoPath).size;
+              const finalMB = (finalSize/(1024*1024)).toFixed(1);
+              await sendMessage(chatId, `✅ دانلود شد | حجم: ${finalMB}MB | زمان: ${dlTime}s`);
+
+              if (finalSize <= 50*1024*1024) {
+                const sent = await uploadAndSendVideo(chatId, videoPath, `🎬 ${path.basename(videoPath)}`);
+                if (sent) await sendMessage(chatId, '📤 ویدیو با موفقیت ارسال شد.');
+                else await sendMessage(chatId, '❌ ارسال ناموفق.');
+              } else {
+                const splitStart = Date.now();
+                const baseName = path.basename(videoPath, path.extname(videoPath));
+                const ok = await splitAndSend(chatId, videoPath, baseName);
+                if (ok) {
+                  const totalSplit = ((Date.now()-splitStart)/1000).toFixed(1);
+                  await sendMessage(chatId, `⏱️ کل زمان تقسیم و ارسال: ${totalSplit}s`);
+                } else {
+                  await sendMessage(chatId, '❌ تقسیم ویدیو ناموفق بود.');
+                }
+              }
+              try { fs.unlinkSync(videoPath); } catch(_){}
+              success = true;
+            } catch(e) {
+              err('خطای غیرمنتظره در پردازش:', e.message);
+              await sendMessage(chatId, '❌ خطایی در پردازش رخ داد.');
+            } finally {
+              const totalTime = (Date.now() - startAll) / 1000;
+              if (success) {
+                recentTimes.push(totalTime);
+                if (recentTimes.length > 5) recentTimes.shift();
+              }
+              // نوبت بعدی
+              processNext();
+            }
+          }
+
+          async function processNext() {
+            if (queue.length === 0) {
+              isProcessing = false;
+              return;
+            }
+            isProcessing = true;
+            const next = queue.shift();
+            await sendMessage(next.chatId, '🔜 نوبت شما رسید! در حال دانلود...');
+            processRequest(next.chatId, next.url);
+          }
+
+          function addToQueue(chatId, url) {
+            // اگر همین کاربر قبلاً درخواستی در صف دارد، رد کن
+            if (queue.some(item => item.chatId === chatId)) {
+              sendMessage(chatId, '⚠️ شما قبلاً یک درخواست در صف دارید. لطفاً صبر کنید.');
+              return;
+            }
+            if (!isProcessing) {
+              // مستقیماً پردازش کن
+              isProcessing = true;
+              sendMessage(chatId, '📥 شروع دانلود...');
+              processRequest(chatId, url);
+              return;
+            }
+            // اضافه به صف
+            if (queue.length >= MAX_QUEUE) {
+              sendMessage(chatId, '⚠️ ظرفیت صف تکمیل است. لطفاً بعداً تلاش کنید.');
+              return;
+            }
+            queue.push({ chatId, url });
+            const position = queue.length; // چون کاربر جدید در انتهاست
+            const avg = getAverageTime();
+            const estMin = Math.ceil((position * avg) / 60);
+            const keypad = {
+              rows: [
+                { buttons: [ { id: 'QUEUE_STATUS', type: 'Simple', button_text: '⏳ چقدر مونده؟' } ] }
+              ],
+              resize_keyboard: true,
+              one_time_keyboard: false
+            };
+            sendMessage(chatId, `🔢 شما نفر ${position} در صف هستید.\n⏱️ زمان انتظار تقریبی: ${estMin} دقیقه`, keypad);
+          }
+
+          async function handleQueueStatus(chatId) {
+            // بررسی آیا کاربر در صف است
+            const idx = queue.findIndex(item => item.chatId === chatId);
+            if (idx === -1) {
+              // شاید در حال پردازش
+              if (isProcessing) {
+                // نمی‌توان فهمید کدام کاربر در حال پردازش است (چون ذخیره نشده)
+                // اما اگر کاربری دکمه بزند و در صف نباشد، یعنی کارش شروع شده یا تمام شده
+                await sendMessage(chatId, 'ℹ️ درخواست فعالی برای شما یافت نشد. اگر لینکی ارسال نکرده‌اید، اکنون بفرستید.');
+              } else {
+                await sendMessage(chatId, 'ℹ️ درخواست فعالی برای شما یافت نشد.');
+              }
+              return;
+            }
+            const position = idx + 1;
+            const avg = getAverageTime();
+            const estSec = Math.ceil(position * avg);
+            const estMin = Math.floor(estSec / 60);
+            const estRemSec = estSec % 60;
+            let timeText = '';
+            if (estMin > 0) timeText = `${estMin} دقیقه و ${estRemSec} ثانیه`;
+            else timeText = `${estSec} ثانیه`;
+            await sendMessage(chatId, `📍 شما نفر ${position} در صف هستید.\n⏳ حدوداً ${timeText} دیگر نوبت شماست.`);
           }
 
           // ======================== اجرای اصلی ========================
@@ -307,6 +447,14 @@ jobs:
                   if (u.type !== 'NewMessage') continue;
                   const chatId = u.chat_id;
                   const msg = u.new_message;
+                  const buttonId = msg.aux_data?.button_id;
+
+                  // اولویت با دکمه‌ها
+                  if (buttonId === 'QUEUE_STATUS') {
+                    await handleQueueStatus(chatId);
+                    continue;
+                  }
+
                   if (!msg?.text) continue;
                   const text = msg.text.trim();
 
@@ -322,59 +470,7 @@ jobs:
 
                   const videoUrl = m[0];
                   log(`🎬 درخواست از ${chatId}: ${videoUrl}`);
-                  await sendMessage(chatId, '📥 در حال دانلود...');
-
-                  let dlResult = null;
-                  for (let tryNum = 0; tryNum < proxies.length; tryNum++) {
-                    if (tryNum > 0) {
-                      log(`🔄 تلاش مجدد (${tryNum+1}/${proxies.length}) با پروکسی جدید...`);
-                      await sendMessage(chatId, `🔄 تلاش با پروکسی جدید (${tryNum+1})...`);
-                      await ensureProxy();
-                      if (!(await grabCookies())) continue;
-                    }
-
-                    dlResult = await downloadYouTube(videoUrl);
-                    if (dlResult) break;
-                    else log('❌ دانلود با این پروکسی ناموفق، تعویض پروکسی...');
-                  }
-
-                  if (!dlResult) {
-                    await sendMessage(chatId, '❌ همهٔ پروکسی‌ها شکست خوردند، دانلود ممکن نیست.');
-                    continue;
-                  }
-
-                  let videoPath = dlResult.path;
-                  const dlTime = dlResult.time;
-
-                  const compatPath = await makeCompatible(videoPath);
-                  if (compatPath !== videoPath) {
-                    try { fs.unlinkSync(videoPath); } catch(_){}
-                    videoPath = compatPath;
-                  }
-
-                  const finalSize = fs.statSync(videoPath).size;
-                  const finalMB = (finalSize / (1024*1024)).toFixed(1);
-                  await sendMessage(chatId, `✅ دانلود شد | حجم: ${finalMB}MB | زمان: ${dlTime}s`);
-
-                  if (finalSize <= 50*1024*1024) {
-                    const startUp = Date.now();
-                    const sent = await uploadAndSendVideo(chatId, videoPath, `🎬 ${path.basename(videoPath)}`);
-                    const upT = ((Date.now()-startUp)/1000).toFixed(1);
-                    if (sent) await sendMessage(chatId, `📤 ویدیو در ${upT}s ارسال شد.`);
-                    else await sendMessage(chatId, '❌ ارسال ناموفق.');
-                  } else {
-                    const splitStart = Date.now();
-                    const baseName = path.basename(videoPath, path.extname(videoPath));
-                    const ok = await splitAndSend(chatId, videoPath, baseName);
-                    if (!ok) {
-                      await sendMessage(chatId, '❌ تقسیم ویدیو ناموفق بود.');
-                    } else {
-                      const totalSplitTime = ((Date.now()-splitStart)/1000).toFixed(1);
-                      await sendMessage(chatId, `⏱️ کل زمان تقسیم و ارسال: ${totalSplitTime}s`);
-                    }
-                  }
-
-                  try { fs.unlinkSync(videoPath); } catch(_){}
+                  addToQueue(chatId, videoUrl);
                 }
 
                 if (res.data?.next_offset_id) offset = res.data.next_offset_id;
