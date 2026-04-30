@@ -1,4 +1,4 @@
-name: 🎬 ربات یوتیوب (نسخه طلایی نهایی)
+name: 🎬 ربات یوتیوب (نسخهٔ طلایی نهایی)
 
 on:
   workflow_dispatch:
@@ -31,7 +31,7 @@ jobs:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
         run: |
           cat > agent.cjs << 'ENDSCRIPT'
-          const { spawn, execSync } = require('child_process');
+          const { spawn, execSync, exec } = require('child_process');
           const fs = require('fs');
           const path = require('path');
           const puppeteer = require('puppeteer-extra');
@@ -55,6 +55,7 @@ jobs:
           const MAX_QUEUE = 200;
           const MIN_DOWNLOAD_SPEED = 300 * 1024; // ۳۰۰ کیلوبایت بر ثانیه
           const SLOW_SPEED_TIMEOUT = 10000;      // ۱۰ ثانیه
+          const DOWNLOAD_DEADLINE = 600000;       // ۱۰ دقیقه
 
           let proxies = [];
           const queue = [];
@@ -307,21 +308,29 @@ jobs:
             }
           }
 
-          // ======================== دریافت اطلاعات ویدیو ========================
+          // ======================== دریافت اطلاعات ویدیو (اصلاح‌شده) ========================
           function getVideoInfo(url) {
             const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "${url}"`;
+            // استفاده از exec غیرهمگام (نه execSync)
             return new Promise((resolve) => {
-              execSync(cmd, { timeout: 15000 }, (error, stdout) => {
-                if (error) { log('⚠️ دریافت اطلاعات ویدیو ممکن نشد:', error.message); resolve(null); return; }
+              exec(cmd, { timeout: 15000 }, (error, stdout, stderr) => {
+                if (error) {
+                  log('⚠️ دریافت اطلاعات ویدیو ممکن نشد:', error.message);
+                  resolve(null);
+                  return;
+                }
                 try {
                   const data = JSON.parse(stdout);
                   resolve({ duration: data.duration || 0, size: data.filesize_approx || data.filesize || 0 });
-                } catch(e) { log('⚠️ JSON نامعتبر'); resolve(null); }
+                } catch(e) {
+                  log('⚠️ JSON نامعتبر');
+                  resolve(null);
+                }
               });
             });
           }
 
-          // ======================== دانلود با نظارت سرعت ========================
+          // ======================== دانلود با نظارت سرعت و مهلت زمانی ========================
           function downloadWithSpeedMonitor(url, outputPath) {
             return new Promise((resolve) => {
               const args = [
@@ -337,11 +346,25 @@ jobs:
               ];
 
               const startTime = Date.now();
-              let lastSpeed = 0;
               let lowSpeedStart = null;
               let killed = false;
 
               const child = spawn('yt-dlp', args, { stdio: ['pipe', 'pipe', 'pipe'] });
+
+              // مهلت کلی دانلود (۱۰ دقیقه)
+              const deadlineTimer = setTimeout(() => {
+                if (!child.killed) {
+                  log('⏰ دانلود بیش از ۱۰ دقیقه طول کشید، متوقف شد.');
+                  child.kill('SIGTERM');
+                  killed = true;
+                  if (currentProxy) {
+                    const stats = proxyStats.get(currentProxy) || { speeds:[], failures:0, lastUsed: Date.now() };
+                    stats.failures++;
+                    stats.lastUsed = Date.now();
+                    proxyStats.set(currentProxy, stats);
+                  }
+                }
+              }, DOWNLOAD_DEADLINE);
 
               child.stderr.on('data', (data) => {
                 const lines = data.toString().split('\n');
@@ -353,7 +376,6 @@ jobs:
                     if (unit === 'K') speed *= 1024;
                     else if (unit === 'M') speed *= 1024 * 1024;
                     else if (unit === 'G') speed *= 1024 * 1024 * 1024;
-                    lastSpeed = speed;
 
                     if (speed < MIN_DOWNLOAD_SPEED) {
                       if (!lowSpeedStart) lowSpeedStart = Date.now();
@@ -376,8 +398,12 @@ jobs:
               });
 
               child.on('close', (code) => {
+                clearTimeout(deadlineTimer);
                 const elapsed = (Date.now() - startTime) / 1000;
-                if (killed || code !== 0) { resolve(null); return; }
+                if (killed || code !== 0) {
+                  resolve(null);
+                  return;
+                }
                 if (fs.existsSync(outputPath)) {
                   const size = fs.statSync(outputPath).size;
                   const speed = size / elapsed;
@@ -391,10 +417,16 @@ jobs:
                   }
                   log(`⬇️ دانلود در ${elapsed.toFixed(1)}s (≈${(speed/1024/1024).toFixed(2)} MiB/s)`);
                   resolve({ path: outputPath, time: elapsed.toFixed(1) });
-                } else resolve(null);
+                } else {
+                  resolve(null);
+                }
               });
 
-              child.on('error', (e) => { err('خطای spawn:', e.message); resolve(null); });
+              child.on('error', (e) => {
+                clearTimeout(deadlineTimer);
+                err('خطای spawn:', e.message);
+                resolve(null);
+              });
             });
           }
 
