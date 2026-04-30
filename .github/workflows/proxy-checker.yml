@@ -17,25 +17,28 @@ jobs:
           sudo apt-get install -y python3-pip ffmpeg
           pip install yt-dlp
 
+      - name: 🧹 تمیز‌سازی فایل کوکی
+        run: |
+          echo "🔧 حذف خطوط کامنت و خالی از فایل کوکی..."
+          grep -v '^#' youtube_cookies.txt | grep -v '^[[:space:]]*$' > /tmp/clean_cookies.txt
+          echo "تعداد خطوط کوکی واقعی: $(wc -l < /tmp/clean_cookies.txt)"
+          echo "نمونه خطوط:"
+          head -n 3 /tmp/clean_cookies.txt
+
       - name: 🚀 دانلود مستقیم و اندازه‌گیری سرعت
         run: |
           echo "==========================================="
           echo "🎯 شروع دانلود مستقیم (بدون پروکسی)"
           echo "🎬 ویدیو: https://www.youtube.com/watch?v=esJOOQG42r0"
-          echo "🍪 فقط با فایل youtube_cookies.txt"
+          echo "🍪 با فایل کوکی تمیز شده"
           echo "==========================================="
           
-          # پاک‌سازی هرگونه تنظیمات پروکسی در محیط
-          unset http_proxy
-          unset https_proxy
-          unset all_proxy
-          unset HTTP_PROXY
-          unset HTTPS_PROXY
-          unset ALL_PROXY
+          # حذف متغیرهای پروکسی
+          unset http_proxy https_proxy all_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY
           
-          # اندازه‌گیری زمان و دانلود
+          # دانلود و اندازه‌گیری زمان
           time yt-dlp \
-            --cookies youtube_cookies.txt \
+            --cookies /tmp/clean_cookies.txt \
             --no-playlist \
             --format "bestvideo[height<=1080]+bestaudio/best[height<=1080]" \
             --merge-output-format mp4 \
