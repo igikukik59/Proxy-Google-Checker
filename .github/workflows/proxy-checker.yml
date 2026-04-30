@@ -1,54 +1,253 @@
-name: 🧪 تست سرعت دانلود مستقیم با کوکی
+name: 🚀 تست نهایی سرعت با ترفندها
 
 on:
   workflow_dispatch:
 
 jobs:
-  test-cookie-direct:
+  final-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
-      - name: 📥 دریافت کد و فایل کوکی
+      - name: 📥 دریافت کد
         uses: actions/checkout@v4
 
-      - name: 🛠️ نصب yt-dlp
+      - name: 🧰 نصب پیش‌نیازها
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y python3-pip ffmpeg
+          sudo apt-get install -y curl unzip ffmpeg python3-pip aria2
           pip install yt-dlp
+          wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
+          unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
+          npm init -y
+          npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🧹 تمیز‌سازی فایل کوکی
+      - name: 🤖 اجرای خودکار (پروکسی ← کوکی ← دانلود سریع)
         run: |
-          echo "🔧 حذف خطوط کامنت و خالی از فایل کوکی..."
-          grep -v '^#' youtube_cookies.txt | grep -v '^[[:space:]]*$' > /tmp/clean_cookies.txt
-          echo "تعداد خطوط کوکی واقعی: $(wc -l < /tmp/clean_cookies.txt)"
-          echo "نمونه خطوط:"
-          head -n 3 /tmp/clean_cookies.txt
+          cat > run.cjs << 'ENDSCRIPT'
+          const { spawn, execSync } = require('child_process');
+          const fs = require('fs');
+          const path = require('path');
+          const puppeteer = require('puppeteer-extra');
+          const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+          puppeteer.use(StealthPlugin());
 
-      - name: 🚀 دانلود مستقیم و اندازه‌گیری سرعت
-        run: |
-          echo "==========================================="
-          echo "🎯 شروع دانلود مستقیم (بدون پروکسی)"
-          echo "🎬 ویدیو: https://www.youtube.com/watch?v=esJOOQG42r0"
-          echo "🍪 با فایل کوکی تمیز شده"
-          echo "==========================================="
-          
-          # حذف متغیرهای پروکسی
-          unset http_proxy https_proxy all_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY
-          
-          # دانلود و اندازه‌گیری زمان
-          time yt-dlp \
-            --cookies /tmp/clean_cookies.txt \
-            --no-playlist \
-            --format "bestvideo[height<=1080]+bestaudio/best[height<=1080]" \
-            --merge-output-format mp4 \
-            --output "/tmp/test_video.mp4" \
-            "https://www.youtube.com/watch?v=esJOOQG42r0"
+          const PROXY_FILE = 'کانفیگ های خوب.txt';
+          const YT_VIDEO = 'https://www.youtube.com/watch?v=esJOOQG42r0';
+          const COOKIE_FILE = '/tmp/youtube_cookies.txt';
+          const OUTPUT_VIDEO = '/tmp/test_video.mp4';
 
-      - name: 📊 بررسی نتیجه
+          function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
+          function log(...args) { console.log(`[${ts()}]`, ...args); }
+          function err(...args) { console.error(`[${ts()}] ❌`, ...args); }
+          const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+          // ===================== Xray (کامل) =====================
+          function parseURI(uri) {
+            try {
+              const u = new URL(uri);
+              return {
+                protocol: u.protocol.replace(':',''),
+                uuid: u.username,
+                address: u.hostname,
+                port: u.port,
+                params: Object.fromEntries(u.searchParams.entries())
+              };
+            } catch(e) { return null; }
+          }
+
+          function generateXrayConfig(uri) {
+            const p = parseURI(uri);
+            if (!p) return null;
+            const inbound = { port: 10808, protocol: 'socks', settings: { auth: 'noauth', udp: true } };
+            let outbound = {
+              protocol: p.protocol,
+              streamSettings: { network: p.params.type || 'tcp' }
+            };
+            if (p.protocol === 'trojan') {
+              outbound.settings = {
+                servers: [{ address: p.address, port: parseInt(p.port), password: p.uuid }]
+              };
+            } else {
+              outbound.settings = {
+                vnext: [{
+                  address: p.address,
+                  port: parseInt(p.port),
+                  users: [{ id: p.uuid, encryption: p.params.encryption || 'none', flow: p.params.flow || '' }]
+                }]
+              };
+            }
+            const network = p.params.type || 'tcp';
+            outbound.streamSettings.network = network;
+            if (network === 'ws') {
+              outbound.streamSettings.wsSettings = {
+                path: p.params.path || '/',
+                headers: p.params.host ? { Host: p.params.host } : {}
+              };
+            }
+            const security = p.params.security || 'none';
+            if (security === 'tls' || security === 'reality') {
+              outbound.streamSettings.security = security;
+              const tls = { serverName: p.params.sni || p.address };
+              if (security === 'reality') {
+                tls.fingerprint = p.params.fp || 'chrome';
+                tls.publicKey = p.params.pbk || '';
+                tls.shortId = p.params.sid || '';
+                tls.spiderX = '';
+              }
+              if (p.params.allowInsecure === '1') tls.allowInsecure = true;
+              if (p.params.alpn) tls.alpn = p.params.alpn.split(',');
+              outbound.streamSettings.tlsSettings = tls;
+            } else {
+              outbound.streamSettings.security = 'none';
+            }
+            return { inbounds: [inbound], outbounds: [outbound] };
+          }
+
+          async function startXray(uri, idx) {
+            const config = generateXrayConfig(uri);
+            if (!config) return null;
+            const cfgPath = `/tmp/xray_${idx}.json`;
+            fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
+            const xray = spawn(path.join(process.cwd(), 'xray', 'xray'), ['run', '-config', cfgPath], { stdio: 'pipe' });
+            await new Promise(r => setTimeout(r, 4000));
+            return xray;
+          }
+
+          function testCurl(port) {
+            try {
+              execSync(`curl --socks5 127.0.0.1:${port} --max-time 5 -s http://ip-api.com/json`, { encoding: 'utf8' });
+              return true;
+            } catch(e) { return false; }
+          }
+
+          // ===================== Netscape Cookie Formatter =====================
+          function cookiesToNetscape(cookies) {
+            const lines = ['# Netscape HTTP Cookie File', '']; // خط اول اجباری
+            for (const c of cookies) {
+              const domain = c.domain.startsWith('.') ? c.domain : '.' + c.domain;
+              const flag = c.secure ? 'TRUE' : 'FALSE';
+              const expires = c.expires > 0 ? Math.floor(c.expires) : 0;
+              lines.push(`${domain}\tTRUE\t${c.path}\t${flag}\t${expires}\t${c.name}\t${c.value}`);
+            }
+            return lines.join('\n');
+          }
+
+          // ===================== تابع اصلی =====================
+          (async () => {
+            if (!fs.existsSync(PROXY_FILE)) {
+              err(`فایل ${PROXY_FILE} یافت نشد.`);
+              process.exit(1);
+            }
+
+            const proxies = fs.readFileSync(PROXY_FILE, 'utf8')
+              .split('\n').map(l => l.trim())
+              .filter(l => /^(vless|trojan|ss|vmess):\/\//.test(l));
+            log(`تعداد پروکسی‌ها: ${proxies.length}`);
+
+            let xrayProc = null;
+            let success = false;
+
+            for (let i = 0; i < proxies.length; i++) {
+              const uri = proxies[i];
+              log(`\n🔌 تست پروکسی ${i+1}/${proxies.length}: ${uri.substring(0,60)}...`);
+
+              xrayProc = await startXray(uri, i);
+              if (!xrayProc) {
+                err('خطا در اجرای Xray');
+                continue;
+              }
+              if (!testCurl(10808)) {
+                err('پروکسی کار نمی‌کند');
+                xrayProc.kill();
+                await sleep(1000);
+                continue;
+              }
+
+              let browser;
+              try {
+                // 🍪 مرحله ۱: استخراج کوکی
+                browser = await puppeteer.launch({
+                  headless: 'new',
+                  args: [
+                    '--no-sandbox','--disable-setuid-sandbox',
+                    '--proxy-server=socks5://127.0.0.1:10808',
+                    '--disable-dev-shm-usage','--window-size=1280,720'
+                  ]
+                });
+                const page = await browser.newPage();
+                await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
+
+                log('🌐 باز کردن یوتیوب...');
+                await page.goto('https://www.youtube.com/', { waitUntil: 'networkidle2', timeout: 60000 });
+                await sleep(5000);
+
+                const cookies = await page.cookies();
+                log(`🍪 ${cookies.length} کوکی دریافت شد.`);
+                if (cookies.length === 0) {
+                  await browser.close();
+                  xrayProc.kill();
+                  continue;
+                }
+
+                const netscapeContent = cookiesToNetscape(cookies);
+                fs.writeFileSync(COOKIE_FILE, netscapeContent);
+                await browser.close();
+                log('✅ کوکی‌ها ذخیره شدند.');
+
+                // 🚀 مرحله ۲: دانلود با ترفندهای سرعت
+                log('📥 شروع دانلود سریع...');
+                const startTime = Date.now();
+
+                // تنظیمات aria2 برای حداکثر سرعت
+                const ariaArgs = ' -x 16 -s 16 -k 1M --file-allocation=none --max-connection-per-server=16 --min-split-size=1M --summary-interval=0 ';
+
+                try {
+                  execSync(
+                    `yt-dlp ` +
+                    `--cookies ${COOKIE_FILE} ` +
+                    `--proxy socks5h://127.0.0.1:10808 ` +
+                    `--downloader aria2c ` +
+                    `--downloader-args "aria2c:${ariaArgs}" ` +
+                    `-N 8 ` +                         // چندین قطعه موازی
+                    `--concurrent-fragments 8 ` +      // قطعات DASH همزمان
+                    `--buffer-size 1024K ` +
+                    `--no-playlist ` +
+                    `--format "bestvideo[height<=1080]+bestaudio/best[height<=1080]" ` +
+                    `--merge-output-format mp4 ` +
+                    `--output "${OUTPUT_VIDEO}" ` +
+                    `"${YT_VIDEO}"`,
+                    { stdio: 'inherit', timeout: 600000 }
+                  );
+                  const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+                  log(`🎉 دانلود در ${elapsed} ثانیه کامل شد.`);
+                  success = true;
+                  xrayProc.kill();
+                  break; // از حلقه بیرون برو
+                } catch(dlErr) {
+                  err('خطا در دانلود:', dlErr.message);
+                  xrayProc.kill();
+                  // پروکسی بعدی را امتحان کن
+                }
+              } catch(e) {
+                err('خطای کلی:', e.message);
+                if (browser) await browser.close().catch(()=>{});
+                xrayProc.kill();
+              }
+              await sleep(2000);
+            }
+
+            if (!success) {
+              err('❌ هیچ پروکسی موفق به دانلود نشد.');
+              process.exit(1);
+            }
+          })();
+          ENDSCRIPT
+
+          timeout 900 node run.cjs
+
+      - name: 📊 نمایش نتیجه
         run: |
           echo "==========================================="
           echo "📁 فایل دانلود شده:"
-          ls -lh /tmp/test_video.mp4 2>/dev/null || echo "❌ فایل وجود ندارد – دانلود ناموفق بود"
+          ls -lh /tmp/test_video.mp4 2>/dev/null || echo "❌ فایل دانلود وجود ندارد."
           echo "==========================================="
-          echo "🔎 سرعت و زمان دقیق در خطوط بالا (از خروجی yt-dlp و time) قابل مشاهده است."
