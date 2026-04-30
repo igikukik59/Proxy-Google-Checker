@@ -173,7 +173,7 @@ jobs:
             } catch(e) { err('دانلود شکست:', e.message); return null; }
           }
 
-          // ========== قطعه‌قطعه و ارسال (ffmpeg -segment_size) ==========
+          // ========== قطعه‌قطعه و ارسال (بر اساس حجم) ==========
           async function splitAndSend(chatId, videoPath, baseName) {
             const stats = fs.statSync(videoPath);
             const sizeMB = (stats.size/(1024*1024)).toFixed(1);
@@ -184,9 +184,8 @@ jobs:
             fs.mkdirSync(chunkDir, {recursive:true});
             const pattern = path.join(chunkDir, 'part_%03d.mp4');
 
-            // تقسیم با محدودیت حجم ۴۵MB
-            const cmd = `ffmpeg -i "${videoPath}" -c copy -f segment -segment_size 45M -reset_timestamps 1 "${pattern}"`;
-            execSync(cmd, {stdio:'inherit', timeout:600000});
+            // تقسیم بر اساس حجم ۴۵ مگابایت
+            execSync(`ffmpeg -i "${videoPath}" -c copy -f segment -segment_size 45M -reset_timestamps 1 "${pattern}"`, {stdio:'inherit', timeout:600000});
 
             const chunks = fs.readdirSync(chunkDir).filter(f=>f.endsWith('.mp4')).sort((a,b)=>{
               const na = parseInt(a.match(/\d+/)[0]), nb = parseInt(b.match(/\d+/)[0]);
@@ -245,90 +244,98 @@ jobs:
             await ensureProxy();
             if (!(await grabCookies())) { err('❌ کوکی اولیه شکست'); process.exit(1); }
 
+            // ----- پاکسازی تاریخچه پیام‌های قدیمی -----
+            log('🧹 پاکسازی پیام‌های قدیمی...');
             let offset = null;
-            const DEADLINE = Date.now() + 17380*1000;
+            while (true) {
+              const res = await api('getUpdates', { limit: 10, offset_id: offset });
+              const updates = res?.data?.updates;
+              if (!updates || updates.length === 0) break;
+              offset = res.data.next_offset_id;
+              if (!offset) break;
+            }
+            log('✅ تاریخچه پاک شد');
 
-            // نگاشت برای جلوگیری از ارسال مکرر راهنما
             const sentHelp = new Set();
+            const DEADLINE = Date.now() + 17380*1000;
 
             while (Date.now() < DEADLINE) {
               try {
-                const params = { limit: 10 };
-                if (offset !== null) params.offset_id = offset;
-                const upd = await api('getUpdates', params);
-                if (upd.error) { await sleep(5000); continue; }
-                const updates = upd?.data?.updates;
-                if (updates && updates.length) {
-                  for (const u of updates) {
-                    if (u.type !== 'NewMessage') continue;
-                    const chatId = u.chat_id;
-                    const msg = u.new_message;
-                    if (!msg?.text) continue;
-                    const text = msg.text.trim();
-
-                    const ytReg = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/;
-                    const m = text.match(ytReg);
-                    if (!m) {
-                      if (!sentHelp.has(chatId)) {
-                        await sendMessage(chatId, '👋 سلام! لینک یوتیوب رو بفرست تا دانلود کنم.');
-                        sentHelp.add(chatId);
-                      }
-                      continue;
-                    }
-                    // لینک یوتیوب دریافت شد
-                    const videoUrl = m[0];
-                    log(`🎬 درخواست از ${chatId}: ${videoUrl}`);
-                    await sendMessage(chatId, '📥 در حال دانلود...');
-
-                    await ensureProxy();
-                    if (!(await grabCookies())) {
-                      await sendMessage(chatId, '❌ گرفتن کوکی یوتیوب ناموفق.');
-                      continue;
-                    }
-
-                    // دانلود
-                    const dlResult = await downloadYouTube(videoUrl);
-                    if (!dlResult) {
-                      await sendMessage(chatId, '❌ دانلود ناموفق.');
-                      continue;
-                    }
-                    let videoPath = dlResult.path;
-                    const dlTime = dlResult.time;
-
-                    // تبدیل ظرف در صورت نیاز
-                    const compatPath = await makeCompatible(videoPath);
-                    if (compatPath !== videoPath) {
-                      try { fs.unlinkSync(videoPath); } catch(_){}
-                      videoPath = compatPath;
-                    }
-
-                    const finalSize = fs.statSync(videoPath).size;
-                    const finalMB = (finalSize / (1024*1024)).toFixed(1);
-                    await sendMessage(chatId, `✅ دانلود شد | حجم: ${finalMB}MB | زمان: ${dlTime}s`);
-
-                    if (finalSize <= 50*1024*1024) {
-                      const startUp = Date.now();
-                      const sent = await uploadAndSendVideo(chatId, videoPath, `🎬 ${path.basename(videoPath)}`);
-                      const upT = ((Date.now()-startUp)/1000).toFixed(1);
-                      if (sent) await sendMessage(chatId, `📤 ویدیو در ${upT}s ارسال شد.`);
-                      else await sendMessage(chatId, '❌ ارسال ناموفق.');
-                    } else {
-                      const splitStart = Date.now();
-                      const baseName = path.basename(videoPath, path.extname(videoPath));
-                      await splitAndSend(chatId, videoPath, baseName);
-                      const totalSplitTime = ((Date.now()-splitStart)/1000).toFixed(1);
-                      await sendMessage(chatId, `⏱️ کل زمان تقسیم و ارسال: ${totalSplitTime}s`);
-                    }
-
-                    try { fs.unlinkSync(videoPath); } catch(_){}
-                  }
-                  if (upd.data?.next_offset_id) offset = upd.data.next_offset_id;
+                const res = await api('getUpdates', { limit: 10, offset_id: offset });
+                if (res.error) { log('⚠️ خطا در getUpdates:', res.message || res.raw); await sleep(5000); continue; }
+                const updates = res?.data?.updates;
+                if (!updates || updates.length === 0) {
+                  await sleep(4000);
+                  continue;
                 }
+
+                for (const u of updates) {
+                  if (u.type !== 'NewMessage') continue;
+                  const chatId = u.chat_id;
+                  const msg = u.new_message;
+                  if (!msg?.text) continue;
+                  const text = msg.text.trim();
+
+                  const ytReg = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/;
+                  const m = text.match(ytReg);
+                  if (!m) {
+                    if (!sentHelp.has(chatId)) {
+                      await sendMessage(chatId, '👋 سلام! لینک یوتیوب رو بفرست تا دانلود کنم.');
+                      sentHelp.add(chatId);
+                    }
+                    continue;
+                  }
+
+                  const videoUrl = m[0];
+                  log(`🎬 درخواست از ${chatId}: ${videoUrl}`);
+                  await sendMessage(chatId, '📥 در حال دانلود...');
+
+                  await ensureProxy();
+                  if (!(await grabCookies())) {
+                    await sendMessage(chatId, '❌ گرفتن کوکی یوتیوب ناموفق.');
+                    continue;
+                  }
+
+                  const dlResult = await downloadYouTube(videoUrl);
+                  if (!dlResult) {
+                    await sendMessage(chatId, '❌ دانلود ناموفق.');
+                    continue;
+                  }
+                  let videoPath = dlResult.path;
+                  const dlTime = dlResult.time;
+
+                  const compatPath = await makeCompatible(videoPath);
+                  if (compatPath !== videoPath) {
+                    try { fs.unlinkSync(videoPath); } catch(_){}
+                    videoPath = compatPath;
+                  }
+
+                  const finalSize = fs.statSync(videoPath).size;
+                  const finalMB = (finalSize / (1024*1024)).toFixed(1);
+                  await sendMessage(chatId, `✅ دانلود شد | حجم: ${finalMB}MB | زمان: ${dlTime}s`);
+
+                  if (finalSize <= 50*1024*1024) {
+                    const startUp = Date.now();
+                    const sent = await uploadAndSendVideo(chatId, videoPath, `🎬 ${path.basename(videoPath)}`);
+                    const upT = ((Date.now()-startUp)/1000).toFixed(1);
+                    if (sent) await sendMessage(chatId, `📤 ویدیو در ${upT}s ارسال شد.`);
+                    else await sendMessage(chatId, '❌ ارسال ناموفق.');
+                  } else {
+                    const splitStart = Date.now();
+                    const baseName = path.basename(videoPath, path.extname(videoPath));
+                    await splitAndSend(chatId, videoPath, baseName);
+                    const totalSplitTime = ((Date.now()-splitStart)/1000).toFixed(1);
+                    await sendMessage(chatId, `⏱️ کل زمان تقسیم و ارسال: ${totalSplitTime}s`);
+                  }
+
+                  try { fs.unlinkSync(videoPath); } catch(_){}
+                }
+
+                if (res.data?.next_offset_id) offset = res.data.next_offset_id;
               } catch(e) {
                 err('حلقه اصلی:', e.message);
                 await sleep(5000);
               }
-              await sleep(4000);
             }
 
             if (xrayProc) xrayProc.kill();
