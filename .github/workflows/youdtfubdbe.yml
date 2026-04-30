@@ -1,4 +1,4 @@
-name: 🎬 ربات یوتیوب (نهایی کامل)
+name: 🎬 ربات یوتیوب (نسخهٔ طلایی)
 
 on:
   workflow_dispatch:
@@ -24,7 +24,7 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای ربات (نسخهٔ نهایی)
+      - name: 🤖 اجرای ربات طلایی
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
         run: |
@@ -41,10 +41,10 @@ jobs:
           const LOG_FILE = 'bot_log.txt';
           const STATS_FILE = 'bot_stats.json';
           const TOKEN = process.env.RUBIKA_BOT_TOKEN;
-          if (!TOKEN) { console.error('❌ RUBIKA_BOT_TOKEN تنظیم نشده'); process.exit(1); }
+          if (!TOKEN) { console.error('❌ TOKEN تنظیم نشده'); process.exit(1); }
 
-          const MAX_DURATION = 3600;          // ثانیه
-          const DAILY_LIMIT = 3600;          // کل مصرف مجاز هر کاربر در این اجرا
+          const MAX_DURATION = 3600;
+          const DAILY_LIMIT = 3600;
           const MAX_PROXY_RETRIES = 3;
           const MAX_QUEUE = 200;
 
@@ -54,7 +54,7 @@ jobs:
           const recentTimes = [];
           let currentProxy = null;
           let xrayProc = null;
-          const userDailyUsage = new Map();   // chatId -> ثانیه
+          const userDailyUsage = new Map();
 
           // ========== Logger ==========
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
@@ -109,9 +109,9 @@ jobs:
             catch(_) { return false; }
           }
 
-          // ======================== Rubika API ========================
+          // ======================== Rubika API (با مدیریت خطای nginx) ========================
           const BASE = `https://botapi.rubika.ir/v3/${TOKEN}`;
-          async function api(method, body={}, retries=3) {
+          async function api(method, body={}, retries=5) {
             const url = `${BASE}/${method}`;
             for (let a=0; a<retries; a++) {
               try {
@@ -119,10 +119,17 @@ jobs:
                 const res = await fetch(url, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:ctrl.signal});
                 clearTimeout(id);
                 const t = await res.text();
+                // اگر پاسخ HTML بود (خطای nginx)
+                if (t.startsWith('<!DOCTYPE html>') || t.includes('nginx')) {
+                  log(`⚠️ خطای HTML از سرور (تلاش ${a+1})، ۲ ثانیه صبر...`);
+                  await sleep(2000);
+                  continue;
+                }
                 let d; try { d = JSON.parse(t); } catch(_) { if (a<retries-1) { await sleep(2000*(a+1)); continue; } return {error:true, raw:t}; }
                 return d;
               } catch(e) { if (a<retries-1) { await sleep(2000*(a+1)); continue; } return {error:true, message:e.message}; }
             }
+            return {error:true, message:'بعد از ۵ تلاش ناموفق'};
           }
           async function sendMessage(chatId, text, keypad = null) {
             const body = { chat_id: chatId, text };
@@ -198,25 +205,16 @@ jobs:
             return false;
           }
 
-          // ======================== بررسی غیرهمگام مدت ویدیو ========================
+          // ======================== دریافت غیرهمگام اطلاعات ویدیو ========================
           function getVideoInfo(url) {
             const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "${url}"`;
             return new Promise((resolve) => {
               exec(cmd, { timeout: 15000 }, (error, stdout) => {
-                if (error) {
-                  log('⚠️ دریافت اطلاعات ویدیو ممکن نشد:', error.message);
-                  resolve(null);
-                  return;
-                }
+                if (error) { log('⚠️ دریافت اطلاعات ویدیو ممکن نشد:', error.message); resolve(null); return; }
                 try {
                   const data = JSON.parse(stdout);
-                  const duration = data.duration || 0;
-                  const size = data.filesize_approx || data.filesize || 0;
-                  resolve({ duration, size });
-                } catch(e) {
-                  log('⚠️ خطای JSON در اطلاعات ویدیو');
-                  resolve(null);
-                }
+                  resolve({ duration: data.duration || 0, size: data.filesize_approx || data.filesize || 0 });
+                } catch(e) { log('⚠️ JSON نامعتبر'); resolve(null); }
               });
             });
           }
@@ -252,7 +250,7 @@ jobs:
             return out;
           }
 
-          // ======================== تقسیم‌کنندهٔ پویا ========================
+          // ======================== تقسیم‌کنندهٔ پیشرفته ========================
           async function splitAndSend(chatId, videoPath, baseName) {
             const stats = fs.statSync(videoPath);
             const sizeMB = (stats.size / (1024*1024)).toFixed(1);
@@ -261,9 +259,9 @@ jobs:
 
             const dur = parseFloat(execSync(`ffprobe -v error -show_entries format=duration -of csv=p=0 "${videoPath}"`, {encoding:'utf8'}).trim());
             const br = parseFloat(execSync(`ffprobe -v error -show_entries format=bit_rate -of csv=p=0 "${videoPath}"`, {encoding:'utf8'}).trim());
-            const maxChunkBytes = 45 * 1024 * 1024;
-            let segTime = Math.floor((maxChunkBytes * 8) / br);
-            segTime = Math.min(600, Math.max(30, segTime));
+            const targetChunkBytes = 44 * 1024 * 1024; // هدف ۴۴ مگابایت
+            let segTime = Math.floor((targetChunkBytes * 8) / br);
+            segTime = Math.min(1800, Math.max(30, segTime)); // بین ۳۰ ثانیه و ۳۰ دقیقه
             log(`🎯 بیت‌ریت: ${(br/1000).toFixed(0)}kbps | مدت: ${dur.toFixed(1)}s | زمان قطعه: ${segTime}s`);
 
             if (dur <= segTime + 10) {
@@ -307,13 +305,13 @@ jobs:
             return true;
           }
 
-          // ======================== صف هوشمند ========================
+          // ======================== صف و زمان‌بندی ========================
           function getAverageTime() {
             if (recentTimes.length === 0) return 90;
             return recentTimes.reduce((a,b)=>a+b, 0) / recentTimes.length;
           }
 
-          // ======================== آمار و ذخیره‌سازی ========================
+          // ======================== آمار ========================
           const stats = {
             totalBytes: 0,
             totalVideos: 0,
@@ -321,7 +319,6 @@ jobs:
             uniqueUsers: new Set(),
             failedAttempts: 0
           };
-
           function saveStatsToFile() {
             const avgTime = getAverageTime();
             const data = {
@@ -346,18 +343,27 @@ jobs:
               execSync('git commit -m "📊 به‌روزرسانی لاگ و آمار"', {stdio:'pipe'});
               execSync('git push', {stdio:'pipe'});
               log('📤 لاگ و آمار push شد');
-            } catch(e) {
-              // ممکن است تغییری وجود نداشته باشد – اشکال ندارد
-            }
+            } catch(e) {}
           }
 
-          // ======================== پردازش یک درخواست ========================
+          // ======================== کی‌پد دائمی ========================
+          const mainKeypad = {
+            rows: [
+              { buttons: [
+                  { id: 'QUEUE_STATUS', type: 'Simple', button_text: '⏳ چقدر مونده؟' },
+                  { id: 'HELP', type: 'Simple', button_text: '❓ راهنما' }
+              ]}
+            ],
+            resize_keyboard: true,
+            one_time_keyboard: false
+          };
+
+          // ======================== پردازش درخواست اصلی ========================
           async function processRequest(chatId, url, videoDuration) {
             const startAll = Date.now();
             let success = false;
             try {
-              const delay = Math.floor(Math.random() * 4000) + 1000;
-              await sleep(delay);
+              await sleep(Math.floor(Math.random() * 4000) + 1000);
 
               let dlResult = null;
               for (let attempt = 0; attempt < MAX_PROXY_RETRIES; attempt++) {
@@ -391,17 +397,14 @@ jobs:
                 videoPath = compatPath;
               }
 
-              // استخراج دقیق مدت و حجم از فایل نهایی
-              const duration = parseFloat(execSync(`ffprobe -v error -show_entries format=duration -of csv=p=0 "${videoPath}"`, {encoding:'utf8'}).trim());
+              const durationReal = parseFloat(execSync(`ffprobe -v error -show_entries format=duration -of csv=p=0 "${videoPath}"`, {encoding:'utf8'}).trim());
               const finalSize = fs.statSync(videoPath).size;
               const finalMB = (finalSize/(1024*1024)).toFixed(1);
 
-              // بروزرسانی مصرف کاربر
-              userDailyUsage.set(chatId, (userDailyUsage.get(chatId) || 0) + duration);
-              // بروزرسانی آمار
+              userDailyUsage.set(chatId, (userDailyUsage.get(chatId) || 0) + durationReal);
               stats.totalBytes += finalSize;
               stats.totalVideos++;
-              stats.totalDuration += duration;
+              stats.totalDuration += durationReal;
               stats.uniqueUsers.add(chatId);
 
               await sendMessage(chatId, `✅ دانلود شد | حجم: ${finalMB}MB | زمان: ${dlTime}s`);
@@ -424,7 +427,7 @@ jobs:
               try { fs.unlinkSync(videoPath); } catch(_){}
               success = true;
             } catch(e) {
-              err('خطای غیرمنتظره در پردازش:', e.message);
+              err('خطای غیرمنتظره:', e.message);
               await sendMessage(chatId, '❌ خطایی رخ داد.');
               stats.failedAttempts++;
             } finally {
@@ -441,10 +444,7 @@ jobs:
           }
 
           async function processNext() {
-            if (queue.length === 0) {
-              isProcessing = false;
-              return;
-            }
+            if (queue.length === 0) { isProcessing = false; return; }
             isProcessing = true;
             const next = queue.shift();
             await sendMessage(next.chatId, '🔜 نوبت شما رسید! در حال دانلود...');
@@ -463,27 +463,20 @@ jobs:
               return;
             }
             if (queue.length >= MAX_QUEUE) {
-              sendMessage(chatId, '⚠️ ظرفیت صف تکمیل است. لطفاً بعداً امتحان کنید.');
+              sendMessage(chatId, '⚠️ ظرفیت صف تکمیل است.');
               return;
             }
             queue.push({ chatId, url, duration });
             const position = queue.length;
             const avg = getAverageTime();
             const estMin = Math.ceil((position * avg) / 60);
-            const keypad = {
-              rows: [
-                { buttons: [ { id: 'QUEUE_STATUS', type: 'Simple', button_text: '⏳ چقدر مونده؟' } ] }
-              ],
-              resize_keyboard: true,
-              one_time_keyboard: false
-            };
-            sendMessage(chatId, `🔢 شما نفر ${position} در صف هستید.\n⏱️ زمان انتظار تقریبی: ${estMin} دقیقه`, keypad);
+            sendMessage(chatId, `🔢 شما نفر ${position} در صف هستید.\n⏱️ زمان انتظار تقریبی: ${estMin} دقیقه`, mainKeypad);
           }
 
           async function handleQueueStatus(chatId) {
             const idx = queue.findIndex(item => item.chatId === chatId);
             if (idx === -1) {
-              await sendMessage(chatId, 'ℹ️ درخواست فعالی برای شما یافت نشد.');
+              await sendMessage(chatId, 'ℹ️ درخواست فعالی ندارید.');
               return;
             }
             const position = idx + 1;
@@ -491,10 +484,28 @@ jobs:
             const estSec = Math.ceil(position * avg);
             const estMin = Math.floor(estSec / 60);
             const estRemSec = estSec % 60;
-            let timeText = estMin > 0 ? `${estMin} دقیقه و ${estRemSec} ثانیه` : `${estSec} ثانیه`;
-            await sendMessage(chatId, `📍 شما نفر ${position} در صف هستید.\n⏳ حدوداً ${timeText} دیگر نوبت شماست.`);
+            const timeText = estMin > 0 ? `${estMin} دقیقه و ${estRemSec} ثانیه` : `${estSec} ثانیه`;
+            await sendMessage(chatId, `📍 شما نفر ${position} در صف هستید.\n⏳ حدود ${timeText} دیگر نوبت شماست.`);
           }
 
+          async function handleHelp(chatId) {
+            const helpText = 
+              'راهنمای ربات دانلود یوتیوب\n\n' +
+              '(1) یک ویدیو در یوتیوب پیدا کنید (در گوگل سرچ کنید یا از لینک مستقیم استفاده کنید).\n' +
+              '(2) لینک کامل ویدیو (مثلاً https://youtube.com/watch?v=... یا https://youtu.be/...) را کپی کنید و در همین چت بفرستید.\n' +
+              '(3) ربات ابتدا مدت ویدیو را بررسی می‌کند (حداکثر ۶۰ دقیقه) و در صورت تأیید، دانلود را شروع می‌کند.\n' +
+              '(4) در صورت شلوغ بودن ربات، درخواست شما در صف قرار می‌گیرد و می‌توانید با دکمه «چقدر مونده؟» وضعیت خود را بپرسید.\n' +
+              '(5) پس از دانلود، ویدیو به صورت قطعات زیر ۵۰ مگابایت برای شما ارسال می‌شود.\n\n' +
+              'محدودیت‌ها:\n' +
+              '- هر ویدیو حداکثر ۱ ساعت\n' +
+              '- هر کاربر مجموعاً ۱ ساعت در این بازه (۶ ساعت) می‌تواند دانلود کند.\n\n' +
+              'نحوه اتصال و شفاف‌سازی:\n' +
+              'این ربات برای دانلود محتوای درخواستی شما، از منابع و مسیرهای ارتباطی استفاده می‌کند که توسط نهادهای رسمی و مسئول در کشور برای دسترسی به اینترنت بین‌الملل مجاز شمرده شده است. این سرویس صرفاً یک واسط برای دریافت محتوای آموزشی و عمومی بوده و هیچ‌گونه ترافیک حساس، ارتباط رمزنگاری‌شده غیرمتعارف، یا داده‌ای که به امنیت ملی یا منافع کشور آسیب برساند، از طریق آن رد و بدل نمی‌شود. هدف ما تسهیل دسترسی هموطنان به اطلاعات مفید و دانش جهانی، در چارچوب قوانین و مصالح کشور عزیزمان ایران است.\n\n' +
+              'کانال رسمی ما در روبیکا:\n' +
+              'https://rubika.ir/joinc/EIJHJDBI0JVRYRXAUOPHHLSQFFKWQBCB\n\n' +
+              'با فرستادن لینک شروع کنید!';
+            await sendMessage(chatId, helpText);
+          }
           // ======================== اجرای اصلی ========================
           (async () => {
             const me = await api('getMe');
@@ -502,7 +513,7 @@ jobs:
             log('✅ ربات:', me.data.bot.username);
 
             proxies = fs.readFileSync(PROXY_FILE, 'utf8').split('\n').map(l=>l.trim()).filter(l=>/^(vless|trojan|ss|vmess):\/\//.test(l));
-            if (proxies.length === 0) { err('هیچ پروکسی در فایل نیست'); process.exit(1); }
+            if (proxies.length === 0) { err('هیچ پروکسی وجود ندارد'); process.exit(1); }
             log(`${proxies.length} پروکسی خوب`);
 
             if (!(await switchToRandomProxy())) { err('❌ هیچ پروکسی سالمی یافت نشد'); process.exit(1); }
@@ -519,24 +530,22 @@ jobs:
             }
             log('✅ تاریخچه پاک شد');
 
-            // راه‌اندازی تایمر git push (هر ۱۰ دقیقه)
-            gitPushInterval = setInterval(() => {
-              saveStatsToFile();
-              gitPushAll();
-            }, 10 * 60 * 1000);
-
+            // ارسال کی‌پد دائمی برای کاربران فعال
             const sentHelp = new Set();
+            gitPushInterval = setInterval(() => { saveStatsToFile(); gitPushAll(); }, 10*60*1000);
             const DEADLINE = Date.now() + 17380*1000;
 
             while (Date.now() < DEADLINE) {
               try {
                 const res = await api('getUpdates', { limit: 10, offset_id: offset });
-                if (res.error) { log('⚠️ خطا در getUpdates:', res.message || res.raw); await sleep(5000); continue; }
-                const updates = res?.data?.updates;
-                if (!updates || updates.length === 0) {
-                  await sleep(4000);
+                if (res.error) {
+                  log('⚠️ خطای API:', res.message || res.raw);
+                  // اگر خطای HTML بود، ممکن است اینجا قبلاً پیام خطا داده باشیم، صبر می‌کنیم
+                  await sleep(5000);
                   continue;
                 }
+                const updates = res?.data?.updates;
+                if (!updates || updates.length === 0) { await sleep(4000); continue; }
 
                 for (const u of updates) {
                   if (u.type !== 'NewMessage') continue;
@@ -548,6 +557,10 @@ jobs:
                     await handleQueueStatus(chatId);
                     continue;
                   }
+                  if (buttonId === 'HELP') {
+                    await handleHelp(chatId);
+                    continue;
+                  }
 
                   if (!msg?.text) continue;
                   const text = msg.text.trim();
@@ -556,7 +569,7 @@ jobs:
                   const m = text.match(ytReg);
                   if (!m) {
                     if (!sentHelp.has(chatId)) {
-                      await sendMessage(chatId, '👋 سلام! لینک یوتیوب رو بفرست تا دانلود کنم.');
+                      await sendMessage(chatId, '👋 سلام! لینک یوتیوب رو بفرست تا دانلود کنم. از دکمه‌های زیر کمک بگیر.', mainKeypad);
                       sentHelp.add(chatId);
                     }
                     continue;
@@ -565,10 +578,9 @@ jobs:
                   const videoUrl = m[0];
                   log(`🎬 درخواست از ${chatId}: ${videoUrl}`);
 
-                  // دریافت اطلاعات ویدیو
                   const info = await getVideoInfo(videoUrl);
                   if (!info || !info.duration) {
-                    await sendMessage(chatId, '⚠️ نتوانستم اطلاعات این ویدیو را دریافت کنم.');
+                    await sendMessage(chatId, '⚠️ نتوانستم اطلاعات این ویدیو را دریافت کنم. لطفاً دوباره امتحان کنید.');
                     continue;
                   }
 
@@ -583,7 +595,7 @@ jobs:
                   if (info.duration > remaining) {
                     const usedMin = Math.floor(used / 60);
                     const remMin = Math.floor(remaining / 60);
-                    await sendMessage(chatId, `⚠️ شما امروز ${usedMin} دقیقه دانلود کرده‌اید. سهمیهٔ باقی‌مانده: ${remMin} دقیقه. این ویدیو ${Math.floor(info.duration/60)} دقیقه است و از حد مجاز فراتر می‌رود.`);
+                    await sendMessage(chatId, `⚠️ شما امروز ${usedMin} دقیقه دانلود کرده‌اید. سهمیهٔ باقی‌مانده: ${remMin} دقیقه. این ویدیو ${Math.floor(info.duration/60)} دقیقه است و از سهمیه فراتر می‌رود.`);
                     continue;
                   }
 
@@ -597,7 +609,6 @@ jobs:
               }
             }
 
-            // پایان کار
             clearInterval(gitPushInterval);
             saveStatsToFile();
             gitPushAll();
