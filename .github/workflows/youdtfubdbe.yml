@@ -466,13 +466,30 @@ jobs:
           let gitPushInterval;
           function gitPushAll() {
             try {
+              // بررسی وضعیت فایل‌های آماری
+              const status = execSync('git status --porcelain bot_log.txt bot_stats.json', {encoding:'utf8'}).trim();
+              if (!status) {
+                log('📁 فایل‌های آماری بدون تغییر، push انجام نمی‌شود.');
+                return;
+              }
+              // افزودن و commit
               execSync('git add bot_log.txt bot_stats.json', {stdio:'pipe'});
               execSync('git commit -m "📊 به‌روزرسانی لاگ و آمار"', {stdio:'pipe'});
+              // push
               execSync('git push', {stdio:'pipe'});
-              log('📤 لاگ و آمار push شد');
-            } catch(e) {}
+              log('📤 لاگ و آمار با موفقیت push شد');
+            } catch(e) {
+              err('خطا در git push:', e.message);
+              // تلاش مجدد ساده (اختیاری)
+              try {
+                sleep(2000);
+                execSync('git push', {stdio:'pipe'});
+                log('📤 تلاش مجدد push موفق بود');
+              } catch(retryErr) {
+                err('تلاش مجدد push نیز ناموفق:', retryErr.message);
+              }
+            }
           }
-
           // ======================== کی‌پد دائمی ========================
           const mainKeypad = {
             rows: [{ buttons: [
