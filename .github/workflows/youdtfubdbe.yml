@@ -8,7 +8,7 @@ on:
 jobs:
   bot:
     runs-on: ubuntu-latest
-    timeout-minutes: 350
+    timeout-minutes: 290
     permissions:
       contents: write
     steps:
@@ -36,10 +36,6 @@ jobs:
           const StealthPlugin = require('puppeteer-extra-plugin-stealth');
           puppeteer.use(StealthPlugin());
 
-          // تنظیم هویت git برای commit
-          execSync('git config --global user.name "github-actions[bot]"', {stdio:'pipe'});
-          execSync('git config --global user.email "github-actions[bot]@users.noreply.github.com"', {stdio:'pipe'});
-
           const PROXY_FILE = 'کانفیگ های خوب.txt';
           const COOKIE_FILE = '/tmp/youtube_cookies.txt';
           const LOG_FILE = 'bot_log.txt';
@@ -51,7 +47,6 @@ jobs:
           const DAILY_LIMIT = 3600;          // کل مصرف مجاز هر کاربر در این اجرا
           const MAX_PROXY_RETRIES = 3;
           const MAX_QUEUE = 200;
-          const MIN_SPEED_BYTES = 1 * 1024 * 1024; // ۱ مگابایت بر ثانیه
 
           let proxies = [];
           const queue = [];
@@ -60,7 +55,6 @@ jobs:
           let currentProxy = null;
           let xrayProc = null;
           const userDailyUsage = new Map();   // chatId -> ثانیه
-          let consecutiveSuccess = 0;         // شمارنده موفقیت‌های متوالی
 
           // ========== Logger ==========
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
@@ -227,7 +221,7 @@ jobs:
             });
           }
 
-          // ======================== دانلود ویدیو (با لاگ کامل) ========================
+          // ======================== دانلود ویدیو ========================
           async function downloadYouTube(url) {
             const out = '/tmp/video_raw.mp4';
             const fmt = `best[height<=480][ext=mp4] / best[height<=480]`;
@@ -319,7 +313,7 @@ jobs:
             return recentTimes.reduce((a,b)=>a+b, 0) / recentTimes.length;
           }
 
-          // ======================== آمار و ذخیره‌سازی (آپلود آنی) ========================
+          // ======================== آمار و ذخیره‌سازی ========================
           const stats = {
             totalBytes: 0,
             totalVideos: 0,
@@ -342,26 +336,25 @@ jobs:
               queueLength: queue.length,
               currentProxy: currentProxy ? currentProxy.substring(0,40) : 'none'
             };
-            try { fs.writeFileSync(STATS_FILE, JSON.stringify(data, null, 2)); log('📊 آمار به‌روزرسانی شد'); } catch(e) { err('خطای ذخیره آمار:', e.message); }
+            try { fs.writeFileSync(STATS_FILE, JSON.stringify(data, null, 2)); } catch(e) { err('خطای ذخیره آمار:', e.message); }
           }
 
+          let gitPushInterval;
           function gitPushAll() {
             try {
-              const status = execSync('git status --porcelain bot_log.txt bot_stats.json', {encoding:'utf8'}).trim();
-              if (!status) return;
               execSync('git add bot_log.txt bot_stats.json', {stdio:'pipe'});
               execSync('git commit -m "📊 به‌روزرسانی لاگ و آمار"', {stdio:'pipe'});
               execSync('git push', {stdio:'pipe'});
               log('📤 لاگ و آمار push شد');
-            } catch(e) {}
+            } catch(e) {
+              // ممکن است تغییری وجود نداشته باشد – اشکال ندارد
+            }
           }
 
           // ======================== پردازش یک درخواست ========================
           async function processRequest(chatId, url, videoDuration) {
             const startAll = Date.now();
             let success = false;
-            let finalSize = 0;
-            let dlTime = 0;
             try {
               const delay = Math.floor(Math.random() * 4000) + 1000;
               await sleep(delay);
@@ -390,7 +383,7 @@ jobs:
               }
 
               let videoPath = dlResult.path;
-              dlTime = dlResult.time;
+              const dlTime = dlResult.time;
 
               const compatPath = await makeCompatible(videoPath);
               if (compatPath !== videoPath) {
@@ -398,11 +391,14 @@ jobs:
                 videoPath = compatPath;
               }
 
+              // استخراج دقیق مدت و حجم از فایل نهایی
               const duration = parseFloat(execSync(`ffprobe -v error -show_entries format=duration -of csv=p=0 "${videoPath}"`, {encoding:'utf8'}).trim());
-              finalSize = fs.statSync(videoPath).size;
+              const finalSize = fs.statSync(videoPath).size;
               const finalMB = (finalSize/(1024*1024)).toFixed(1);
 
+              // بروزرسانی مصرف کاربر
               userDailyUsage.set(chatId, (userDailyUsage.get(chatId) || 0) + duration);
+              // بروزرسانی آمار
               stats.totalBytes += finalSize;
               stats.totalVideos++;
               stats.totalDuration += duration;
@@ -436,30 +432,10 @@ jobs:
               if (success) {
                 recentTimes.push(totalTime);
                 if (recentTimes.length > 5) recentTimes.shift();
-                // آپلود آنی آمار
-                saveStatsToFile();
-                gitPushAll();
-
-                // تصمیم‌گیری برای تعویض پروکسی
-                const speed = dlTime > 0 ? finalSize / dlTime : 0; // bytes per second
-                if (speed < MIN_SPEED_BYTES) {
-                  consecutiveSuccess = 0;
-                  await switchToRandomProxy();
-                  await grabCookies();
-                } else {
-                  consecutiveSuccess++;
-                  if (consecutiveSuccess >= 5) {
-                    consecutiveSuccess = 0;
-                    await switchToRandomProxy();
-                    await grabCookies();
-                  }
-                }
-              } else {
-                // دانلود ناموفق → حتماً پروکسی عوض شود
-                await switchToRandomProxy();
-                await grabCookies();
-                consecutiveSuccess = 0;
               }
+              saveStatsToFile();
+              await switchToRandomProxy();
+              await grabCookies();
               processNext();
             }
           }
@@ -543,20 +519,14 @@ jobs:
             }
             log('✅ تاریخچه پاک شد');
 
-            // ایجاد فایل آمار اولیه در صورت عدم وجود
-            if (!fs.existsSync(STATS_FILE)) {
-              saveStatsToFile();
-              gitPushAll();
-            }
-
-            const sentHelp = new Set();
-            const DEADLINE = Date.now() + 20940 * 1000; // ۵ ساعت و ۵۰ دقیقه
-
-            // تایمر پشتیبان برای push (هر ۱۰ دقیقه)
-            const backupPushInterval = setInterval(() => {
+            // راه‌اندازی تایمر git push (هر ۱۰ دقیقه)
+            gitPushInterval = setInterval(() => {
               saveStatsToFile();
               gitPushAll();
             }, 10 * 60 * 1000);
+
+            const sentHelp = new Set();
+            const DEADLINE = Date.now() + 17380*1000;
 
             while (Date.now() < DEADLINE) {
               try {
@@ -595,6 +565,7 @@ jobs:
                   const videoUrl = m[0];
                   log(`🎬 درخواست از ${chatId}: ${videoUrl}`);
 
+                  // دریافت اطلاعات ویدیو
                   const info = await getVideoInfo(videoUrl);
                   if (!info || !info.duration) {
                     await sendMessage(chatId, '⚠️ نتوانستم اطلاعات این ویدیو را دریافت کنم.');
@@ -626,7 +597,8 @@ jobs:
               }
             }
 
-            clearInterval(backupPushInterval);
+            // پایان کار
+            clearInterval(gitPushInterval);
             saveStatsToFile();
             gitPushAll();
             if (xrayProc) xrayProc.kill();
@@ -634,4 +606,4 @@ jobs:
           })();
           ENDSCRIPT
 
-          timeout 20940 node agent.cjs
+          timeout 17400 node agent.cjs
