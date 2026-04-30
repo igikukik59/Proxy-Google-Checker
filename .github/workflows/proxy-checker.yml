@@ -1,4 +1,4 @@
-name: 🎬 ربات یوتیوب (بدون فیلتر حجم، کاملاً روان)
+name: 🎬 ربات یوتیوب (نهایی کامل)
 
 on:
   workflow_dispatch:
@@ -24,7 +24,7 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای ربات (بدون فیلتر حجم)
+      - name: 🤖 اجرای ربات (نسخهٔ نهایی)
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
         run: |
@@ -38,10 +38,13 @@ jobs:
 
           const PROXY_FILE = 'کانفیگ های خوب.txt';
           const COOKIE_FILE = '/tmp/youtube_cookies.txt';
+          const LOG_FILE = 'bot_log.txt';
+          const STATS_FILE = 'bot_stats.json';
           const TOKEN = process.env.RUBIKA_BOT_TOKEN;
           if (!TOKEN) { console.error('❌ RUBIKA_BOT_TOKEN تنظیم نشده'); process.exit(1); }
 
-          const MAX_DURATION = 5400;          // ۱.۵ ساعت
+          const MAX_DURATION = 3600;          // ثانیه
+          const DAILY_LIMIT = 3600;          // کل مصرف مجاز هر کاربر در این اجرا
           const MAX_PROXY_RETRIES = 3;
           const MAX_QUEUE = 200;
 
@@ -51,10 +54,20 @@ jobs:
           const recentTimes = [];
           let currentProxy = null;
           let xrayProc = null;
+          const userDailyUsage = new Map();   // chatId -> ثانیه
 
+          // ========== Logger ==========
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
-          function log(...args) { console.log(`[${ts()}]`, ...args); }
-          function err(...args) { console.error(`[${ts()}] ❌`, ...args); }
+          function log(...args) {
+            const msg = `[${ts()}] ${args.join(' ')}`;
+            console.log(msg);
+            try { fs.appendFileSync(LOG_FILE, msg + '\n'); } catch(_){}
+          }
+          function err(...args) {
+            const msg = `[${ts()}] ❌ ${args.join(' ')}`;
+            console.error(msg);
+            try { fs.appendFileSync(LOG_FILE, msg + '\n'); } catch(_){}
+          }
           const sleep = ms => new Promise(r => setTimeout(r, ms));
 
           // ======================== Xray ========================
@@ -113,10 +126,7 @@ jobs:
           }
           async function sendMessage(chatId, text, keypad = null) {
             const body = { chat_id: chatId, text };
-            if (keypad) {
-              body.chat_keypad = keypad;
-              body.chat_keypad_type = 'New';
-            }
+            if (keypad) { body.chat_keypad = keypad; body.chat_keypad_type = 'New'; }
             return await api('sendMessage', body);
           }
           async function uploadAndSendVideo(chatId, videoPath, caption='') {
@@ -173,7 +183,7 @@ jobs:
           async function switchToRandomProxy() {
             if (xrayProc) { xrayProc.kill(); await sleep(500); xrayProc = null; }
             currentProxy = null;
-            for (let attempt = 0; attempt < proxies.length; attempt++) {
+            for (let i=0; i<proxies.length; i++) {
               const candidate = getRandomProxy();
               log(`🔀 تلاش با پروکسی تصادفی: ${candidate.substring(0,60)}...`);
               xrayProc = await startXray(candidate, Date.now());
@@ -189,27 +199,23 @@ jobs:
           }
 
           // ======================== بررسی غیرهمگام مدت ویدیو ========================
-          async function checkVideoEligibility(url) {
+          function getVideoInfo(url) {
             const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "${url}"`;
             return new Promise((resolve) => {
-              exec(cmd, { timeout: 15000 }, (error, stdout, stderr) => {
+              exec(cmd, { timeout: 15000 }, (error, stdout) => {
                 if (error) {
                   log('⚠️ دریافت اطلاعات ویدیو ممکن نشد:', error.message);
-                  resolve({ ok: true, warning: true }); // اجازه دانلود بده
+                  resolve(null);
                   return;
                 }
                 try {
                   const data = JSON.parse(stdout);
                   const duration = data.duration || 0;
-                  if (duration > MAX_DURATION) {
-                    const min = Math.floor(duration / 60);
-                    resolve({ ok: false, reason: `مدت ویدیو (${min} دقیقه) بیش از ۹۰ دقیقه مجاز است.` });
-                  } else {
-                    resolve({ ok: true });
-                  }
+                  const size = data.filesize_approx || data.filesize || 0;
+                  resolve({ duration, size });
                 } catch(e) {
-                  log('⚠️ خطای پردازش JSON اطلاعات ویدیو');
-                  resolve({ ok: true, warning: true });
+                  log('⚠️ خطای JSON در اطلاعات ویدیو');
+                  resolve(null);
                 }
               });
             });
@@ -224,8 +230,7 @@ jobs:
               execSync(
                 `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 ` +
                 `-N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist ` +
-                `--format "${fmt}" --merge-output-format mp4 --output "${out}" ` +
-                `"${url}"`,
+                `--format "${fmt}" --merge-output-format mp4 --output "${out}" "${url}"`,
                 {stdio:'inherit', timeout:600000}
               );
               const t = ((Date.now()-start)/1000).toFixed(1);
@@ -237,11 +242,11 @@ jobs:
 
           // ======================== تبدیل سریع ========================
           async function makeCompatible(inputPath) {
-            const probeExt = execSync(`ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 "${inputPath}"`, {encoding:'utf8'}).trim();
-            const audioExt = execSync(`ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of csv=p=0 "${inputPath}"`, {encoding:'utf8'}).trim();
+            const v = execSync(`ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 "${inputPath}"`, {encoding:'utf8'}).trim();
+            const a = execSync(`ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of csv=p=0 "${inputPath}"`, {encoding:'utf8'}).trim();
             const ext = path.extname(inputPath).toLowerCase();
-            if (ext === '.mp4' && probeExt==='h264' && audioExt==='aac') return inputPath;
-            log('🔄 تبدیل ظرف (فقط کپی) به MP4 سازگار...');
+            if (ext === '.mp4' && v==='h264' && a==='aac') return inputPath;
+            log('🔄 تبدیل ظرف (فقط کپی) به MP4...');
             const out = inputPath.replace(/\.\w+$/, '_ok.mp4');
             execSync(`ffmpeg -i "${inputPath}" -c copy -movflags +faststart "${out}"`, {stdio:'inherit', timeout:300000});
             return out;
@@ -250,32 +255,28 @@ jobs:
           // ======================== تقسیم‌کنندهٔ پویا ========================
           async function splitAndSend(chatId, videoPath, baseName) {
             const stats = fs.statSync(videoPath);
-            const sizeMB = (stats.size / (1024 * 1024)).toFixed(1);
+            const sizeMB = (stats.size / (1024*1024)).toFixed(1);
             log(`✂️ شروع تقسیم ${baseName} (${sizeMB}MB)`);
             await sendMessage(chatId, `📦 ویدیو ${sizeMB}MB است. در حال تقسیم هوشمند...`);
 
-            const duration = parseFloat(
-              execSync(`ffprobe -v error -show_entries format=duration -of csv=p=0 "${videoPath}"`, { encoding: 'utf8' }).trim()
-            );
-            const bitrate = parseFloat(
-              execSync(`ffprobe -v error -show_entries format=bit_rate -of csv=p=0 "${videoPath}"`, { encoding: 'utf8' }).trim()
-            );
-            const maxChunkSizeBytes = 45 * 1024 * 1024;
-            let segmentTime = Math.floor((maxChunkSizeBytes * 8) / bitrate);
-            segmentTime = Math.min(600, Math.max(30, segmentTime));
-            log(`🎯 بیت‌ریت: ${(bitrate/1000).toFixed(0)}kbps | مدت: ${duration.toFixed(1)}s | زمان قطعه: ${segmentTime}s`);
+            const dur = parseFloat(execSync(`ffprobe -v error -show_entries format=duration -of csv=p=0 "${videoPath}"`, {encoding:'utf8'}).trim());
+            const br = parseFloat(execSync(`ffprobe -v error -show_entries format=bit_rate -of csv=p=0 "${videoPath}"`, {encoding:'utf8'}).trim());
+            const maxChunkBytes = 45 * 1024 * 1024;
+            let segTime = Math.floor((maxChunkBytes * 8) / br);
+            segTime = Math.min(600, Math.max(30, segTime));
+            log(`🎯 بیت‌ریت: ${(br/1000).toFixed(0)}kbps | مدت: ${dur.toFixed(1)}s | زمان قطعه: ${segTime}s`);
 
-            if (duration <= segmentTime + 10) {
-              await sendMessage(chatId, `📤 ویدیو مستقیماً قابل ارسال است.`);
+            if (dur <= segTime + 10) {
+              await sendMessage(chatId, `📤 ویدیو مستقیماً ارسال می‌شود.`);
               return await uploadAndSendVideo(chatId, videoPath, `🎬 ${baseName}.mp4`);
             }
 
             const chunkDir = `/tmp/chunks_${Date.now()}`;
-            fs.mkdirSync(chunkDir, { recursive: true });
+            fs.mkdirSync(chunkDir, {recursive:true});
             const pattern = path.join(chunkDir, 'part_%03d.mp4');
-            execSync(`ffmpeg -i "${videoPath}" -c copy -f segment -segment_time ${segmentTime} -reset_timestamps 1 "${pattern}"`, { stdio: 'inherit', timeout: 600000 });
+            execSync(`ffmpeg -i "${videoPath}" -c copy -f segment -segment_time ${segTime} -reset_timestamps 1 "${pattern}"`, {stdio:'inherit', timeout:600000});
 
-            const chunks = fs.readdirSync(chunkDir).filter(f => f.endsWith('.mp4')).sort((a,b) => {
+            const chunks = fs.readdirSync(chunkDir).filter(f=>f.endsWith('.mp4')).sort((a,b)=>{
               const na = parseInt(a.match(/\d+/)[0]), nb = parseInt(b.match(/\d+/)[0]);
               return na - nb;
             });
@@ -312,7 +313,46 @@ jobs:
             return recentTimes.reduce((a,b)=>a+b, 0) / recentTimes.length;
           }
 
-          async function processRequest(chatId, url) {
+          // ======================== آمار و ذخیره‌سازی ========================
+          const stats = {
+            totalBytes: 0,
+            totalVideos: 0,
+            totalDuration: 0,
+            uniqueUsers: new Set(),
+            failedAttempts: 0
+          };
+
+          function saveStatsToFile() {
+            const avgTime = getAverageTime();
+            const data = {
+              totalDataMB: (stats.totalBytes / (1024*1024)).toFixed(2),
+              totalVideos: stats.totalVideos,
+              totalDurationMinutes: (stats.totalDuration / 60).toFixed(1),
+              uniqueUsers: stats.uniqueUsers.size,
+              failedAttempts: stats.failedAttempts,
+              avgProcessingTimeSec: avgTime.toFixed(1),
+              avgVideoSizeMB: stats.totalVideos > 0 ? (stats.totalBytes / stats.totalVideos / (1024*1024)).toFixed(2) : 0,
+              avgVideoDurationMin: stats.totalVideos > 0 ? (stats.totalDuration / stats.totalVideos / 60).toFixed(1) : 0,
+              queueLength: queue.length,
+              currentProxy: currentProxy ? currentProxy.substring(0,40) : 'none'
+            };
+            try { fs.writeFileSync(STATS_FILE, JSON.stringify(data, null, 2)); } catch(e) { err('خطای ذخیره آمار:', e.message); }
+          }
+
+          let gitPushInterval;
+          function gitPushAll() {
+            try {
+              execSync('git add bot_log.txt bot_stats.json', {stdio:'pipe'});
+              execSync('git commit -m "📊 به‌روزرسانی لاگ و آمار"', {stdio:'pipe'});
+              execSync('git push', {stdio:'pipe'});
+              log('📤 لاگ و آمار push شد');
+            } catch(e) {
+              // ممکن است تغییری وجود نداشته باشد – اشکال ندارد
+            }
+          }
+
+          // ======================== پردازش یک درخواست ========================
+          async function processRequest(chatId, url, videoDuration) {
             const startAll = Date.now();
             let success = false;
             try {
@@ -337,6 +377,7 @@ jobs:
               }
 
               if (!dlResult) {
+                stats.failedAttempts++;
                 await sendMessage(chatId, '❌ بعد از چندین تلاش دانلود ممکن نشد.');
                 return;
               }
@@ -350,8 +391,19 @@ jobs:
                 videoPath = compatPath;
               }
 
+              // استخراج دقیق مدت و حجم از فایل نهایی
+              const duration = parseFloat(execSync(`ffprobe -v error -show_entries format=duration -of csv=p=0 "${videoPath}"`, {encoding:'utf8'}).trim());
               const finalSize = fs.statSync(videoPath).size;
               const finalMB = (finalSize/(1024*1024)).toFixed(1);
+
+              // بروزرسانی مصرف کاربر
+              userDailyUsage.set(chatId, (userDailyUsage.get(chatId) || 0) + duration);
+              // بروزرسانی آمار
+              stats.totalBytes += finalSize;
+              stats.totalVideos++;
+              stats.totalDuration += duration;
+              stats.uniqueUsers.add(chatId);
+
               await sendMessage(chatId, `✅ دانلود شد | حجم: ${finalMB}MB | زمان: ${dlTime}s`);
 
               if (finalSize <= 50*1024*1024) {
@@ -374,12 +426,14 @@ jobs:
             } catch(e) {
               err('خطای غیرمنتظره در پردازش:', e.message);
               await sendMessage(chatId, '❌ خطایی رخ داد.');
+              stats.failedAttempts++;
             } finally {
               const totalTime = (Date.now() - startAll) / 1000;
               if (success) {
                 recentTimes.push(totalTime);
                 if (recentTimes.length > 5) recentTimes.shift();
               }
+              saveStatsToFile();
               await switchToRandomProxy();
               await grabCookies();
               processNext();
@@ -394,10 +448,10 @@ jobs:
             isProcessing = true;
             const next = queue.shift();
             await sendMessage(next.chatId, '🔜 نوبت شما رسید! در حال دانلود...');
-            processRequest(next.chatId, next.url);
+            processRequest(next.chatId, next.url, next.duration);
           }
 
-          function addToQueue(chatId, url) {
+          function addToQueue(chatId, url, duration) {
             if (queue.some(item => item.chatId === chatId)) {
               sendMessage(chatId, '⚠️ شما قبلاً یک درخواست در صف دارید.');
               return;
@@ -405,14 +459,14 @@ jobs:
             if (!isProcessing) {
               isProcessing = true;
               sendMessage(chatId, '📥 شروع دانلود...');
-              processRequest(chatId, url);
+              processRequest(chatId, url, duration);
               return;
             }
             if (queue.length >= MAX_QUEUE) {
-              sendMessage(chatId, '⚠️ ظرفیت صف تکمیل است.');
+              sendMessage(chatId, '⚠️ ظرفیت صف تکمیل است. لطفاً بعداً امتحان کنید.');
               return;
             }
-            queue.push({ chatId, url });
+            queue.push({ chatId, url, duration });
             const position = queue.length;
             const avg = getAverageTime();
             const estMin = Math.ceil((position * avg) / 60);
@@ -451,7 +505,7 @@ jobs:
             if (proxies.length === 0) { err('هیچ پروکسی در فایل نیست'); process.exit(1); }
             log(`${proxies.length} پروکسی خوب`);
 
-            if (!(await switchToRandomProxy())) { err('❌ هیچ پروکسی اولیه سالم نبود'); process.exit(1); }
+            if (!(await switchToRandomProxy())) { err('❌ هیچ پروکسی سالمی یافت نشد'); process.exit(1); }
             if (!(await grabCookies())) { err('❌ کوکی اولیه شکست'); process.exit(1); }
 
             log('🧹 پاکسازی پیام‌های قدیمی...');
@@ -464,6 +518,12 @@ jobs:
               if (!offset) break;
             }
             log('✅ تاریخچه پاک شد');
+
+            // راه‌اندازی تایمر git push (هر ۱۰ دقیقه)
+            gitPushInterval = setInterval(() => {
+              saveStatsToFile();
+              gitPushAll();
+            }, 10 * 60 * 1000);
 
             const sentHelp = new Set();
             const DEADLINE = Date.now() + 17380*1000;
@@ -505,14 +565,29 @@ jobs:
                   const videoUrl = m[0];
                   log(`🎬 درخواست از ${chatId}: ${videoUrl}`);
 
-                  // بررسی غیرهمگام مدت ویدیو
-                  const eligibility = await checkVideoEligibility(videoUrl);
-                  if (!eligibility.ok) {
-                    await sendMessage(chatId, `⚠️ ${eligibility.reason}`);
+                  // دریافت اطلاعات ویدیو
+                  const info = await getVideoInfo(videoUrl);
+                  if (!info || !info.duration) {
+                    await sendMessage(chatId, '⚠️ نتوانستم اطلاعات این ویدیو را دریافت کنم.');
                     continue;
                   }
 
-                  addToQueue(chatId, videoUrl);
+                  if (info.duration > MAX_DURATION) {
+                    const min = Math.floor(info.duration / 60);
+                    await sendMessage(chatId, `⚠️ مدت ویدیو (${min} دقیقه) بیش از ۶۰ دقیقه مجاز است.`);
+                    continue;
+                  }
+
+                  const used = userDailyUsage.get(chatId) || 0;
+                  const remaining = DAILY_LIMIT - used;
+                  if (info.duration > remaining) {
+                    const usedMin = Math.floor(used / 60);
+                    const remMin = Math.floor(remaining / 60);
+                    await sendMessage(chatId, `⚠️ شما امروز ${usedMin} دقیقه دانلود کرده‌اید. سهمیهٔ باقی‌مانده: ${remMin} دقیقه. این ویدیو ${Math.floor(info.duration/60)} دقیقه است و از حد مجاز فراتر می‌رود.`);
+                    continue;
+                  }
+
+                  addToQueue(chatId, videoUrl, info.duration);
                 }
 
                 if (res.data?.next_offset_id) offset = res.data.next_offset_id;
@@ -522,6 +597,10 @@ jobs:
               }
             }
 
+            // پایان کار
+            clearInterval(gitPushInterval);
+            saveStatsToFile();
+            gitPushAll();
             if (xrayProc) xrayProc.kill();
             log('⏹️ ربات خاموش شد');
           })();
