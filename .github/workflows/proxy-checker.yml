@@ -1,4 +1,4 @@
-name: 🎬 ربات یوتیوب (پیشرفته با فیلتر و پروکسی تصادفی)
+name: 🎬 ربات یوتیوب (بدون فیلتر حجم، کاملاً روان)
 
 on:
   workflow_dispatch:
@@ -24,12 +24,12 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای ربات هوشمند
+      - name: 🤖 اجرای ربات (بدون فیلتر حجم)
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
         run: |
           cat > agent.cjs << 'ENDSCRIPT'
-          const { spawn, execSync } = require('child_process');
+          const { spawn, execSync, exec } = require('child_process');
           const fs = require('fs');
           const path = require('path');
           const puppeteer = require('puppeteer-extra');
@@ -42,15 +42,14 @@ jobs:
           if (!TOKEN) { console.error('❌ RUBIKA_BOT_TOKEN تنظیم نشده'); process.exit(1); }
 
           const MAX_DURATION = 5400;          // ۱.۵ ساعت
-          const MAX_ESTIMATED_SIZE = 600 * 1024 * 1024; // ۶۰۰ مگابایت
-          const MAX_PROXY_RETRIES = 3;        // حداکثر تعویض پروکسی برای یک درخواست
+          const MAX_PROXY_RETRIES = 3;
           const MAX_QUEUE = 200;
 
           let proxies = [];
           const queue = [];
           let isProcessing = false;
           const recentTimes = [];
-          let currentProxy = null;    // پروکسی که الان فعال است
+          let currentProxy = null;
           let xrayProc = null;
 
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
@@ -139,7 +138,7 @@ jobs:
             return !!s?.data?.message_id;
           }
 
-          // ======================== کوکی یوتیوب با پروکسی فعلی ========================
+          // ======================== کوکی یوتیوب ========================
           async function grabCookies() {
             if (!currentProxy) return false;
             let browser;
@@ -165,18 +164,15 @@ jobs:
             } catch(e) { err('خطای کوکی:', e.message); if (browser) await browser.close().catch(()=>{}); return false; }
           }
 
-          // ======================== انتخاب تصادفی پروکسی و فعال‌سازی ========================
+          // ======================== پروکسی تصادفی ========================
           function getRandomProxy() {
             if (proxies.length === 0) return null;
             const idx = Math.floor(Math.random() * proxies.length);
             return proxies[idx];
           }
-
           async function switchToRandomProxy() {
-            // خاموش کردن پروکسی فعلی
             if (xrayProc) { xrayProc.kill(); await sleep(500); xrayProc = null; }
             currentProxy = null;
-
             for (let attempt = 0; attempt < proxies.length; attempt++) {
               const candidate = getRandomProxy();
               log(`🔀 تلاش با پروکسی تصادفی: ${candidate.substring(0,60)}...`);
@@ -192,34 +188,34 @@ jobs:
             return false;
           }
 
-          // ======================== بررسی حجم و زمان ویدیو (فیلتر) ========================
+          // ======================== بررسی غیرهمگام مدت ویدیو ========================
           async function checkVideoEligibility(url) {
-            try {
-              const info = execSync(
-                `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "${url}"`,
-                { encoding: 'utf8', timeout: 30000 }
-              );
-              const data = JSON.parse(info);
-              const duration = data.duration || 0;
-              const filesizeApprox = data.filesize_approx || data.filesize || 0;
-
-              if (duration > MAX_DURATION) {
-                const min = Math.floor(duration / 60);
-                return { ok: false, reason: `مدت ویدیو (${min} دقیقه) بیش از ۹۰ دقیقه مجاز است.` };
-              }
-              if (filesizeApprox > MAX_ESTIMATED_SIZE) {
-                const mb = (filesizeApprox / (1024*1024)).toFixed(0);
-                return { ok: false, reason: `حجم تخمینی ویدیو (≈${mb}MB) بیش از ۶۰۰MB مجاز است.` };
-              }
-              return { ok: true };
-            } catch(e) {
-              // اگر نشد اطلاعات گرفت، ریسک می‌کنیم و اجازه می‌دهیم
-              log('⚠️ نشد اطلاعات ویدیو چک شود، ادامه می‌دهیم...');
-              return { ok: true };
-            }
+            const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "${url}"`;
+            return new Promise((resolve) => {
+              exec(cmd, { timeout: 15000 }, (error, stdout, stderr) => {
+                if (error) {
+                  log('⚠️ دریافت اطلاعات ویدیو ممکن نشد:', error.message);
+                  resolve({ ok: true, warning: true }); // اجازه دانلود بده
+                  return;
+                }
+                try {
+                  const data = JSON.parse(stdout);
+                  const duration = data.duration || 0;
+                  if (duration > MAX_DURATION) {
+                    const min = Math.floor(duration / 60);
+                    resolve({ ok: false, reason: `مدت ویدیو (${min} دقیقه) بیش از ۹۰ دقیقه مجاز است.` });
+                  } else {
+                    resolve({ ok: true });
+                  }
+                } catch(e) {
+                  log('⚠️ خطای پردازش JSON اطلاعات ویدیو');
+                  resolve({ ok: true, warning: true });
+                }
+              });
+            });
           }
 
-          // ======================== دانلود ویدیو با کوکی فعلی ========================
+          // ======================== دانلود ویدیو ========================
           async function downloadYouTube(url) {
             const out = '/tmp/video_raw.mp4';
             const fmt = `best[height<=480][ext=mp4] / best[height<=480]`;
@@ -239,7 +235,7 @@ jobs:
             } catch(e) { err('دانلود شکست:', e.message); return null; }
           }
 
-          // ======================== تبدیل سریع (ظرف کپی) ========================
+          // ======================== تبدیل سریع ========================
           async function makeCompatible(inputPath) {
             const probeExt = execSync(`ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 "${inputPath}"`, {encoding:'utf8'}).trim();
             const audioExt = execSync(`ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of csv=p=0 "${inputPath}"`, {encoding:'utf8'}).trim();
@@ -251,7 +247,7 @@ jobs:
             return out;
           }
 
-          // ======================== تقسیم‌کنندهٔ پویا (بر اساس بیت‌ریت) ========================
+          // ======================== تقسیم‌کنندهٔ پویا ========================
           async function splitAndSend(chatId, videoPath, baseName) {
             const stats = fs.statSync(videoPath);
             const sizeMB = (stats.size / (1024 * 1024)).toFixed(1);
@@ -270,7 +266,7 @@ jobs:
             log(`🎯 بیت‌ریت: ${(bitrate/1000).toFixed(0)}kbps | مدت: ${duration.toFixed(1)}s | زمان قطعه: ${segmentTime}s`);
 
             if (duration <= segmentTime + 10) {
-              await sendMessage(chatId, `📤 ویدیو زیر ۵۰MB، مستقیم ارسال می‌شود.`);
+              await sendMessage(chatId, `📤 ویدیو مستقیماً قابل ارسال است.`);
               return await uploadAndSendVideo(chatId, videoPath, `🎬 ${baseName}.mp4`);
             }
 
@@ -310,7 +306,7 @@ jobs:
             return true;
           }
 
-          // ======================== صف و پردازش هوشمند ========================
+          // ======================== صف هوشمند ========================
           function getAverageTime() {
             if (recentTimes.length === 0) return 90;
             return recentTimes.reduce((a,b)=>a+b, 0) / recentTimes.length;
@@ -320,11 +316,9 @@ jobs:
             const startAll = Date.now();
             let success = false;
             try {
-              // تأخیر تصادفی ۱-۵ ثانیه برای طبیعی‌سازی
               const delay = Math.floor(Math.random() * 4000) + 1000;
               await sleep(delay);
 
-              // تلاش با پروکسی‌های تصادفی تا MAX_PROXY_RETRIES بار
               let dlResult = null;
               for (let attempt = 0; attempt < MAX_PROXY_RETRIES; attempt++) {
                 if (attempt > 0) {
@@ -386,7 +380,6 @@ jobs:
                 recentTimes.push(totalTime);
                 if (recentTimes.length > 5) recentTimes.shift();
               }
-              // تغییر پروکسی بعد از هر کار (تصادفی جدید)
               await switchToRandomProxy();
               await grabCookies();
               processNext();
@@ -406,7 +399,7 @@ jobs:
 
           function addToQueue(chatId, url) {
             if (queue.some(item => item.chatId === chatId)) {
-              sendMessage(chatId, '⚠️ شما قبلاً یک درخواست در صف دارید. لطفاً صبر کنید.');
+              sendMessage(chatId, '⚠️ شما قبلاً یک درخواست در صف دارید.');
               return;
             }
             if (!isProcessing) {
@@ -416,7 +409,7 @@ jobs:
               return;
             }
             if (queue.length >= MAX_QUEUE) {
-              sendMessage(chatId, '⚠️ ظرفیت صف تکمیل است. لطفاً بعداً تلاش کنید.');
+              sendMessage(chatId, '⚠️ ظرفیت صف تکمیل است.');
               return;
             }
             queue.push({ chatId, url });
@@ -458,7 +451,7 @@ jobs:
             if (proxies.length === 0) { err('هیچ پروکسی در فایل نیست'); process.exit(1); }
             log(`${proxies.length} پروکسی خوب`);
 
-            if (!(await switchToRandomProxy())) { err('❌ هیچ پروکسی اولیه‌ای سالم نبود'); process.exit(1); }
+            if (!(await switchToRandomProxy())) { err('❌ هیچ پروکسی اولیه سالم نبود'); process.exit(1); }
             if (!(await grabCookies())) { err('❌ کوکی اولیه شکست'); process.exit(1); }
 
             log('🧹 پاکسازی پیام‌های قدیمی...');
@@ -512,7 +505,7 @@ jobs:
                   const videoUrl = m[0];
                   log(`🎬 درخواست از ${chatId}: ${videoUrl}`);
 
-                  // فیلتر حجم/زمان
+                  // بررسی غیرهمگام مدت ویدیو
                   const eligibility = await checkVideoEligibility(videoUrl);
                   if (!eligibility.ok) {
                     await sendMessage(chatId, `⚠️ ${eligibility.reason}`);
