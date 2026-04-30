@@ -24,10 +24,9 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🤖 اجرای ربات
+      - name: 🤖 اجرای ربات جدید
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
-          RUBIKA_OWNER_CHAT_ID: ${{ secrets.RUBIKA_OWNER_CHAT_ID }}
         run: |
           cat > agent.cjs << 'ENDSCRIPT'
           const { spawn, execSync } = require('child_process');
@@ -40,14 +39,15 @@ jobs:
           const PROXY_FILE = 'کانفیگ های خوب.txt';
           const COOKIE_FILE = '/tmp/youtube_cookies.txt';
           const TOKEN = process.env.RUBIKA_BOT_TOKEN;
-          const OWNER = process.env.RUBIKA_OWNER_CHAT_ID || '';
+          if (!TOKEN) { console.error('❌ RUBIKA_BOT_TOKEN تنظیم نشده'); process.exit(1); }
 
+          // ========== Logger ==========
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
           function log(...args) { console.log(`[${ts()}]`, ...args); }
           function err(...args) { console.error(`[${ts()}] ❌`, ...args); }
           const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-          // ======================== Xray ========================
+          // ========== Xray ==========
           function parseURI(uri) {
             try {
               const u = new URL(uri);
@@ -86,7 +86,7 @@ jobs:
             catch(_) { return false; }
           }
 
-          // ======================== Rubika API ========================
+          // ========== Rubika API ==========
           const BASE = `https://botapi.rubika.ir/v3/${TOKEN}`;
           async function api(method, body={}, retries=3) {
             const url = `${BASE}/${method}`;
@@ -104,6 +104,7 @@ jobs:
           async function sendMessage(chatId, text) { return await api('sendMessage', {chat_id:chatId, text}); }
 
           async function uploadAndSendVideo(chatId, videoPath, caption='') {
+            const start = Date.now();
             const req = await api('requestSendFile', {type:'Video'});
             const upUrl = req?.data?.upload_url;
             if (!upUrl) { err('upload_url نگرفت'); return false; }
@@ -116,10 +117,12 @@ jobs:
             const fileId = j?.file_id || j?.data?.file_id;
             if (!fileId) { err('file_id یافت نشد'); return false; }
             const s = await api('sendFile', {chat_id:chatId, file_id:fileId, text:caption});
+            const elapsed = ((Date.now()-start)/1000).toFixed(1);
+            log(`⬆️ آپلود ${path.basename(videoPath)} در ${elapsed}s`);
             return !!s?.data?.message_id;
           }
 
-          // ======================== استخراج کوکی یوتیوب ========================
+          // ========== کوکی یوتیوب ==========
           async function grabCookies() {
             let browser;
             try {
@@ -144,103 +147,78 @@ jobs:
             } catch(e) { err('خطای کوکی:', e.message); if (browser) await browser.close().catch(()=>{}); return false; }
           }
 
-          // ======================== تبدیل سریع به MP4 (فقط کپی) ========================
-          // اگر ویدیو MP4 با کدک h264+aac نیست، با ffmpeg -c copy به MP4 تبدیل کن (بدون افت کیفیت و سریع)
+          // ========== تبدیل سریع ظرف (کپی) ==========
           async function makeCompatible(inputPath) {
             const probeExt = execSync(`ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 "${inputPath}"`, {encoding:'utf8'}).trim();
             const audioExt = execSync(`ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of csv=p=0 "${inputPath}"`, {encoding:'utf8'}).trim();
             const ext = path.extname(inputPath).toLowerCase();
-            if (ext === '.mp4' && probeExt==='h264' && audioExt==='aac') {
-              return inputPath; // از قبل سازگاره
-            }
-            log('🔄 تبدیل ظرف (فقط کپی) به MP4...');
+            if (ext === '.mp4' && probeExt==='h264' && audioExt==='aac') return inputPath; // سازگاره
+            log('🔄 تبدیل ظرف (فقط کپی) به MP4 سازگار...');
             const out = inputPath.replace(/\.\w+$/, '_ok.mp4');
             execSync(`ffmpeg -i "${inputPath}" -c copy -movflags +faststart "${out}"`, {stdio:'inherit', timeout:300000});
             return out;
           }
 
-          // ======================== دانلود ویدیوی یوتیوب ========================
+          // ========== دانلود ویدیو ==========
           async function downloadYouTube(url) {
             const out = '/tmp/video_raw.mp4';
-            // تلاش برای دریافت بهترین نسخه‌ی MP4 تا ۴۸۰p (حجم کمتر)
-            // اگر نبود، bestvideo+bestaudio (هر کیفیتی) و بعداً تبدیل ظرف انجام می‌شود
             const fmt = `best[height<=480][ext=mp4] / best[height<=480]`;
             const start = Date.now();
             try {
-              execSync(
-                `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 ` +
-                `-N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist ` +
-                `--format "${fmt}" --merge-output-format mp4 --output "${out}" "${url}"`,
-                { stdio:'inherit', timeout:600000 }
-              );
+              execSync(`yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "${fmt}" --merge-output-format mp4 --output "${out}" "${url}"`, {stdio:'inherit', timeout:600000});
               const t = ((Date.now()-start)/1000).toFixed(1);
-              log(`⬇️ دانلود در ${t} ثانیه`);
+              log(`⬇️ دانلود در ${t}s`);
               if (!fs.existsSync(out)) return null;
               return { path: out, time: parseFloat(t) };
             } catch(e) { err('دانلود شکست:', e.message); return null; }
           }
 
-          // ======================== قطعه‌قطعه کردن و ارسال ========================
-          function splitAndSendSequential(chatId, videoPath, baseName, notificationCallback) {
-            return new Promise(async (resolve) => {
-              const stats = fs.statSync(videoPath);
-              const sizeMB = (stats.size/(1024*1024)).toFixed(1);
-              log(`✂️ شروع تقسیم ${baseName} (${sizeMB}MB)`);
-              await sendMessage(chatId, `📦 ویدیو حجمش ${sizeMB}MB است و به قطعات زیر ۵۰MB تقسیم می‌شود.`);
+          // ========== قطعه‌قطعه و ارسال (ffmpeg -segment_size) ==========
+          async function splitAndSend(chatId, videoPath, baseName) {
+            const stats = fs.statSync(videoPath);
+            const sizeMB = (stats.size/(1024*1024)).toFixed(1);
+            log(`✂️ شروع تقسیم ${baseName} (${sizeMB}MB)`);
+            await sendMessage(chatId, `📦 ویدیو ${sizeMB}MB است. در حال تقسیم به قطعات ۴۵MB...`);
 
-              let segmentTime = 120; // شروع از ۲ دقیقه
-              let success = false;
+            const chunkDir = `/tmp/chunks_${Date.now()}`;
+            fs.mkdirSync(chunkDir, {recursive:true});
+            const pattern = path.join(chunkDir, 'part_%03d.mp4');
 
-              while (segmentTime >= 30 && !success) {
-                const chunkDir = `/tmp/chunks_${Date.now()}`;
-                fs.mkdirSync(chunkDir, {recursive:true});
-                const pattern = path.join(chunkDir, 'part_%03d.mp4');
+            // تقسیم با محدودیت حجم ۴۵MB
+            const cmd = `ffmpeg -i "${videoPath}" -c copy -f segment -segment_size 45M -reset_timestamps 1 "${pattern}"`;
+            execSync(cmd, {stdio:'inherit', timeout:600000});
 
-                // تقسیم سریع (فقط کپی)
-                execSync(`ffmpeg -i "${videoPath}" -c copy -f segment -segment_time ${segmentTime} -reset_timestamps 1 "${pattern}"`, {stdio:'pipe', timeout:600000});
-
-                const chunks = fs.readdirSync(chunkDir).filter(f=>f.endsWith('.mp4')).sort((a,b)=>{
-                  const na = parseInt(a.match(/\d+/)[0]), nb = parseInt(b.match(/\d+/)[0]);
-                  return na - nb;
-                });
-                if (chunks.length===0) { fs.rmdirSync(chunkDir,{recursive:true}); resolve(false); return; }
-
-                const tooLarge = chunks.some(f=>fs.statSync(path.join(chunkDir,f)).size > 50*1024*1024);
-                if (tooLarge) {
-                  log(`! یک قطعه >۵۰MB، کاهش segment_time به ${segmentTime/2}s`);
-                  fs.rmdirSync(chunkDir,{recursive:true});
-                  segmentTime = Math.floor(segmentTime / 2);
-                  continue;
-                }
-
-                // ارسال قطعه‌ها
-                const total = chunks.length;
-                for (let i=0; i<chunks.length; i++) {
-                  const chunkName = chunks[i];
-                  const chunkPath = path.join(chunkDir, chunkName);
-                  const chunkSize = (fs.statSync(chunkPath).size/(1024*1024)).toFixed(1);
-                  const newName = `${baseName}.part${String(i+1).padStart(2,'0')}.mp4`;
-                  const finalPath = path.join(chunkDir, newName);
-                  fs.renameSync(chunkPath, finalPath);
-
-                  const startUp = Date.now();
-                  const ok = await uploadAndSendVideo(chatId, finalPath, (i===total-1 ? `🎬 قسمت آخر ${baseName}` : `📦 ${newName} (${chunkSize}MB)`));
-                  const upTime = ((Date.now()-startUp)/1000).toFixed(1);
-                  log(`📤 قطعه ${i+1}/${total}: ${newName} آپلود در ${upTime}s`);
-                  if (typeof notificationCallback === 'function') {
-                    await notificationCallback(chatId, `📤 قطعه ${i+1}/${total} ارسال شد (${upTime}s) — ${chunkSize}MB`);
-                  }
-                  try { fs.unlinkSync(finalPath); } catch(_){}
-                  await sleep(500);
-                }
-                fs.rmdirSync(chunkDir,{recursive:true});
-                success = true;
-              }
-              resolve(success);
+            const chunks = fs.readdirSync(chunkDir).filter(f=>f.endsWith('.mp4')).sort((a,b)=>{
+              const na = parseInt(a.match(/\d+/)[0]), nb = parseInt(b.match(/\d+/)[0]);
+              return na - nb;
             });
+            if (chunks.length===0) { fs.rmdirSync(chunkDir,{recursive:true}); return false; }
+
+            const total = chunks.length;
+            let totalUpTime = 0;
+            for (let i=0; i<chunks.length; i++) {
+              const chunkName = chunks[i];
+              const chunkPath = path.join(chunkDir, chunkName);
+              const chunkSize = (fs.statSync(chunkPath).size/(1024*1024)).toFixed(1);
+              const newName = `${baseName}.part${String(i+1).padStart(2,'0')}.mp4`;
+              const finalPath = path.join(chunkDir, newName);
+              fs.renameSync(chunkPath, finalPath);
+
+              const startUp = Date.now();
+              const ok = await uploadAndSendVideo(chatId, finalPath, (i===total-1 ? `🎬 قسمت آخر ${baseName}` : `📦 ${newName} (${chunkSize}MB)`));
+              const upTime = ((Date.now()-startUp)/1000).toFixed(1);
+              totalUpTime += parseFloat(upTime);
+              log(`📤 قطعه ${i+1}/${total}: ${newName} آپلود در ${upTime}s`);
+              await sendMessage(chatId, `📤 قطعه ${i+1}/${total} ارسال شد (${upTime}s) — ${chunkSize}MB`);
+              try { fs.unlinkSync(finalPath); } catch(_){}
+              await sleep(500);
+            }
+            fs.rmdirSync(chunkDir,{recursive:true});
+            log(`مجموع زمان آپلود قطعات: ${totalUpTime.toFixed(1)}s`);
+            return true;
           }
 
-          // ======================== اجرای اصلی ========================
+          // ========== حلقه اصلی ==========
           (async () => {
             const me = await api('getMe');
             if (!me?.data?.bot?.username) { err('توکن نامعتبر'); process.exit(1); }
@@ -265,12 +243,14 @@ jobs:
             }
 
             await ensureProxy();
-            if (OWNER) await sendMessage(OWNER, '🟢 ربات روشن شد');
-
             if (!(await grabCookies())) { err('❌ کوکی اولیه شکست'); process.exit(1); }
 
             let offset = null;
             const DEADLINE = Date.now() + 17380*1000;
+
+            // نگاشت برای جلوگیری از ارسال مکرر راهنما
+            const sentHelp = new Set();
+
             while (Date.now() < DEADLINE) {
               try {
                 const params = { limit: 10 };
@@ -289,30 +269,33 @@ jobs:
                     const ytReg = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/;
                     const m = text.match(ytReg);
                     if (!m) {
-                      await sendMessage(chatId, '👋 سلام! لینک یوتیوب رو بفرست.');
+                      if (!sentHelp.has(chatId)) {
+                        await sendMessage(chatId, '👋 سلام! لینک یوتیوب رو بفرست تا دانلود کنم.');
+                        sentHelp.add(chatId);
+                      }
                       continue;
                     }
+                    // لینک یوتیوب دریافت شد
                     const videoUrl = m[0];
                     log(`🎬 درخواست از ${chatId}: ${videoUrl}`);
-                    await sendMessage(chatId, '📥 در حال بررسی و دانلود...');
+                    await sendMessage(chatId, '📥 در حال دانلود...');
 
-                    // اطمینان از پروکسی و کوکی
                     await ensureProxy();
                     if (!(await grabCookies())) {
-                      await sendMessage(chatId, '❌ گرفتن کوکی جدید ممکن نشد.');
+                      await sendMessage(chatId, '❌ گرفتن کوکی یوتیوب ناموفق.');
                       continue;
                     }
 
                     // دانلود
                     const dlResult = await downloadYouTube(videoUrl);
                     if (!dlResult) {
-                      await sendMessage(chatId, '❌ دانلود ناموفق بود.');
+                      await sendMessage(chatId, '❌ دانلود ناموفق.');
                       continue;
                     }
                     let videoPath = dlResult.path;
                     const dlTime = dlResult.time;
 
-                    // تبدیل در صورت نیاز
+                    // تبدیل ظرف در صورت نیاز
                     const compatPath = await makeCompatible(videoPath);
                     if (compatPath !== videoPath) {
                       try { fs.unlinkSync(videoPath); } catch(_){}
@@ -321,28 +304,22 @@ jobs:
 
                     const finalSize = fs.statSync(videoPath).size;
                     const finalMB = (finalSize / (1024*1024)).toFixed(1);
-
-                    // ارسال خلاصه
-                    await sendMessage(chatId, `✅ دانلود شد | حجم: ${finalMB}MB | زمان دانلود: ${dlTime}s`);
+                    await sendMessage(chatId, `✅ دانلود شد | حجم: ${finalMB}MB | زمان: ${dlTime}s`);
 
                     if (finalSize <= 50*1024*1024) {
-                      const upStart = Date.now();
-                      const sent = await uploadAndSendVideo(chatId, videoPath, '🎬 ویدیوی شما');
-                      const upT = ((Date.now()-upStart)/1000).toFixed(1);
-                      log(`📤 ارسال یکباره در ${upT}s`);
-                      await sendMessage(chatId, `📤 ویدیو در ${upT} ثانیه ارسال شد.`);
+                      const startUp = Date.now();
+                      const sent = await uploadAndSendVideo(chatId, videoPath, `🎬 ${path.basename(videoPath)}`);
+                      const upT = ((Date.now()-startUp)/1000).toFixed(1);
+                      if (sent) await sendMessage(chatId, `📤 ویدیو در ${upT}s ارسال شد.`);
+                      else await sendMessage(chatId, '❌ ارسال ناموفق.');
                     } else {
-                      // تقسیم و ارسال
-                      const baseName = path.basename(videoPath, path.extname(videoPath));
                       const splitStart = Date.now();
-                      await splitAndSendSequential(chatId, videoPath, baseName, async (cid, txt) => {
-                        await sendMessage(cid, txt);
-                      });
+                      const baseName = path.basename(videoPath, path.extname(videoPath));
+                      await splitAndSend(chatId, videoPath, baseName);
                       const totalSplitTime = ((Date.now()-splitStart)/1000).toFixed(1);
-                      await sendMessage(chatId, `⏱️ کل زمان تقسیم و ارسال: ${totalSplitTime} ثانیه`);
+                      await sendMessage(chatId, `⏱️ کل زمان تقسیم و ارسال: ${totalSplitTime}s`);
                     }
 
-                    // پاکسازی فایل اصلی
                     try { fs.unlinkSync(videoPath); } catch(_){}
                   }
                   if (upd.data?.next_offset_id) offset = upd.data.next_offset_id;
@@ -355,7 +332,7 @@ jobs:
             }
 
             if (xrayProc) xrayProc.kill();
-            if (OWNER) await sendMessage(OWNER, '⏹️ ربات خاموش شد');
+            log('⏹️ ربات خاموش شد');
           })();
           ENDSCRIPT
 
