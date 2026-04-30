@@ -1,167 +1,166 @@
-name: 🖥️ Hardware Info + Save to Repo
+name: 🍪 استخراج کوکی یوتیوب
 
 on:
-  workflow_dispatch:   # فقط دستی اجرا می‌شود
+  workflow_dispatch:          # اجرای دستی
+  schedule:
+    - cron: '0 0 */2 * *'    # هر ۲ روز یکبار (اختیاری)
 
 jobs:
-  gather-info:
+  extract-cookies:
     runs-on: ubuntu-latest
+    timeout-minutes: 30       # حداکثر زمان
     permissions:
-      contents: write   # برای push کردن فایل لازم است
+      contents: write         # برای پوش کردن فایل
 
     steps:
       - name: 📥 دریافت کد مخزن
         uses: actions/checkout@v4
-        # با توکن پیش‌فرض GITHUB_TOKEN کار می‌کند
-        # در صورت نیاز به توکن سفارشی، می‌توانید از یک Secret استفاده کنید:
-        # with:
-        #   token: ${{ secrets.GH_PAT }}
 
-      - name: 🔍 جمع‌آوری اطلاعات واقعی سخت‌افزار
+      - name: 🧰 نصب ابزارها
         run: |
-          echo "============================================"
-          echo "   🏷️  سیستم‌عامل و کرنل"
-          echo "============================================"
-          cat /etc/os-release | grep PRETTY_NAME | cut -d '"' -f2
-          uname -a
-          echo ""
+          sudo apt-get update -qq
+          sudo apt-get install -y curl unzip chromium-browser
+          # Xray
+          wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
+          unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
+          # Node modules
+          npm init -y
+          npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-          echo "============================================"
-          echo "   🧠 پردازنده (CPU)"
-          echo "============================================"
-          lscpu
-          echo ""
-          # جزئیات واقعی از /proc
-          echo "مدل CPU:"
-          cat /proc/cpuinfo | grep "model name" | head -1 | cut -d ':' -f2 | xargs
-          echo "معماری: $(uname -m)"
-          echo "تعداد هسته‌ها: $(nproc)"
-          echo "سرعت فعلی: $(cat /proc/cpuinfo | grep "cpu MHz" | head -1 | cut -d ':' -f2 | xargs) MHz"
-          echo "کش: $(lscpu | grep "L3 cache" | awk '{print $NF}') (در صورت وجود)"
-          echo ""
+      - name: 🍪 اجرای استخراج کوکی
+        run: |
+          cat > extract_cookies.cjs << 'ENDSCRIPT'
+          const { spawn, execSync } = require('child_process');
+          const fs = require('fs');
+          const path = require('path');
+          const puppeteer = require('puppeteer-extra');
+          const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+          puppeteer.use(StealthPlugin());
 
-          echo "============================================"
-          echo "   🧮 حافظه (RAM)"
-          echo "============================================"
-          free -h
-          echo ""
-          echo "جزئیات واقعی:"
-          cat /proc/meminfo | grep -E "MemTotal|MemFree|SwapTotal|MemAvailable|SwapFree" | sed 's/^/  /'
-          echo ""
+          const PROXY_FILE = 'کانفیگ های خوب.txt';
+          const OUTPUT_FILE = 'youtube_cookies.txt';
+          const YOUTUBE_URL = 'https://www.youtube.com/';
 
-          echo "============================================"
-          echo "   💾 دیسک (Disk)"
-          echo "============================================"
-          df -h /
-          echo ""
-          lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,ROTA 2>/dev/null || echo "lsblk در دسترس نیست"
-          echo ""
-          # فضای موقت /tmp
-          echo "/tmp:"
-          df -h /tmp || true
-          echo ""
+          // ============ Helpers ============
+          function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
+          function log(...args) { console.log(`[${ts()}]`, ...args); }
+          function err(...args) { console.error(`[${ts()}] ❌`, ...args); }
+          const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-          echo "============================================"
-          echo "   🌐 شبکه"
-          echo "============================================"
-          ip addr show 2>/dev/null | grep -E "inet " | head -5
-          echo ""
-          cat /etc/resolv.conf 2>/dev/null || true
-          echo ""
+          // ============ Xray (تکراری از کد اصلی) ============
+          function parseURI(uri) { /* ... */ }
+          function generateXrayConfig(uri) { /* ... */ }
+          async function startXray(uri, idx) { /* ... */ }
+          function testCurl(port) { /* ... */ }
 
-          echo "============================================"
-          echo "   🔌 سخت‌افزار متصل (PCI)"
-          echo "============================================"
-          lspci 2>/dev/null || echo "lspci در دسترس نیست"
+          // ============ Netscape cookie formatter ============
+          function cookiesToNetscape(cookies) {
+            return cookies.map(c => {
+              const domain = c.domain.startsWith('.') ? c.domain : '.' + c.domain;
+              const flag = c.secure ? 'TRUE' : 'FALSE';
+              const expires = c.expires > 0 ? Math.floor(c.expires) : 0;
+              return `${domain}\tTRUE\t${c.path}\t${flag}\t${expires}\t${c.name}\t${c.value}`;
+            }).join('\n');
+          }
 
-          # ذخیره‌ی خروجی کامل در یک فایل
-          exec > hardware-info.txt 2>&1
-          # اجرای مجدد همه‌ی موارد بالا برای ورود به فایل
-          echo "============================================"
-          echo "   🏷️  سیستم‌عامل و کرنل"
-          echo "============================================"
-          cat /etc/os-release | grep PRETTY_NAME | cut -d '"' -f2
-          uname -a
-          echo ""
+          // ============ Main ============
+          (async () => {
+            if (!fs.existsSync(PROXY_FILE)) {
+              err(`فایل ${PROXY_FILE} یافت نشد.`);
+              process.exit(1);
+            }
 
-          echo "============================================"
-          echo "   🧠 پردازنده (CPU)"
-          echo "============================================"
-          lscpu
-          echo ""
-          echo "مدل CPU:"
-          cat /proc/cpuinfo | grep "model name" | head -1 | cut -d ':' -f2 | xargs
-          echo "معماری: $(uname -m)"
-          echo "تعداد هسته‌ها: $(nproc)"
-          echo "سرعت فعلی: $(cat /proc/cpuinfo | grep "cpu MHz" | head -1 | cut -d ':' -f2 | xargs) MHz"
-          echo ""
+            const proxies = fs.readFileSync(PROXY_FILE, 'utf8')
+              .split('\n').map(l => l.trim())
+              .filter(l => /^(vless|trojan|ss|vmess):\/\//.test(l));
+            log(`تعداد پروکسی‌ها: ${proxies.length}`);
 
-          echo "============================================"
-          echo "   🧮 حافظه (RAM)"
-          echo "============================================"
-          free -h
-          echo ""
-          cat /proc/meminfo | grep -E "MemTotal|MemFree|SwapTotal|MemAvailable|SwapFree" | sed 's/^/  /'
-          echo ""
+            let allCookiesLines = [];
+            let successCount = 0;
 
-          echo "============================================"
-          echo "   💾 دیسک (Disk)"
-          echo "============================================"
-          df -h /
-          echo ""
-          lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,ROTA 2>/dev/null || true
-          echo ""
-          df -h /tmp || true
-          echo ""
+            for (let i = 0; i < proxies.length; i++) {
+              const uri = proxies[i];
+              log(`\n🔌 تست پروکسی ${i+1}/${proxies.length}: ${uri.substring(0,60)}...`);
 
-          echo "============================================"
-          echo "   🌐 شبکه"
-          echo "============================================"
-          ip addr show 2>/dev/null | grep -E "inet " | head -5
-          echo ""
-          cat /etc/resolv.conf 2>/dev/null || true
-          echo ""
+              // راه‌اندازی Xray
+              const xrayProc = await startXray(uri, i);
+              if (!xrayProc) {
+                err('خطا در اجرای Xray');
+                continue;
+              }
+              if (!testCurl(10808)) {
+                err('پروکسی کار نمی‌کند');
+                xrayProc.kill();
+                await sleep(1000);
+                continue;
+              }
 
-          echo "============================================"
-          echo "   🔌 سخت‌افزار متصل (PCI)"
-          echo "============================================"
-          lspci 2>/dev/null || echo "lspci در دسترس نیست"
+              let browser;
+              try {
+                // راه‌اندازی مرورگر با پروکسی
+                browser = await puppeteer.launch({
+                  headless: 'new',
+                  executablePath: '/usr/bin/chromium-browser',
+                  args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--proxy-server=socks5://127.0.0.1:10808',
+                    '--disable-dev-shm-usage',
+                    '--window-size=1280,720'
+                  ]
+                });
+                const page = await browser.newPage();
+                await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
 
-        # حالا فایل hardware-info.txt در ریشه‌ی مخزن ایجاد شده است
+                // رفتن به یوتیوب
+                log('مرورگر باز شد، رفتن به یوتیوب...');
+                await page.goto(YOUTUBE_URL, { waitUntil: 'networkidle2', timeout: 60000 });
+                await sleep(5000);
 
-      - name: 📄 نمایش فایل تولیدشده (جهت بررسی)
-        run: cat hardware-info.txt
+                // بررسی بلاک
+                const bodyText = await page.evaluate(() => document.body.innerText.toLowerCase());
+                const blocked = ['access denied', 'you have been blocked', 'cloudflare', 'attention required'].some(t => bodyText.includes(t));
+                if (blocked) {
+                  log('⛔ پروکسی توسط یوتیوب بلاک شده است.');
+                  await browser.close();
+                  xrayProc.kill();
+                  continue;
+                }
 
-      - name: 💾 ذخیره و کامیت فایل در مخزن
+                // استخراج کوکی‌ها
+                const cookies = await page.cookies();
+                log(`🍪 ${cookies.length} کوکی از این پروکسی دریافت شد.`);
+
+                if (cookies.length > 0) {
+                  const netscape = cookiesToNetscape(cookies);
+                  allCookiesLines.push(`# Proxy ${i+1}: ${uri}\n${netscape}`);
+                  successCount++;
+                }
+
+                await browser.close();
+                xrayProc.kill();
+                log('✅ انجام شد.');
+              } catch (e) {
+                err('خطا در پردازش مرورگر:', e.message);
+                if (browser) await browser.close().catch(() => {});
+                xrayProc.kill();
+              }
+              await sleep(2000);
+            }
+
+            // ذخیرهٔ فایل نهایی
+            const finalContent = allCookiesLines.join('\n\n') + '\n';
+            fs.writeFileSync(OUTPUT_FILE, finalContent);
+            log(`\n📄 فایل ${OUTPUT_FILE} با ${successCount} پروکسی موفق ذخیره شد.`);
+          })();
+          ENDSCRIPT
+
+          timeout 1800 node extract_cookies.cjs
+
+      - name: 📤 کامیت و پوش فایل کوکی
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add hardware-info.txt
-          git commit -m "📊 به‌روزرسانی خودکار اطلاعات سخت‌افزار" || echo "تغییری برای کامیت وجود ندارد"
+          git add youtube_cookies.txt
+          git commit -m "🍪 به‌روزرسانی خودکار کوکی‌های یوتیوب" || echo "تغییری برای کامیت وجود ندارد"
           git push
-
-      # (اختیاری) ارسال خلاصه به روبیکا
-      - name: 📤 ارسال خلاصه به روبیکا (اختیاری)
-        if: env.TOKEN != '' && env.CHAT_ID != ''
-        env:
-          TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
-          CHAT_ID: ${{ secrets.RUBIKA_OWNER_CHAT_ID }}
-        run: |
-          HW=$(cat hardware-info.txt | head -30)  # خلاصه‌ای از ابتدای فایل
-          # استخراج مقادیر کلیدی
-          OS=$(grep "PRETTY_NAME" /etc/os-release | cut -d '"' -f2)
-          CPU=$(cat /proc/cpuinfo | grep "model name" | head -1 | cut -d ':' -f2 | xargs)
-          CORES=$(nproc)
-          RAM=$(free -h | awk '/^Mem:/{print $2}')
-          DISK=$(df -h / | awk 'NR==2{print $2}')
-
-          MESSAGE="🖥️ مشخصات سرور امروز:"
-          MESSAGE+="\nسیستم‌عامل: $OS"
-          MESSAGE+="\nپردازنده: $CPU"
-          MESSAGE+="\nتعداد هسته: $CORES"
-          MESSAGE+="\nحافظه: $RAM"
-          MESSAGE+="\nفضای دیسک کل: $DISK"
-          # ارسال پیام
-          curl -s -X POST "https://botapi.rubika.ir/v3/${TOKEN}/sendMessage" \
-            -H "Content-Type: application/json" \
-            -d "{\"chat_id\":\"${CHAT_ID}\", \"text\":\"$MESSAGE\"}"
