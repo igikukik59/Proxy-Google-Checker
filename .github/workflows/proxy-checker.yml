@@ -1,7 +1,7 @@
 name: 🧪 تست سرعت دانلود مستقیم با کوکی
 
 on:
-  workflow_dispatch:   # فقط دستی اجرا کنید
+  workflow_dispatch:
 
 jobs:
   test-cookie-direct:
@@ -18,16 +18,24 @@ jobs:
           pip install yt-dlp
 
       - name: 🚀 دانلود مستقیم و اندازه‌گیری سرعت
-        id: download
         run: |
           echo "==========================================="
           echo "🎯 شروع دانلود مستقیم (بدون پروکسی)"
           echo "🎬 ویدیو: https://www.youtube.com/watch?v=esJOOQG42r0"
           echo "🍪 فقط با فایل youtube_cookies.txt"
           echo "==========================================="
+          
+          # پاک‌سازی هرگونه تنظیمات پروکسی در محیط
+          unset http_proxy
+          unset https_proxy
+          unset all_proxy
+          unset HTTP_PROXY
+          unset HTTPS_PROXY
+          unset ALL_PROXY
+          
+          # اندازه‌گیری زمان و دانلود
           time yt-dlp \
             --cookies youtube_cookies.txt \
-            --no-proxy \
             --no-playlist \
             --format "bestvideo[height<=1080]+bestaudio/best[height<=1080]" \
             --merge-output-format mp4 \
