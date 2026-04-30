@@ -1,229 +1,43 @@
-name: 🍪 استخراج کوکی یوتیوب
+name: 🧪 تست سرعت دانلود مستقیم با کوکی
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 0 */2 * *'   # هر ۲ روز یکبار
+  workflow_dispatch:   # فقط دستی اجرا کنید
 
 jobs:
-  extract-cookies:
+  test-cookie-direct:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    permissions:
-      contents: write
-
+    timeout-minutes: 10
     steps:
-      - name: 📥 دریافت کد مخزن
+      - name: 📥 دریافت کد و فایل کوکی
         uses: actions/checkout@v4
 
-      - name: 🧰 نصب ابزارها
+      - name: 🛠️ نصب yt-dlp
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y curl unzip
-          # Xray
-          wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
-          unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
-          # Node.js modules
-          npm init -y
-          npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
+          sudo apt-get update -qq
+          sudo apt-get install -y python3-pip ffmpeg
+          pip install yt-dlp
 
-      - name: 🍪 اجرای استخراج کوکی
+      - name: 🚀 دانلود مستقیم و اندازه‌گیری سرعت
+        id: download
         run: |
-          cat > extract_cookies.cjs << 'ENDSCRIPT'
-          const { spawn, execSync } = require('child_process');
-          const fs = require('fs');
-          const path = require('path');
-          const puppeteer = require('puppeteer-extra');
-          const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-          puppeteer.use(StealthPlugin());
+          echo "==========================================="
+          echo "🎯 شروع دانلود مستقیم (بدون پروکسی)"
+          echo "🎬 ویدیو: https://www.youtube.com/watch?v=esJOOQG42r0"
+          echo "🍪 فقط با فایل youtube_cookies.txt"
+          echo "==========================================="
+          time yt-dlp \
+            --cookies youtube_cookies.txt \
+            --no-proxy \
+            --no-playlist \
+            --format "bestvideo[height<=1080]+bestaudio/best[height<=1080]" \
+            --merge-output-format mp4 \
+            --output "/tmp/test_video.mp4" \
+            "https://www.youtube.com/watch?v=esJOOQG42r0"
 
-          const PROXY_FILE = 'کانفیگ های خوب.txt';
-          const OUTPUT_FILE = 'youtube_cookies.txt';
-          const YOUTUBE_URL = 'https://www.youtube.com/';
-
-          function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
-          function log(...args) { console.log(`[${ts()}]`, ...args); }
-          function err(...args) { console.error(`[${ts()}] ❌`, ...args); }
-          const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-          // ======================== Xray Helpers (کامل از ربات اصلی) ========================
-          function parseURI(uri) {
-            try {
-              const u = new URL(uri);
-              return {
-                protocol: u.protocol.replace(':',''),
-                uuid: u.username,
-                address: u.hostname,
-                port: u.port,
-                params: Object.fromEntries(u.searchParams.entries())
-              };
-            } catch(e) { return null; }
-          }
-
-          function generateXrayConfig(uri) {
-            const p = parseURI(uri);
-            if (!p) return null;
-            const inbound = { port: 10808, protocol: 'socks', settings: { auth: 'noauth', udp: true } };
-            let outbound = {
-              protocol: p.protocol,
-              streamSettings: { network: p.params.type || 'tcp' }
-            };
-            if (p.protocol === 'trojan') {
-              outbound.settings = {
-                servers: [{ address: p.address, port: parseInt(p.port), password: p.uuid }]
-              };
-            } else {
-              outbound.settings = {
-                vnext: [{
-                  address: p.address,
-                  port: parseInt(p.port),
-                  users: [{ id: p.uuid, encryption: p.params.encryption || 'none', flow: p.params.flow || '' }]
-                }]
-              };
-            }
-            const network = p.params.type || 'tcp';
-            outbound.streamSettings.network = network;
-            if (network === 'ws') {
-              outbound.streamSettings.wsSettings = {
-                path: p.params.path || '/',
-                headers: p.params.host ? { Host: p.params.host } : {}
-              };
-            }
-            const security = p.params.security || 'none';
-            if (security === 'tls' || security === 'reality') {
-              outbound.streamSettings.security = security;
-              const tls = { serverName: p.params.sni || p.address };
-              if (security === 'reality') {
-                tls.fingerprint = p.params.fp || 'chrome';
-                tls.publicKey = p.params.pbk || '';
-                tls.shortId = p.params.sid || '';
-                tls.spiderX = '';
-              }
-              if (p.params.allowInsecure === '1') tls.allowInsecure = true;
-              if (p.params.alpn) tls.alpn = p.params.alpn.split(',');
-              outbound.streamSettings.tlsSettings = tls;
-            } else {
-              outbound.streamSettings.security = 'none';
-            }
-            return { inbounds: [inbound], outbounds: [outbound] };
-          }
-
-          async function startXray(uri, idx) {
-            const config = generateXrayConfig(uri);
-            if (!config) return null;
-            const cfgPath = `/tmp/xray_${idx}.json`;
-            fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
-            const xray = spawn(path.join(process.cwd(), 'xray', 'xray'), ['run', '-config', cfgPath], { stdio: 'pipe' });
-            await new Promise(r => setTimeout(r, 4000));
-            return xray;
-          }
-
-          function testCurl(port) {
-            try {
-              execSync(`curl --socks5 127.0.0.1:${port} --max-time 5 -s http://ip-api.com/json`, { encoding: 'utf8' });
-              return true;
-            } catch(e) { return false; }
-          }
-
-          function cookiesToNetscape(cookies) {
-            return cookies.map(c => {
-              const domain = c.domain.startsWith('.') ? c.domain : '.' + c.domain;
-              const flag = c.secure ? 'TRUE' : 'FALSE';
-              const expires = c.expires > 0 ? Math.floor(c.expires) : 0;
-              return `${domain}\tTRUE\t${c.path}\t${flag}\t${expires}\t${c.name}\t${c.value}`;
-            }).join('\n');
-          }
-
-          // ======================== اجرای اصلی ========================
-          (async () => {
-            if (!fs.existsSync(PROXY_FILE)) {
-              err(`فایل ${PROXY_FILE} یافت نشد.`);
-              process.exit(1);
-            }
-
-            const proxies = fs.readFileSync(PROXY_FILE, 'utf8')
-              .split('\n').map(l => l.trim())
-              .filter(l => /^(vless|trojan|ss|vmess):\/\//.test(l));
-            log(`تعداد پروکسی‌ها: ${proxies.length}`);
-
-            let allCookiesLines = [];
-            let successCount = 0;
-
-            for (let i = 0; i < proxies.length; i++) {
-              const uri = proxies[i];
-              log(`\n🔌 تست پروکسی ${i+1}/${proxies.length}: ${uri.substring(0,60)}...`);
-
-              const xrayProc = await startXray(uri, i);
-              if (!xrayProc) {
-                err('خطا در اجرای Xray');
-                continue;
-              }
-              if (!testCurl(10808)) {
-                err('پروکسی کار نمی‌کند');
-                xrayProc.kill();
-                await sleep(1000);
-                continue;
-              }
-
-              let browser;
-              try {
-                browser = await puppeteer.launch({
-                  headless: 'new',
-                  args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--proxy-server=socks5://127.0.0.1:10808',
-                    '--disable-dev-shm-usage',
-                    '--window-size=1280,720'
-                  ]
-                });
-                const page = await browser.newPage();
-                await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
-
-                log('مرورگر باز شد، رفتن به یوتیوب...');
-                await page.goto(YOUTUBE_URL, { waitUntil: 'networkidle2', timeout: 60000 });
-                await sleep(5000);
-
-                const bodyText = await page.evaluate(() => document.body.innerText.toLowerCase());
-                const blocked = ['access denied', 'you have been blocked', 'cloudflare', 'attention required'].some(t => bodyText.includes(t));
-                if (blocked) {
-                  log('⛔ پروکسی توسط یوتیوب بلاک شده است.');
-                  await browser.close();
-                  xrayProc.kill();
-                  continue;
-                }
-
-                const cookies = await page.cookies();
-                log(`🍪 ${cookies.length} کوکی از این پروکسی دریافت شد.`);
-
-                if (cookies.length > 0) {
-                  const netscape = cookiesToNetscape(cookies);
-                  allCookiesLines.push(`# پروکسی ${i+1}: ${uri}\n${netscape}`);
-                  successCount++;
-                }
-
-                await browser.close();
-                xrayProc.kill();
-                log('✅ انجام شد.');
-              } catch (e) {
-                err('خطا در پردازش مرورگر:', e.message);
-                if (browser) await browser.close().catch(() => {});
-                xrayProc.kill();
-              }
-              await sleep(2000);
-            }
-
-            const finalContent = allCookiesLines.join('\n\n') + '\n';
-            fs.writeFileSync(OUTPUT_FILE, finalContent);
-            log(`\n📄 فایل ${OUTPUT_FILE} با ${successCount} پروکسی موفق ذخیره شد.`);
-          })();
-          ENDSCRIPT
-
-          timeout 1800 node extract_cookies.cjs
-
-      - name: 📤 کامیت و پوش فایل کوکی
+      - name: 📊 بررسی نتیجه
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add youtube_cookies.txt
-          git commit -m "🍪 به‌روزرسانی خودکار کوکی‌های یوتیوب" || echo "تغییری برای کامیت وجود ندارد"
-          git push
+          echo "==========================================="
+          echo "📁 فایل دانلود شده:"
+          ls -lh /tmp/test_video.mp4 2>/dev/null || echo "❌ فایل وجود ندارد – دانلود ناموفق بود"
+          echo "==========================================="
+          echo "🔎 سرعت و زمان دقیق در خطوط بالا (از خروجی yt-dlp و time) قابل مشاهده است."
