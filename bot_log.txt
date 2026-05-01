@@ -5481,3 +5481,14 @@ ERROR: [youtube] _-gRIs_c8HM: This video is not available
 [2026-05-01 16:09:52] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 14.1s
 [2026-05-01 16:09:54] مجموع زمان آپلود قطعات: 83.2s
 [2026-05-01 16:09:54] 📊 آمار به‌روزرسانی شد
+[2026-05-01 16:09:55] 📤 لاگ و آمار push شد
+[2026-05-01 16:10:06] ⬇️ دانلود در 6.6s
+[2026-05-01 16:10:06] 🎬 درخواست از b0Jb9c4099P0fc7e0d5c01105ab2da07: https://www.youtube.com/watch?v=UtDA8FOU_cw
+[2026-05-01 16:10:08] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=UtDA8FOU_cw"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] UtDA8FOU_cw: This video is not available
+
+[2026-05-01 16:10:18] 🎬 درخواست از b0ETl4l099P00cd9cc7b7c0a442b4371: https://youtu.be/2A12lTPYMeg
+[2026-05-01 16:10:21] 🎬 درخواست از b0QZyq099P079d93cd174761f8e3638c: https://www.youtube.com/watch?v=B1VH6si5NX0
+[2026-05-01 16:10:30] ⬆️ آپلود video_raw.mp4 در 22.1s
+[2026-05-01 16:10:30] 📊 آمار به‌روزرسانی شد
