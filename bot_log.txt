@@ -3729,3 +3729,28 @@ ERROR: [youtube] usH66Rs5H20: Sign in to confirm your age. This video may be ina
 [2026-05-01 13:07:37] 🎬 درخواست از b0BkdwE099P0554bdbb3452c54227fd1: https://www.youtube.com/watch?v=PAmKjpf9ULc
 [2026-05-01 13:07:51] ⬆️ آپلود video_raw.mp4 در 14.7s
 [2026-05-01 13:07:52] 📊 آمار به‌روزرسانی شد
+[2026-05-01 13:07:54] 📤 لاگ و آمار push شد
+[2026-05-01 13:07:54] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@102.177.189.30:...
+[2026-05-01 13:08:08] 🎬 درخواست از b0QZyq099P079d93cd174761f8e3638c: https://www.youtube.com/watch?v=o65uuj5MkrQ
+[2026-05-01 13:08:11] 🍪 کوکی جدید دریافت شد
+[2026-05-01 13:08:36] ⬇️ دانلود در 20.6s
+[2026-05-01 13:08:36] ✂️ شروع تقسیم video_raw (63.9MB)
+[2026-05-01 13:08:38] 🎯 بیت‌ریت: 556kbps | مدت: 963.8s | زمان قطعه: 664s
+[2026-05-01 13:08:52] 🎬 درخواست از b0IlM6099P07a7ef225bf4fb8b36f1d2: https://www.youtube.com/watch?v=iYG8vOZXUrc
+[2026-05-01 13:08:53] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=iYG8vOZXUrc"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] iYG8vOZXUrc: This video is not available
+
+[2026-05-01 13:08:53] 🎬 درخواست از b0Cjg96099P0e43f585a5469b5c56ab8: https://www.youtube.com/watch?v=A5lBF-Yws_g
+[2026-05-01 13:09:04] ⬆️ آپلود video_raw.part01.mp4 در 25.7s
+[2026-05-01 13:09:04] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 25.7s
+[2026-05-01 13:09:15] 🎬 درخواست از b0IlM6099P07a7ef225bf4fb8b36f1d2: https://www.youtube.com/watch?v=wcplxAsaYXE
+[2026-05-01 13:09:35] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-01 13:09:37] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-01 13:09:38] 🎬 درخواست از b0JbZS099P036bd4969ebdcfc3aff0b4: https://youtu.be/puPqNwNVJ5w
+[2026-05-01 13:09:39] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-01 13:09:41] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-01 13:09:46] ⬆️ آپلود video_raw.part02.mp4 در 41.0s
+[2026-05-01 13:09:46] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 41.0s
+[2026-05-01 13:09:47] مجموع زمان آپلود قطعات: 66.7s
+[2026-05-01 13:09:47] 📊 آمار به‌روزرسانی شد
