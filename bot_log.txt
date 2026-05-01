@@ -5412,3 +5412,47 @@ ERROR: [youtube] uqz3lej6iLU: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 16:06:05] 📤 لاگ و آمار push شد
 [2026-05-01 16:06:10] ⬆️ آپلود video_raw.mp4 در 23.9s
 [2026-05-01 16:06:10] 📊 آمار به‌روزرسانی شد
+[2026-05-01 16:06:11] 📤 لاگ و آمار push شد
+[2026-05-01 16:06:11] 🔀 تلاش با پروکسی تصادفی: vless://cff6f361-828a-43c8-a8b5-8d10b32e57fb@188.114.98.0:44...
+[2026-05-01 16:06:12] 🎬 درخواست از b0Jb9c4099P0fc7e0d5c01105ab2da07: https://www.youtube.com/watch?v=BLVhRz_FO1c
+[2026-05-01 16:06:13] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=BLVhRz_FO1c"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] BLVhRz_FO1c: This video is not available
+
+[2026-05-01 16:06:25] 🎬 درخواست از b0JQvr2099P06061ae1a7033522639c7: https://www.youtube.com/watch?v=q90n5nimFSI
+[2026-05-01 16:06:28] 🍪 کوکی جدید دریافت شد
+[2026-05-01 16:06:32] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/lqt8KpRoyVo"
+[2026-05-01 16:06:32] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 16:06:32] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 16:06:33] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.91.255.121:8...
+[2026-05-01 16:06:47] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-01 16:06:49] 🎬 درخواست از b0BBSsG099P0b326c91d9afa1cb8333e: https://www.youtube.com/watch?v=n7DpPNVaLF4
+[2026-05-01 16:06:52] 🍪 کوکی جدید دریافت شد
+[2026-05-01 16:06:54] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/lqt8KpRoyVo"
+[2026-05-01 16:06:54] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 16:06:54] 🔄 تلاش مجدد (3/3)...
+[2026-05-01 16:06:54] 🎬 درخواست از b0Jb9c4099P0fc7e0d5c01105ab2da07: https://www.youtube.com/watch?v=Opr2UhhRcTE
+[2026-05-01 16:06:55] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=Opr2UhhRcTE"
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+WARNING: [youtube] Unable to download webpage: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused')). Giving up after 3 retries
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+ERROR: [youtube] Opr2UhhRcTE: Unable to download API page: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused'))
+
+[2026-05-01 16:06:55] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@198.71.189.51:4...
+[2026-05-01 16:07:12] 🍪 کوکی جدید دریافت شد
+[2026-05-01 16:07:13] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/lqt8KpRoyVo"
+[2026-05-01 16:07:13] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 16:07:14] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@104.18.12.149:443?security=tls&sni=www.mul...
+[2026-05-01 16:07:23] 🎬 درخواست از b0Jb9c4099P0fc7e0d5c01105ab2da07: https://www.youtube.com/watch?v=eEAYs8ax7Gw
+[2026-05-01 16:07:25] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=eEAYs8ax7Gw"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] eEAYs8ax7Gw: This video is not available
+
+[2026-05-01 16:07:33] 🍪 کوکی جدید دریافت شد
+[2026-05-01 16:07:38] ⬇️ دانلود در 4.1s
+[2026-05-01 16:07:45] ⬆️ آپلود video_raw.mp4 در 6.4s
+[2026-05-01 16:07:46] 📊 آمار به‌روزرسانی شد
