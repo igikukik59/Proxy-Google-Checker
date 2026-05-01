@@ -1,13 +1,13 @@
 {
-  "totalDataMB": "6869.20",
-  "totalVideos": 121,
-  "totalDurationMinutes": "2467.3",
+  "totalDataMB": "6881.64",
+  "totalVideos": 122,
+  "totalDurationMinutes": "2470.0",
   "uniqueUsers": 79,
   "failedAttempts": 12,
-  "avgProcessingTimeSec": "55.0",
-  "avgVideoSizeMB": "56.77",
-  "avgVideoDurationMin": "20.4",
-  "queueLength": 9,
+  "avgProcessingTimeSec": "52.1",
+  "avgVideoSizeMB": "56.41",
+  "avgVideoDurationMin": "20.2",
+  "queueLength": 8,
   "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
   "proxies": [
     {
@@ -40,10 +40,10 @@
     },
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.74.118:4",
-      "avgSpeedMBps": "4.76",
+      "avgSpeedMBps": "5.18",
       "samples": 5,
       "failures": 0,
-      "lastUsed": "2026-05-01T16:12:12.901Z"
+      "lastUsed": "2026-05-01T16:13:03.905Z"
     },
     {
       "proxy": "trojan://humanity@8.6.112.6:443?security=tls&sni=www.creatio",
