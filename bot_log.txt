@@ -471,3 +471,27 @@ ERROR: [youtube] OOgjCk_Thq8: This video is not available
 [2026-05-01 05:30:49] ⬇️ دانلود در 2.2s
 [2026-05-01 05:30:54] ⬆️ آپلود video_raw.mp4 در 5.4s
 [2026-05-01 05:30:56] 📊 آمار به‌روزرسانی شد
+[2026-05-01 05:30:57] 📤 لاگ و آمار push شد
+[2026-05-01 05:30:57] 🔀 تلاش با پروکسی تصادفی: vless://d37a75db-76b6-4db8-b213-0d5b044d138d@172.64.152.100:...
+[2026-05-01 05:31:43] 🎬 درخواست از b0IKfTh099P0f8fe8b07319c83fe7fb3: https://www.youtube.com/watch?v=WzN-G6VNQrY
+[2026-05-01 05:32:06] ❌ خطای کوکی: Navigation timeout of 60000 ms exceeded
+[2026-05-01 05:32:12] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=WzN-G6VNQrY"
+[2026-05-01 05:32:12] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 05:32:12] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 05:32:13] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@172.64.149.54:4...
+[2026-05-01 05:32:30] 🍪 کوکی جدید دریافت شد
+[2026-05-01 05:32:31] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=WzN-G6VNQrY"
+[2026-05-01 05:32:31] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 05:32:31] 🔄 تلاش مجدد (3/3)...
+[2026-05-01 05:32:32] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@8.6.112.6:8443?...
+[2026-05-01 05:32:33] 🎬 درخواست از b0HJNFo099P0478e7c0857cde531a992: https://www.youtube.com/watch?v=s3mMS1SL6Ig
+[2026-05-01 05:32:49] 🍪 کوکی جدید دریافت شد
+[2026-05-01 05:32:50] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=WzN-G6VNQrY"
+[2026-05-01 05:32:50] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 05:32:51] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@8.6.112.0:443?security=tls&sni=www.multipl...
+[2026-05-01 05:32:57] 🎬 درخواست از b0IKfTh099P0f8fe8b07319c83fe7fb3: https://www.youtube.com/watch?v=9lndKUagK88
+[2026-05-01 05:33:10] 🍪 کوکی جدید دریافت شد
+[2026-05-01 05:33:22] ⬇️ دانلود در 10.7s
+[2026-05-01 05:33:31] 🎬 درخواست از b0HdTJk099P026a9ed99c4c90d3b2583: https://www.youtube.com/watch?v=RVGyLcbyhOU
+[2026-05-01 05:33:41] ⬆️ آپلود video_raw.mp4 در 18.4s
+[2026-05-01 05:33:42] 📊 آمار به‌روزرسانی شد
