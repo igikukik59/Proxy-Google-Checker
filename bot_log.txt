@@ -764,3 +764,30 @@ ERROR: [youtube] WMBOsPUi2uw: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 05:54:58] 🎬 درخواست از b0ItsHa099P0a2cc42bdfdea3c37b08f: https://www.youtube.com/watch?v=vLAWj2TDqoU
 [2026-05-01 05:54:59] مجموع زمان آپلود قطعات: 36.0s
 [2026-05-01 05:54:59] 📊 آمار به‌روزرسانی شد
+[2026-05-01 05:55:01] 📤 لاگ و آمار push شد
+[2026-05-01 05:55:01] 🎬 درخواست از b0HTdx4099P07d12273f7b93f7e3ac2a: https://youtu.be/3Y_drsQtMs4
+[2026-05-01 05:55:03] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://youtu.be/3Y_drsQtMs4"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] 3Y_drsQtMs4: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-01 05:55:16] ⬇️ دانلود در 13.0s
+[2026-05-01 05:55:17] ✂️ شروع تقسیم video_raw (148.5MB)
+[2026-05-01 05:55:17] 🎯 بیت‌ریت: 503kbps | مدت: 2475.8s | زمان قطعه: 733s
+[2026-05-01 05:55:20] 🎬 درخواست از b0HTdx4099P07d12273f7b93f7e3ac2a: https://youtu.be/3Y_drsQtMs4
+[2026-05-01 05:55:27] 🎬 درخواست از b0CctB8099P0ac5de42d12df50214c8d: https://www.youtube.com/watch?v=AR3E4LDUmDQ
+[2026-05-01 05:55:28] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=AR3E4LDUmDQ"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] AR3E4LDUmDQ: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-01 05:55:28] 🎬 درخواست از b0JEhUa099P0537bf11255322c3e1f93: https://www.youtube.com/watch?v=cr3IhdlvQPQ
+[2026-05-01 05:55:37] ⬆️ آپلود video_raw.part01.mp4 در 18.2s
+[2026-05-01 05:55:37] 📤 قطعه 1/4: video_raw.part01.mp4 آپلود در 18.2s
+[2026-05-01 05:55:59] ⬆️ آپلود video_raw.part02.mp4 در 20.7s
+[2026-05-01 05:55:59] 📤 قطعه 2/4: video_raw.part02.mp4 آپلود در 20.7s
+[2026-05-01 05:56:09] 🎬 درخواست از b0JCT4w099P0d80237a8efa6676d5ec9: https://www.youtube.com/watch?v=_T5P2vw2oa0
+[2026-05-01 05:56:26] ⬆️ آپلود video_raw.part03.mp4 در 26.5s
+[2026-05-01 05:56:26] 📤 قطعه 3/4: video_raw.part03.mp4 آپلود در 26.5s
+[2026-05-01 05:56:35] ⬆️ آپلود video_raw.part04.mp4 در 6.8s
+[2026-05-01 05:56:35] 📤 قطعه 4/4: video_raw.part04.mp4 آپلود در 6.8s
+[2026-05-01 05:56:36] مجموع زمان آپلود قطعات: 72.2s
+[2026-05-01 05:56:36] 📊 آمار به‌روزرسانی شد
