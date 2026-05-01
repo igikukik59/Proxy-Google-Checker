@@ -4484,3 +4484,12 @@ ERROR: [youtube] Mfl7mwNxvkw: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 14:46:03] 📤 لاگ و آمار push شد
 [2026-05-01 14:46:16] ⬆️ آپلود video_raw.mp4 در 31.3s
 [2026-05-01 14:46:16] 📊 آمار به‌روزرسانی شد
+[2026-05-01 14:46:17] 📤 لاگ و آمار push شد
+[2026-05-01 14:46:21] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=MJs_E4QTC7Q"
+[2026-05-01 14:46:21] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 14:46:21] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 14:46:22] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@103.116.7.138:2...
+[2026-05-01 14:46:39] 🍪 کوکی جدید دریافت شد
+[2026-05-01 14:46:42] ⬇️ دانلود در 3.5s
+[2026-05-01 14:46:53] ⬆️ آپلود video_raw.mp4 در 10.1s
+[2026-05-01 14:46:53] 📊 آمار به‌روزرسانی شد
