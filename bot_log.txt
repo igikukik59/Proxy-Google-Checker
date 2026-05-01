@@ -6353,3 +6353,31 @@ ERROR: [youtube] VeSr9yr1zLw: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 17:36:40] ⬇️ دانلود در 1.8s
 [2026-05-01 17:36:50] ⬆️ آپلود video_raw.mp4 در 10.0s
 [2026-05-01 17:36:50] 📊 آمار به‌روزرسانی شد
+[2026-05-01 17:36:51] 📤 لاگ و آمار push شد
+[2026-05-01 17:36:52] 🔀 تلاش با پروکسی تصادفی: vless://d555dac9-27cb-4ddb-89f5-6a1d8d1e4798@198.41.223.121:...
+[2026-05-01 17:36:52] 🎬 درخواست از b0IutgU099P08d98c0f5fb98c2a0580c: https://www.youtube.com/watch?v=wQFEUvX_kZI
+[2026-05-01 17:37:01] 🎬 درخواست از b0Ca72v099P0390d67c7bc9e6615c14b: https://youtu.be/2ArD3RPPDS8
+[2026-05-01 17:37:02] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://youtu.be/2ArD3RPPDS8"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] 2ArD3RPPDS8: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-01 17:37:09] 🍪 کوکی جدید دریافت شد
+[2026-05-01 17:37:15] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=92foCQ5bT2w"
+[2026-05-01 17:37:15] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 17:37:15] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 17:37:15] 🎬 درخواست از b0Ca72v099P0390d67c7bc9e6615c14b: https://youtu.be/2ArD3RPPDS8
+[2026-05-01 17:37:15] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://youtu.be/2ArD3RPPDS8"
+WARNING: [youtube] 166510 bytes read. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+WARNING: [youtube] Unable to download webpage: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused')). Giving up after 3 retries
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+ERROR: [youtube] 2ArD3RPPDS8: Unable to download API page: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused'))
+
+[2026-05-01 17:37:16] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.73.239:4...
+[2026-05-01 17:37:33] 🍪 کوکی جدید دریافت شد
+[2026-05-01 17:37:36] ⬇️ دانلود در 3.1s
+[2026-05-01 17:38:08] ⬆️ آپلود video_raw.mp4 در 31.7s
+[2026-05-01 17:38:09] 📊 آمار به‌روزرسانی شد
