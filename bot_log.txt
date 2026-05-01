@@ -1687,3 +1687,15 @@ ERROR: [youtube] eDcLqMp7idQ: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 08:53:33] 📤 لاگ و آمار push شد
 [2026-05-01 08:53:34] ⬆️ آپلود video_raw.mp4 در 12.0s
 [2026-05-01 08:53:34] 📊 آمار به‌روزرسانی شد
+[2026-05-01 08:53:35] 📤 لاگ و آمار push شد
+[2026-05-01 08:53:36] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.13.149:8...
+[2026-05-01 08:53:52] 🍪 کوکی جدید دریافت شد
+[2026-05-01 08:53:56] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=SIQnn0DFtBg"
+[2026-05-01 08:53:56] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 08:53:56] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 08:53:56] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@8.6.112.0:443?security=tls&sni=www.multipl...
+[2026-05-01 08:54:07] 🎬 درخواست از b0JVqgz099P0451ab1ad4fdd702bc676: https://www.youtube.com/watch?v=w24PpxM2RYg
+[2026-05-01 08:54:15] 🍪 کوکی جدید دریافت شد
+[2026-05-01 08:54:19] ⬇️ دانلود در 3.9s
+[2026-05-01 08:54:28] ⬆️ آپلود video_raw.mp4 در 9.0s
+[2026-05-01 08:54:29] 📊 آمار به‌روزرسانی شد
