@@ -4072,3 +4072,16 @@ ERROR: [youtube] dwUQyglX5Pk: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 14:15:10] ⚠️ خطای API: بعد از ۵ تلاش ناموفق
 [2026-05-01 14:15:11] مجموع زمان آپلود قطعات: 114.6s
 [2026-05-01 14:15:12] 📊 آمار به‌روزرسانی شد
+[2026-05-01 14:15:13] 📤 لاگ و آمار push شد
+[2026-05-01 14:15:15] 🎬 درخواست از b0HueWI099P0b3afd1029cd7fec55b10: https://www.youtube.com/watch?v=DKV0HrazX34
+[2026-05-01 14:15:17] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=DKV0HrazX34"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] DKV0HrazX34: This video is not available
+
+[2026-05-01 14:15:17] 🎬 درخواست از b0CT32W099P0bc83391a97bea33719c4: https://youtu.be/puPqNwNVJ5w
+[2026-05-01 14:15:23] ⬇️ دانلود در 4.8s
+[2026-05-01 14:15:25] 🎬 درخواست از b0ToJ099P04456dee3033b6cc2247890: https://youtu.be/NROCQCmA8ko
+[2026-05-01 14:15:29] 🎬 درخواست از b0Mhhc099P0394f9486357faa1fff0df: https://www.youtube.com/watch?v=Tdk3vOxXs-k
+[2026-05-01 14:15:30] 🎬 درخواست از b0ToJ099P04456dee3033b6cc2247890: https://youtu.be/unz9ASHaxzQ
+[2026-05-01 14:15:41] ⬆️ آپلود video_raw.mp4 در 17.2s
+[2026-05-01 14:15:42] 📊 آمار به‌روزرسانی شد
