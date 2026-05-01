@@ -1,4 +1,4 @@
-name: 🎬 ربات یوتیوب (نسخهٔ طلایی نهایی)
+name: 🎬 ربات یوتیوب (نسخهٔ طلایی نهایی با ادمین)
 
 on:
   workflow_dispatch:
@@ -175,6 +175,7 @@ jobs:
       - name: 🤖 اجرای ربات طلایی
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
+          ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
         run: |
           cat > agent.cjs << 'ENDSCRIPT'
           const { spawn, execSync, exec } = require('child_process');
@@ -192,6 +193,7 @@ jobs:
           const LOG_FILE = 'bot_log.txt';
           const STATS_FILE = 'bot_stats.json';
           const TOKEN = process.env.RUBIKA_BOT_TOKEN;
+          const ADMIN_SECRET = process.env.ADMIN_SECRET || '';  // رمز ادمین (از Secrets)
           if (!TOKEN) { console.error('❌ TOKEN تنظیم نشده'); process.exit(1); }
 
           const MAX_DURATION = 3600;
@@ -211,6 +213,7 @@ jobs:
 
           const proxyStats = new Map();
           const rateLimitQueue = new Map();
+          const adminUsers = new Set();  // کاربران ادمین
 
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
           function log(...args) {
@@ -510,7 +513,7 @@ jobs:
             const sessionFile = `session_stats_${dateStr}.json`;
             const avgTime = getAverageTime();
             const data = {
-              sessionStart: new Date(now - (DEADLINE_END - Date.now())).toISOString(), // تقریبی
+              sessionStart: new Date(now - (DEADLINE_END - Date.now())).toISOString(),
               sessionEnd: now.toISOString(),
               totalDataMB: (stats.totalBytes / (1024*1024)).toFixed(2),
               totalVideos: stats.totalVideos,
@@ -524,7 +527,6 @@ jobs:
             try {
               fs.writeFileSync(sessionFile, JSON.stringify(data, null, 2));
               log(`📄 آمار چرخه در ${sessionFile} ذخیره شد.`);
-              // add and push this file
               execSync(`git add ${sessionFile}`, {stdio:'pipe'});
               execSync(`git commit -m "📊 آمار جامع چرخه ${dateStr}"`, {stdio:'pipe'});
               execSync('git push', {stdio:'pipe'});
@@ -767,6 +769,13 @@ jobs:
                   if (!msg?.text) continue;
                   const text = msg.text.trim();
 
+                  // ----- کلید ادمین -----
+                  if (ADMIN_SECRET && text === ADMIN_SECRET) {
+                    adminUsers.add(chatId);
+                    await sendMessage(chatId, '🔑 دسترسی ادمین فعال شد. محدودیت‌ها برداشته شد.');
+                    continue;
+                  }
+
                   const ytReg = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/;
                   const m = text.match(ytReg);
                   if (!m) {
@@ -780,13 +789,15 @@ jobs:
                   const info = await getVideoInfo(videoUrl);
                   if (!info || !info.duration) { await sendMessage(chatId, '⚠️ نتوانستم اطلاعات ویدیو را دریافت کنم.'); continue; }
 
-                  if (info.duration > MAX_DURATION) { await sendMessage(chatId, `⚠️ مدت ویدیو (${Math.floor(info.duration/60)} دقیقه) بیش از ۶۰ دقیقه مجاز است.`); continue; }
-
-                  const used = userDailyUsage.get(chatId) || 0;
-                  const remaining = DAILY_LIMIT - used;
-                  if (info.duration > remaining) {
-                    await sendMessage(chatId, `⚠️ شما امروز ${Math.floor(used/60)} دقیقه دانلود کرده‌اید. سهمیهٔ باقی‌مانده: ${Math.floor(remaining/60)} دقیقه.`);
-                    continue;
+                  // محدودیت‌ها فقط برای غیرادمین
+                  if (!adminUsers.has(chatId)) {
+                    if (info.duration > MAX_DURATION) { await sendMessage(chatId, `⚠️ مدت ویدیو (${Math.floor(info.duration/60)} دقیقه) بیش از ۶۰ دقیقه مجاز است.`); continue; }
+                    const used = userDailyUsage.get(chatId) || 0;
+                    const remaining = DAILY_LIMIT - used;
+                    if (info.duration > remaining) {
+                      await sendMessage(chatId, `⚠️ شما امروز ${Math.floor(used/60)} دقیقه دانلود کرده‌اید. سهمیهٔ باقی‌مانده: ${Math.floor(remaining/60)} دقیقه.`);
+                      continue;
+                    }
                   }
 
                   addToQueue(chatId, videoUrl, info.duration);
