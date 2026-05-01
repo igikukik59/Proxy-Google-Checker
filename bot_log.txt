@@ -5809,3 +5809,15 @@ ERROR: [youtube] pzjgTbNRToc: Sign in to confirm you’re not a bot. Use --cooki
 
 [2026-05-01 16:43:35] ⬆️ آپلود video_raw.mp4 در 7.6s
 [2026-05-01 16:43:35] 📊 آمار به‌روزرسانی شد
+[2026-05-01 16:43:36] 📤 لاگ و آمار push شد
+[2026-05-01 16:43:39] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=bP_3nMaj0VQ"
+[2026-05-01 16:43:39] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 16:43:39] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 16:43:41] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@104.18.16.56:44...
+[2026-05-01 16:43:44] 🎬 درخواست از b0DdSAg099P019e5cd13b05daee8e759: https://www.youtube.com/watch?v=sk9aeFG4818
+[2026-05-01 16:43:58] 🍪 کوکی جدید دریافت شد
+[2026-05-01 16:44:16] ⬇️ دانلود در 18.2s
+[2026-05-01 16:44:18] 🎬 درخواست از b0DdSAg099P019e5cd13b05daee8e759: https://www.youtube.com/watch?v=pzjgTbNRToc
+[2026-05-01 16:44:19] 🎬 درخواست از b0DdSAg099P019e5cd13b05daee8e759: https://www.youtube.com/watch?v=O2S6MAETlyM
+[2026-05-01 16:44:27] ⬆️ آپلود video_raw.mp4 در 10.7s
+[2026-05-01 16:44:28] 📊 آمار به‌روزرسانی شد
