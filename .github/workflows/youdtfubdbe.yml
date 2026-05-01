@@ -506,6 +506,7 @@ jobs:
               'با فرستادن لینک شروع کنید!';
             await sendMessage(chatId, helpText);
           }
+
           // ======================== اجرای اصلی ========================
           (async () => {
             const me = await api('getMe');
