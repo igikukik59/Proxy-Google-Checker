@@ -3620,3 +3620,28 @@ ERROR: [youtube] x5ClcH1_RMk: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 12:58:24] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 29.1s
 [2026-05-01 12:58:26] مجموع زمان آپلود قطعات: 61.1s
 [2026-05-01 12:58:26] 📊 آمار به‌روزرسانی شد
+[2026-05-01 12:58:27] 📤 لاگ و آمار push شد
+[2026-05-01 12:58:27] 🔀 تلاش با پروکسی تصادفی: vless://d37a75db-76b6-4db8-b213-0d5b044d138d@172.64.152.100:...
+[2026-05-01 12:59:00] 🎬 درخواست از b0IIpUs099P0d0112fcb6a564b7359d6: https://youtu.be/_8THce_PdsI
+[2026-05-01 12:59:07] 🎬 درخواست از b0J4htG099P09c78977e0f0b8eaaa163: https://www.youtube.com/watch?v=pqkQu_fL7MQ
+[2026-05-01 12:59:08] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=pqkQu_fL7MQ"
+WARNING: [youtube] 44575 bytes read. Retrying (1/3)...
+WARNING: [youtube] Remote end closed connection without response. Retrying (2/3)...
+WARNING: [youtube] 89789 bytes read. Retrying (3/3)...
+WARNING: [youtube] Unable to download webpage: 56457 bytes read (caused by <IncompleteRead: 56457 bytes read>); please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U. Giving up after 3 retries
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] pqkQu_fL7MQ: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-01 12:59:36] ❌ خطای کوکی: Navigation timeout of 60000 ms exceeded
+[2026-05-01 12:59:48] ⬇️ دانلود در 9.3s
+[2026-05-01 12:59:49] ✂️ شروع تقسیم video_raw (76.7MB)
+[2026-05-01 12:59:49] 🎯 بیت‌ریت: 363kbps | مدت: 1772.3s | زمان قطعه: 1016s
+[2026-05-01 13:00:19] ⬆️ آپلود video_raw.part01.mp4 در 27.3s
+[2026-05-01 13:00:19] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 27.3s
+[2026-05-01 13:00:42] 🎬 درخواست از b0FqFKh099P0115e1c0b7e7ffcc4a767: https://www.youtube.com/watch?v=soQzc2BZW58
+[2026-05-01 13:00:44] 🎬 درخواست از b0DL6a8099P07164ca28ccde699c21e6: https://www.youtube.com/watch?v=UxG1Wp2Tyi4
+[2026-05-01 13:00:47] ⬆️ آپلود video_raw.part02.mp4 در 25.8s
+[2026-05-01 13:00:47] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 25.8s
+[2026-05-01 13:00:49] مجموع زمان آپلود قطعات: 53.1s
+[2026-05-01 13:00:49] 📊 آمار به‌روزرسانی شد
