@@ -257,3 +257,24 @@ ERROR: [youtube] ytEBnWLQBTo: This video is not available
 
 [2026-05-01 04:55:08] مجموع زمان آپلود قطعات: 51.3s
 [2026-05-01 04:55:08] 📊 آمار به‌روزرسانی شد
+[2026-05-01 04:55:09] 📤 لاگ و آمار push شد
+[2026-05-01 04:55:10] 🔀 تلاش با پروکسی تصادفی: vless://8c4604ef-749c-4b56-adf1-7da405002a21@141.193.213.10:...
+[2026-05-01 04:55:14] 🎬 درخواست از b0BvJly099P02e6274390cf9a7c641c6: https://www.youtube.com/watch?v=qxdO4kwtD4g
+[2026-05-01 04:55:16] 🎬 درخواست از b0Jb9c4099P0fc7e0d5c01105ab2da07: https://www.youtube.com/watch?v=ytEBnWLQBTo
+[2026-05-01 04:55:18] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=ytEBnWLQBTo"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] ytEBnWLQBTo: This video is not available
+
+[2026-05-01 04:55:26] 🍪 کوکی جدید دریافت شد
+[2026-05-01 04:55:42] ⬇️ دانلود در 10.8s
+[2026-05-01 04:55:43] ✂️ شروع تقسیم video_raw (53.5MB)
+[2026-05-01 04:55:44] 🎯 بیت‌ریت: 427kbps | مدت: 1049.5s | زمان قطعه: 863s
+[2026-05-01 04:55:58] 🎬 درخواست از b0BvJly099P02e6274390cf9a7c641c6: https://www.youtube.com/watch?v=IC96RspvV_8
+[2026-05-01 04:55:59] 🎬 درخواست از b0Jb9c4099P0fc7e0d5c01105ab2da07: https://www.youtube.com/watch?v=xnASiCY3x-Q
+[2026-05-01 04:56:02] 🎬 درخواست از b0Iw5vt099P0405e5d6cb1fbca2886ea: https://www.youtube.com/watch?v=fC4utuNDnSI
+[2026-05-01 04:56:03] ⬆️ آپلود video_raw.part01.mp4 در 17.8s
+[2026-05-01 04:56:03] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 17.8s
+[2026-05-01 04:56:10] ⬆️ آپلود video_raw.part02.mp4 در 6.6s
+[2026-05-01 04:56:10] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 6.6s
+[2026-05-01 04:56:12] مجموع زمان آپلود قطعات: 24.4s
+[2026-05-01 04:56:12] 📊 آمار به‌روزرسانی شد
