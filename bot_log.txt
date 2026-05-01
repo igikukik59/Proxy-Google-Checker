@@ -2099,3 +2099,15 @@ ERROR: [youtube] q8wnX9y7JzU: Unable to download API page: [Errno 111] Connectio
 [2026-05-01 09:43:33] 📤 لاگ و آمار push شد
 [2026-05-01 09:43:41] ⬆️ آپلود video_raw.mp4 در 26.5s
 [2026-05-01 09:43:42] 📊 آمار به‌روزرسانی شد
+[2026-05-01 09:43:43] 📤 لاگ و آمار push شد
+[2026-05-01 09:44:09] ⬇️ دانلود در 20.2s
+[2026-05-01 09:44:11] 🎬 درخواست از b0EQK2S099P043bc42057ace07adb97d: https://www.youtube.com/watch?v=Y-O1qJC9f7Q
+[2026-05-01 09:44:22] 🎬 درخواست از b0Jo9MN099P02e1bccc3d34a796657ff: https://www.youtube.com/watch?v=Y-O1qJC9f7Q
+[2026-05-01 09:44:24] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=Y-O1qJC9f7Q"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] Y-O1qJC9f7Q: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-01 09:44:44] 🎬 درخواست از b0Jo9MN099P02e1bccc3d34a796657ff: https://www.youtube.com/watch?v=Y-O1qJC9f7Q
+[2026-05-01 09:44:47] 🎬 درخواست از b0G75gi099P00120953e9a4c20ecc6ad: https://www.youtube.com/watch?v=mxHVECl3-nQ
+[2026-05-01 09:44:56] ⬆️ آپلود video_raw.mp4 در 46.3s
+[2026-05-01 09:44:56] 📊 آمار به‌روزرسانی شد
