@@ -4926,3 +4926,24 @@ ERROR: [youtube] jsn0fEj8f58: Requested format is not available. Use --list-form
 [2026-05-01 15:26:52] 🎬 درخواست از b0BA1ZV099P06a6d852ec7a5a21f4b58: https://www.youtube.com/watch?v=25wHRC53a9k
 [2026-05-01 15:27:08] ⬆️ آپلود video_raw.mp4 در 18.0s
 [2026-05-01 15:27:09] 📊 آمار به‌روزرسانی شد
+[2026-05-01 15:27:10] 📤 لاگ و آمار push شد
+[2026-05-01 15:27:17] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/lqYIR35iVFw"
+[2026-05-01 15:27:17] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 15:27:17] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 15:27:18] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@102.177.189.30:...
+[2026-05-01 15:27:35] 🍪 کوکی جدید دریافت شد
+[2026-05-01 15:27:37] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/lqYIR35iVFw"
+[2026-05-01 15:27:37] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 15:27:37] 🔄 تلاش مجدد (3/3)...
+[2026-05-01 15:27:38] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.13.149:2...
+[2026-05-01 15:27:54] 🍪 کوکی جدید دریافت شد
+[2026-05-01 15:27:56] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/lqYIR35iVFw"
+[2026-05-01 15:27:56] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 15:27:58] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@156.225.72.238:...
+[2026-05-01 15:28:04] 🎬 درخواست از b0CC1Tc099P0d6b5b9cfe1ca5baf2522: https://www.youtube.com/watch?v=uymztlVLLm8
+[2026-05-01 15:28:06] 🎬 درخواست از b0GllPx099P036d2870b03fdd8aa7f2a: https://youtu.be/lqYIR35iVFw
+[2026-05-01 15:28:15] 🍪 کوکی جدید دریافت شد
+[2026-05-01 15:28:26] ⬇️ دانلود در 6.7s
+[2026-05-01 15:28:41] 🎬 درخواست از b0Cjg96099P0e43f585a5469b5c56ab8: https://www.youtube.com/watch?v=zHeWEgAheXI
+[2026-05-01 15:28:44] ⬆️ آپلود video_raw.mp4 در 17.6s
+[2026-05-01 15:28:44] 📊 آمار به‌روزرسانی شد
