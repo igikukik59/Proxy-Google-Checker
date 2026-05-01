@@ -1,9 +1,9 @@
 name: 🔍 شکارچی خودکار کانفیگ
 
 on:
-  workflow_dispatch:          # اجرای دستی
+  workflow_dispatch:
   schedule:
-    - cron: '0 2 * * *'      # هر روز ساعت ۲ بامداد (اختیاری)
+    - cron: '0 2 * * *'   # هر شب ساعت ۲:۰۰ UTC
 
 jobs:
   hunter:
@@ -12,7 +12,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: 📥 دریافت کد مخزن
+      - name: 📥 دریافت مخزن
         uses: actions/checkout@v4
 
       - name: 🧰 نصب ابزارها (Xray, Puppeteer, yt-dlp)
@@ -35,8 +35,10 @@ jobs:
           MIN_SPEED_MiB=2
           PARALLEL=5
           BASE_PORT=10808
+          WORKDIR="$(pwd)"
+          export NODE_PATH="${WORKDIR}/node_modules"
 
-          # ─── ۱. دانلود همهٔ منابع ────────────────────────────
+          # منابع کانفیگ
           SOURCES=(
             "https://github.com/Epodonios/v2ray-configs/raw/main/All_Configs_Sub.txt"
             "https://raw.githubusercontent.com/SoliSpirit/v2ray-configs/refs/heads/main/all_configs.txt"
@@ -49,59 +51,41 @@ jobs:
             "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/splitted/mixed"
             "https://raw.githubusercontent.com/MhdiTaheri/V2rayCollector/main/sub/mix"
           )
+
+          # ۱. دانلود همزمان
           mkdir -p /tmp/sources
           for i in "${!SOURCES[@]}"; do
             curl -sL "${SOURCES[$i]}" -o "/tmp/sources/$i.txt" &
           done
           wait
 
-          # ─── ۲. استخراج هوشمند لینک‌ها ───────────────────────
+          # ۲. استخراج لینک‌ها
           RAW_LINKS="/tmp/raw_links.txt"
           rm -f "$RAW_LINKS"
-          # الگوی سخت‌گیرانه برای vless, trojan, ss (با پورت و کاراکترهای مجاز)
           grep -rhoP '(vless|trojan|ss)://[a-zA-Z0-9./?=:@&_\-]+' /tmp/sources/ | sort -u > "$RAW_LINKS"
-          # تمیزکاری: حذف خطوط خالی، اصلاح URLهای ناقص با sed
           sed -i '/^$/d' "$RAW_LINKS"
-          # درهم‌ریزی تصادفی
           shuf -o "$RAW_LINKS" "$RAW_LINKS"
           TOTAL=$(wc -l < "$RAW_LINKS")
           echo "📋 $TOTAL کانفیگ منحصربه‌فرد یافت شد."
 
-          # ─── ۳. آماده‌سازی تابع تست ─────────────────────────
+          # ۳. تابع تست
           test_config() {
             local uri="$1"
             local port="$2"
             local idx="$3"
             local xray_pid=""
-            local result=1
 
-            # ساخت فایل کانفیگ موقت Xray
-            local cfg="/tmp/xray_hunter_${idx}.json"
-            cat > "$cfg" << XRAYEOF
-          {
-            "inbounds": [{
-              "port": ${port},
-              "protocol": "socks",
-              "settings": { "auth": "noauth", "udp": true }
-            }],
-            "outbounds": [{
-              "protocol": "freedom",
-              "settings": {}
-            }]
-          }
-          XRAYEOF
-            # اینجا ما از یک اسکریپت Node.js کمکی استفاده می‌کنیم که بتواند URI را parse کند و outbound مناسب بسازد
-            # چون parse کردن URI در bash پیچیده است، یک اسکریپت کوچک Node.js inline می‌سازیم
+            # generate Xray config using Node.js
             node -e "
+              const fs = require('fs');
               const uri = process.argv[1];
-              const cfg = JSON.parse(require('fs').readFileSync('/tmp/xray_hunter_${idx}.json','utf8'));
-              // parse URI
               const u = new URL(uri);
               const protocol = u.protocol.replace(':','');
               const address = u.hostname;
               const port = u.port;
               const uuid = u.username;
               const params = Object.fromEntries(u.searchParams.entries());
+              const inbound = { port: ${port}, protocol: 'socks', settings: { auth: 'noauth', udp: true } };
               let outbound = { protocol, streamSettings: { network: params.type || 'tcp' } };
               if (protocol === 'trojan') {
                 outbound.settings = { servers: [{ address, port: parseInt(port), password: uuid }] };
@@ -129,35 +113,40 @@ jobs:
               } else {
                 outbound.streamSettings.security = 'none';
               }
-              cfg.outbounds[0] = outbound;
-              require('fs').writeFileSync('/tmp/xray_hunter_${idx}.json', JSON.stringify(cfg, null, 2));
+              const cfg = { inbounds: [inbound], outbounds: [outbound] };
+              fs.writeFileSync('/tmp/xray_hunter_${idx}.json', JSON.stringify(cfg, null, 2));
             " "$uri"
 
-            # راه‌اندازی Xray
-            ./xray/xray run -config "$cfg" &>/dev/null &
+            # Run Xray
+            ./xray/xray run -config "/tmp/xray_hunter_${idx}.json" &>/dev/null &
             xray_pid=$!
             sleep 2
 
-            # تست سریع curl
+            # Quick curl test
             if ! curl --socks5 127.0.0.1:${port} --max-time 5 -s http://ip-api.com/json >/dev/null; then
               kill $xray_pid 2>/dev/null || true
               return 1
             fi
 
-            # دریافت کوکی و دانلود تست با Puppeteer + yt-dlp
-            cat > /tmp/hunter_test_${idx}.cjs << NODEEOF
+            # Create test script with env vars
+            cat > /tmp/hunter_test_${idx}.cjs << 'NODEEOF'
           const puppeteer = require('puppeteer-extra');
           const StealthPlugin = require('puppeteer-extra-plugin-stealth');
           puppeteer.use(StealthPlugin());
-          const { execSync } = require('child_process');
+          const { spawn } = require('child_process');
           const fs = require('fs');
+
+          const PORT = process.env.HUNTER_PORT;
+          const TEST_VIDEO = process.env.HUNTER_VIDEO;
+          const MIN_SPEED = parseFloat(process.env.HUNTER_MIN_SPEED) * 1024 * 1024;
+          const MAX_TIME = parseInt(process.env.HUNTER_MAX_TIME);
 
           (async () => {
             let browser;
             try {
               browser = await puppeteer.launch({
                 headless: 'new',
-                args: ['--no-sandbox','--disable-setuid-sandbox','--proxy-server=socks5://127.0.0.1:${port}','--disable-dev-shm-usage']
+                args: ['--no-sandbox','--disable-setuid-sandbox',`--proxy-server=socks5://127.0.0.1:${PORT}`,'--disable-dev-shm-usage']
               });
               const page = await browser.newPage();
               await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
@@ -170,32 +159,32 @@ jobs:
                 const domain = c.domain.startsWith('.') ? c.domain : '.' + c.domain;
                 const flag = c.secure ? 'TRUE' : 'FALSE';
                 const exp = c.expires>0 ? Math.floor(c.expires) : 0;
-                lines.push('\${domain}\\tTRUE\\t\${c.path}\\t\${flag}\\t\${exp}\\t\${c.name}\\t\${c.value}');
+                lines.push(`${domain}\tTRUE\t${c.path}\t${flag}\t${exp}\t${c.name}\t${c.value}`);
               });
-              fs.writeFileSync('/tmp/cookies_hunter_${idx}.txt', lines.join('\\n'));
+              fs.writeFileSync(`/tmp/cookies_hunter_${process.env.HUNTER_IDX}.txt`, lines.join('\n'));
               await browser.close();
 
-              // دانلود با مهلت و بررسی سرعت
-              const outPath = '/tmp/test_hunter_${idx}.mp4';
+              // Download with speed monitoring
+              const outPath = `/tmp/test_hunter_${process.env.HUNTER_IDX}.mp4`;
               const start = Date.now();
-              const child = require('child_process').spawn('yt-dlp', [
-                '--cookies', '/tmp/cookies_hunter_${idx}.txt',
-                '--proxy', 'socks5h://127.0.0.1:${port}',
+              const child = spawn('yt-dlp', [
+                '--cookies', `/tmp/cookies_hunter_${process.env.HUNTER_IDX}.txt`,
+                '--proxy', `socks5h://127.0.0.1:${PORT}`,
                 '-N', '8', '--concurrent-fragments', '8',
                 '--buffer-size', '1024K', '--no-playlist',
                 '--format', 'best[height<=480][ext=mp4] / best[height<=480]',
                 '--merge-output-format', 'mp4',
                 '--output', outPath,
-                '${TEST_VIDEO}'
+                TEST_VIDEO
               ], { stdio: ['pipe', 'pipe', 'pipe'] });
 
               let lastSpeed = 0;
               let lowSpeedStart = null;
               let killed = false;
               child.stderr.on('data', (data) => {
-                const lines = data.toString().split('\\n');
+                const lines = data.toString().split('\n');
                 for (const line of lines) {
-                  const match = line.match(/(\\d+\\.?\\d*)\\s*(K|M|G)?iB\\/s/);
+                  const match = line.match(/(\d+\.?\d*)\s*(K|M|G)?iB\/s/);
                   if (match) {
                     let speed = parseFloat(match[1]);
                     const unit = match[2] || '';
@@ -203,7 +192,7 @@ jobs:
                     else if (unit === 'M') speed *= 1024*1024;
                     else if (unit === 'G') speed *= 1024*1024*1024;
                     lastSpeed = speed;
-                    if (speed < ${MIN_SPEED_MiB}*1024*1024) {
+                    if (speed < MIN_SPEED) {
                       if (!lowSpeedStart) lowSpeedStart = Date.now();
                       else if (Date.now() - lowSpeedStart > 5000) {
                         child.kill('SIGTERM');
@@ -217,29 +206,32 @@ jobs:
               child.on('close', (code) => {
                 const elapsed = (Date.now() - start) / 1000;
                 if (killed || code !== 0) { process.exit(1); }
-                if (elapsed > ${MAX_TIME}) { process.exit(1); }
+                if (elapsed > MAX_TIME) { process.exit(1); }
                 if (fs.existsSync(outPath)) {
                   try { fs.unlinkSync(outPath); } catch(_){}
                   process.exit(0);
                 } else { process.exit(1); }
               });
 
-              // timeout کلی
-              setTimeout(() => { child.kill('SIGTERM'); process.exit(1); }, ${MAX_TIME}*1000);
+              setTimeout(() => { child.kill('SIGTERM'); process.exit(1); }, MAX_TIME*1000);
             } catch(e) { process.exit(1); }
           })();
           NODEEOF
 
-            timeout ${MAX_TIME} node /tmp/hunter_test_${idx}.cjs
-            result=$?
+            # Set environment variables and run test
+            HUNTER_PORT="$port" HUNTER_VIDEO="$TEST_VIDEO" HUNTER_MIN_SPEED="$MIN_SPEED_MiB" HUNTER_MAX_TIME="$MAX_TIME" HUNTER_IDX="$idx" \
+            timeout $((MAX_TIME+10)) node /tmp/hunter_test_${idx}.cjs
+            local test_result=$?
+
+            # Cleanup
             kill $xray_pid 2>/dev/null || true
-            rm -f "$cfg" /tmp/cookies_hunter_${idx}.txt /tmp/test_hunter_${idx}.mp4 /tmp/hunter_test_${idx}.cjs
-            return $result
+            rm -f "/tmp/xray_hunter_${idx}.json" "/tmp/cookies_hunter_${idx}.txt" "/tmp/test_hunter_${idx}.mp4" "/tmp/hunter_test_${idx}.cjs"
+
+            return $test_result
           }
 
-          # ─── ۴. اجرای موازی در دسته‌های ۵ تایی ───────────────
+          # ۴. حلقهٔ تست موازی
           mapfile -t CONFIGS < "$RAW_LINKS"
-          COUNT=0
           for ((i=0; i<${#CONFIGS[@]}; i+=PARALLEL)); do
             PIDS=()
             for ((j=i; j<i+PARALLEL && j<${#CONFIGS[@]}; j++)); do
@@ -248,18 +240,11 @@ jobs:
               PIDS+=($!)
             done
             for pid in "${PIDS[@]}"; do
-              wait $pid
-              if [ $? -eq 0 ]; then
-                # استفاده از flock برای نوشتن ایمن
-                (
-                  flock -x 200
-                  echo "${CONFIGS[$j]}" >> "$OUTPUT_FILE"
-                ) 200>/tmp/hunter.lock
-              fi
+              wait $pid || true
             done
           done
 
-          echo "✅ شکار تمام شد. فایل $OUTPUT_FILE به‌روزرسانی شد."
+          echo "✅ شکار تمام شد."
           EOF
           chmod +x hunter.sh
           ./hunter.sh
