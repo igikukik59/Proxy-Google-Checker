@@ -5001,3 +5001,25 @@ ERROR: [youtube:truncated_id] kouman: Incomplete YouTube ID kouman. URL https://
 [2026-05-01 15:35:08] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 25.6s
 [2026-05-01 15:35:09] مجموع زمان آپلود قطعات: 64.6s
 [2026-05-01 15:35:09] 📊 آمار به‌روزرسانی شد
+[2026-05-01 15:35:11] ❌ خطا در push: Command failed: git push
+To https://github.com/igikukik59/Proxy-Google-Checker
+ ! [remote rejected] main -> main (cannot lock ref 'refs/heads/main': is at 62c687e24c96443543101f922b4f839871e2af8b but expected a9c7bc7e622ba7458311bb958447304dca4e9c94)
+error: failed to push some refs to 'https://github.com/igikukik59/Proxy-Google-Checker'
+
+[2026-05-01 15:35:12] 📤 تلاش مجدد push موفق بود
+[2026-05-01 15:35:16] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "youtube.com/watch?v=OSaEnbeMnkU"
+[2026-05-01 15:35:16] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 15:35:16] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 15:35:17] 🔀 تلاش با پروکسی تصادفی: trojan://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:...
+[2026-05-01 15:35:22] 🎬 درخواست از b0Il6WK099P0f93db8ff4920e81ca1ed: https://youtu.be/6Sfs6eEeBx4
+[2026-05-01 15:35:33] 🍪 کوکی جدید دریافت شد
+[2026-05-01 15:35:35] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "youtube.com/watch?v=OSaEnbeMnkU"
+[2026-05-01 15:35:35] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 15:35:35] 🔄 تلاش مجدد (3/3)...
+[2026-05-01 15:35:36] 🔀 تلاش با پروکسی تصادفی: vless://cff6f361-828a-43c8-a8b5-8d10b32e57fb@188.114.98.0:44...
+[2026-05-01 15:35:52] 🍪 کوکی جدید دریافت شد
+[2026-05-01 15:35:54] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "youtube.com/watch?v=OSaEnbeMnkU"
+[2026-05-01 15:35:54] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 15:35:55] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@198.71.189.51:4...
+[2026-05-01 15:36:02] 🎬 درخواست از b0BVDuQ099P04c10126c396df005529c: https://www.youtube.com/watch?v=uOGLuQ312xU
+[2026-05-01 15:36:03] 📊 آمار به‌روزرسانی شد
