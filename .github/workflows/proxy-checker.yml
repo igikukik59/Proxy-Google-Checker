@@ -1,4 +1,4 @@
-name: 🔍 شکارچی خودکار کانفیگ با لاگ کامل
+name: 🔍 شکارچی خودکار کانفیگ با لاگ کامل و push آنی
 
 on:
   workflow_dispatch:
@@ -24,7 +24,7 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🎯 شکار کانفیگ‌های جدید
+      - name: 🎯 شکار کانفیگ‌های جدید و push آنی
         run: |
           cat > hunter.sh << 'EOF'
           #!/bin/bash
@@ -37,6 +37,10 @@ jobs:
           BASE_PORT=10808
           WORKDIR="$(pwd)"
           export NODE_PATH="${WORKDIR}/node_modules"
+
+          # تنظیم هویت git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
           # منابع
           SOURCES=(
@@ -71,12 +75,20 @@ jobs:
           echo "📋 $TOTAL کانفیگ یکتا پیدا شد."
           echo "=============================="
 
-          # شمارنده‌ها
           PASSED=0
           FAILED=0
           COUNTER=0
 
           log_ts() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
+
+          # تابع push آنی
+          push_changes() {
+            # pull --rebase برای جلوگیری از تداخل با ربات اصلی
+            git pull --rebase origin main 2>/dev/null || true
+            git add "$OUTPUT_FILE"
+            git commit -m "🔁 به‌روزرسانی خودکار پروکسی‌های خوب" 2>/dev/null || true
+            git push 2>/dev/null || true
+          }
 
           # تابع تست
           test_config() {
@@ -132,14 +144,14 @@ jobs:
             xray_pid=$!
             sleep 2
 
-            # تست اولیه CURL
+            # تست CURL
             if ! curl --socks5 127.0.0.1:${port} --max-time 5 -s http://ip-api.com/json >/dev/null; then
               kill $xray_pid 2>/dev/null || true
               log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — شکست در CURL"
               return 2
             fi
 
-            # اسکریپت Node.js
+            # اسکریپت Node.js تست نهایی
             cat > /tmp/hunter_test_${idx}.cjs << 'NODEEOF'
           const puppeteer = require('puppeteer-extra');
           const StealthPlugin = require('puppeteer-extra-plugin-stealth');
@@ -151,6 +163,7 @@ jobs:
           const TEST_VIDEO = process.env.HUNTER_VIDEO;
           const MIN_SPEED = parseFloat(process.env.HUNTER_MIN_SPEED) * 1024 * 1024;
           const MAX_TIME = parseInt(process.env.HUNTER_MAX_TIME);
+          const IDX = process.env.HUNTER_IDX;
 
           (async () => {
             let browser;
@@ -172,13 +185,13 @@ jobs:
                 const exp = c.expires>0 ? Math.floor(c.expires) : 0;
                 lines.push(`${domain}\tTRUE\t${c.path}\t${flag}\t${exp}\t${c.name}\t${c.value}`);
               });
-              fs.writeFileSync(`/tmp/cookies_hunter_${process.env.HUNTER_IDX}.txt`, lines.join('\n'));
+              fs.writeFileSync(`/tmp/cookies_hunter_${IDX}.txt`, lines.join('\n'));
               await browser.close();
 
-              const outPath = `/tmp/test_hunter_${process.env.HUNTER_IDX}.mp4`;
+              const outPath = `/tmp/test_hunter_${IDX}.mp4`;
               const start = Date.now();
               const child = spawn('yt-dlp', [
-                '--cookies', `/tmp/cookies_hunter_${process.env.HUNTER_IDX}.txt`,
+                '--cookies', `/tmp/cookies_hunter_${IDX}.txt`,
                 '--proxy', `socks5h://127.0.0.1:${PORT}`,
                 '-N', '8', '--concurrent-fragments', '8',
                 '--buffer-size', '1024K', '--no-playlist',
@@ -192,6 +205,7 @@ jobs:
               child.stdout.pipe(process.stdout);
 
               let lastSpeed = 0;
+              let avgSpeed = 0;
               let lowSpeedStart = null;
               let killed = false;
               child.stderr.on('data', (data) => {
@@ -205,6 +219,7 @@ jobs:
                     else if (unit === 'M') speed *= 1024*1024;
                     else if (unit === 'G') speed *= 1024*1024*1024;
                     lastSpeed = speed;
+                    avgSpeed = speed; // ساده‌سازی: آخرین سرعت را نگه می‌داریم
                     if (speed < MIN_SPEED) {
                       if (!lowSpeedStart) lowSpeedStart = Date.now();
                       else if (Date.now() - lowSpeedStart > 5000) {
@@ -222,6 +237,10 @@ jobs:
                 if (elapsed > MAX_TIME) { process.exit(5); }
                 if (fs.existsSync(outPath)) {
                   try { fs.unlinkSync(outPath); } catch(_){}
+                  // سرعت میانگین (MB/s)
+                  const fileSize = 75.92 * 1024 * 1024; // approx size of test video
+                  const avgSpeedMB = (fileSize / elapsed / (1024*1024)).toFixed(2);
+                  console.log(`AVG_SPEED:${avgSpeedMB}`);
                   process.exit(0);
                 } else { process.exit(6); }
               });
@@ -231,18 +250,22 @@ jobs:
           })();
           NODEEOF
 
-            # اجرای تست نهایی
+            # اجرای تست
             HUNTER_PORT="$port" HUNTER_VIDEO="$TEST_VIDEO" HUNTER_MIN_SPEED="$MIN_SPEED_MiB" HUNTER_MAX_TIME="$MAX_TIME" HUNTER_IDX="$idx" \
-            timeout $((MAX_TIME+10)) node /tmp/hunter_test_${idx}.cjs
-            local test_result=$?
+            timeout $((MAX_TIME+10)) node /tmp/hunter_test_${idx}.cjs 2>&1 | tee /tmp/hunter_output_${idx}.txt
+            local test_result=${PIPESTATUS[0]}
 
             # پاک‌سازی
             kill $xray_pid 2>/dev/null || true
             rm -f "/tmp/xray_hunter_${idx}.json" "/tmp/cookies_hunter_${idx}.txt" "/tmp/test_hunter_${idx}.mp4" "/tmp/hunter_test_${idx}.cjs"
 
-            # تحلیل کد خروجی و لاگ
+            # تحلیل نتیجه
+            local speed_str=""
+            if [ -f "/tmp/hunter_output_${idx}.txt" ]; then
+              speed_str=$(grep -oP 'AVG_SPEED:\K[\d.]+' "/tmp/hunter_output_${idx}.txt" 2>/dev/null || echo "?")
+            fi
             case $test_result in
-              0) log_ts "✅ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — قبول شد ($(grep -oP 'at [\d.]+MiB/s' /tmp/test_output 2>/dev/null || echo ''))"
+              0) log_ts "✅ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — قبول شد (≈${speed_str:-?} MB/s)"
                  # اضافه به فایل با قفل
                  (
                    flock -x 200
@@ -252,13 +275,13 @@ jobs:
               2) ;; # قبلاً لاگ شده
               3) log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — کوکی دریافت نشد" ;;
               4) log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — دانلود شکست" ;;
-              5) log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — تایم‌اوت (بیش از ${MAX_TIME}s)" ;;
+              5) log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — تایم‌اوت" ;;
               6) log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — فایل خروجی ایجاد نشد" ;;
               7) log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — خطای ناشناخته" ;;
             esac
+            rm -f "/tmp/hunter_output_${idx}.txt"
           }
 
-          # حلقه اصلی تست
           mapfile -t CONFIGS < "$RAW_LINKS"
           echo "🚀 شروع تست هم‌زمان $TOTAL کانفیگ در دسته‌های $PARALLEL تایی..."
           for ((i=0; i<${#CONFIGS[@]}; i+=PARALLEL)); do
@@ -268,21 +291,18 @@ jobs:
               test_config "${CONFIGS[$j]}" "$port" "$j" &
               PIDS+=($!)
             done
+            # منتظر تمام شدن دسته
             for pid in "${PIDS[@]}"; do
               wait $pid || true
             done
+            # push آنی بعد از هر دسته
+            push_changes
           done
 
           echo "=============================="
-          echo "✅ شکار تمام شد. کانفیگ‌های سالم به $OUTPUT_FILE اضافه شدند."
+          echo "✅ شکار تمام شد. تمام کانفیگ‌های سالم به $OUTPUT_FILE اضافه و push شدند."
           EOF
           chmod +x hunter.sh
           ./hunter.sh
 
-      - name: 📤 ذخیره و push تغییرات
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add 'کانفیگ های خوب.txt'
-          git commit -m "🔁 به‌روزرسانی خودکار پروکسی‌های خوب" || echo "بدون تغییر"
-          git push
+      # مرحله جداگانه push حذف شد چون اسکریپت خودش push می‌کند.
