@@ -736,3 +736,12 @@ ERROR: [youtube] WMBOsPUi2uw: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 05:52:26] ⬇️ دانلود در 5.1s
 [2026-05-01 05:52:42] ⬆️ آپلود video_raw.mp4 در 15.1s
 [2026-05-01 05:52:42] 📊 آمار به‌روزرسانی شد
+[2026-05-01 05:52:43] 📤 لاگ و آمار push شد
+[2026-05-01 05:52:48] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/FpXRFD9ht38"
+[2026-05-01 05:52:48] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 05:52:48] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 05:52:49] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@104.17.72.206:4...
+[2026-05-01 05:53:06] 🍪 کوکی جدید دریافت شد
+[2026-05-01 05:53:09] ⬇️ دانلود در 2.7s
+[2026-05-01 05:53:16] ⬆️ آپلود video_raw.mp4 در 6.5s
+[2026-05-01 05:53:16] 📊 آمار به‌روزرسانی شد
