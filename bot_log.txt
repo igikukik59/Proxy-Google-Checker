@@ -4787,3 +4787,41 @@ ERROR: [youtube] 9Fxnm6cnMt8: Sign in to confirm your age. This video may be ina
 [2026-05-01 15:17:14] ⬆️ آپلود video_raw.mp4 در 22.2s
 [2026-05-01 15:17:15] 🎬 درخواست از b0CQOb099P0a9e8e5158824637706b9c: https://www.youtube.com/watch?v=w0kozeQ8KOg
 [2026-05-01 15:17:15] 📊 آمار به‌روزرسانی شد
+[2026-05-01 15:17:16] 📤 لاگ و آمار push شد
+[2026-05-01 15:17:20] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/lqYIR35iVFw"
+[2026-05-01 15:17:20] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 15:17:20] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 15:17:21] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@156.225.72.238:...
+[2026-05-01 15:17:37] 🎬 درخواست از b0Cjg96099P0e43f585a5469b5c56ab8: https://www.youtube.com/watch?v=A89TIc_y4Co
+[2026-05-01 15:17:38] 🍪 کوکی جدید دریافت شد
+[2026-05-01 15:17:39] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/lqYIR35iVFw"
+[2026-05-01 15:17:39] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 15:17:39] 🔄 تلاش مجدد (3/3)...
+[2026-05-01 15:17:40] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@104.17.72.206:4...
+[2026-05-01 15:17:57] 🍪 کوکی جدید دریافت شد
+[2026-05-01 15:17:58] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/lqYIR35iVFw"
+[2026-05-01 15:17:58] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 15:17:59] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@104.17.72.206:4...
+[2026-05-01 15:18:04] 🎬 درخواست از b0GllPx099P036d2870b03fdd8aa7f2a: https://youtu.be/lqYIR35iVFw
+[2026-05-01 15:18:16] 🍪 کوکی جدید دریافت شد
+[2026-05-01 15:18:21] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/MBtCNNZu7Pg"
+[2026-05-01 15:18:21] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 15:18:21] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 15:18:21] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@188.114.96.3:20...
+[2026-05-01 15:18:38] 🍪 کوکی جدید دریافت شد
+[2026-05-01 15:18:39] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/MBtCNNZu7Pg"
+[2026-05-01 15:18:39] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 15:18:39] 🔄 تلاش مجدد (3/3)...
+[2026-05-01 15:18:40] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@104.18.12.149:443?security=tls&sni=www.mul...
+[2026-05-01 15:18:59] 🍪 کوکی جدید دریافت شد
+[2026-05-01 15:19:14] ⬇️ دانلود در 15.0s
+[2026-05-01 15:19:14] ✂️ شروع تقسیم video_raw (77.6MB)
+[2026-05-01 15:19:15] 🎬 درخواست از b0ETl4l099P00cd9cc7b7c0a442b4371: https://youtu.be/EGe-vT0nm4E
+[2026-05-01 15:19:16] 🎯 بیت‌ریت: 333kbps | مدت: 1955.4s | زمان قطعه: 1108s
+[2026-05-01 15:19:37] ❌ file_id یافت نشد
+[2026-05-01 15:19:37] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 19.4s
+[2026-05-01 15:19:39] 🎬 درخواست از b0JXVEH099P0a78a80ef06f0da7776e6: https://www.youtube.com/watch?v=-vzDFOizsig
+[2026-05-01 15:19:59] ⬆️ آپلود video_raw.part02.mp4 در 21.0s
+[2026-05-01 15:19:59] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 21.0s
+[2026-05-01 15:20:00] مجموع زمان آپلود قطعات: 40.4s
+[2026-05-01 15:20:00] 📊 آمار به‌روزرسانی شد
