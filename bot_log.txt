@@ -3448,3 +3448,18 @@ ERROR: [youtube] iY5RKODM4AQ: Video unavailable
 [2026-05-01 12:40:33] ⬇️ دانلود در 2.3s
 [2026-05-01 12:40:48] ⬆️ آپلود video_raw.mp4 در 14.6s
 [2026-05-01 12:40:49] 📊 آمار به‌روزرسانی شد
+[2026-05-01 12:40:50] 📤 لاگ و آمار push شد
+[2026-05-01 12:40:58] ⬇️ دانلود در 4.0s
+[2026-05-01 12:41:04] 🎬 درخواست از b0DL6a8099P07164ca28ccde699c21e6: https://www.youtube.com/watch?v=usH66Rs5H20
+[2026-05-01 12:41:05] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=usH66Rs5H20"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] usH66Rs5H20: Sign in to confirm your age. This video may be inappropriate for some users. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-01 12:41:15] 🎬 درخواست از b0EIbsg099P02245527bee99342d435d: https://www.youtube.com/watch?v=8675V-MuWfo
+[2026-05-01 12:41:17] 🎬 درخواست از b0DL6a8099P07164ca28ccde699c21e6: https://www.youtube.com/watch?v=usH66Rs5H20
+[2026-05-01 12:41:19] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=usH66Rs5H20"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] usH66Rs5H20: Sign in to confirm your age. This video may be inappropriate for some users. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-01 12:41:29] ⬆️ آپلود video_raw.mp4 در 30.4s
+[2026-05-01 12:41:30] 📊 آمار به‌روزرسانی شد
