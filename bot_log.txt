@@ -3838,3 +3838,13 @@ ERROR: [youtube] 3zVAj4I72t8: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 13:54:37] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 2.2s
 [2026-05-01 13:54:38] مجموع زمان آپلود قطعات: 49.1s
 [2026-05-01 13:54:38] 📊 آمار به‌روزرسانی شد
+[2026-05-01 13:54:39] 📤 لاگ و آمار push شد
+[2026-05-01 13:54:47] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/u7SGXLCoxo0"
+[2026-05-01 13:54:47] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 13:54:47] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 13:54:48] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.145.238:2...
+[2026-05-01 13:54:52] 🎬 درخواست از b0GKWwM099P0ae157c0a92eab32bd188: https://www.youtube.com/watch?v=3JwUN-D10lQ
+[2026-05-01 13:55:05] 🍪 کوکی جدید دریافت شد
+[2026-05-01 13:55:11] ⬇️ دانلود در 6.1s
+[2026-05-01 13:55:26] ⬆️ آپلود video_raw.mp4 در 14.7s
+[2026-05-01 13:55:26] 📊 آمار به‌روزرسانی شد
