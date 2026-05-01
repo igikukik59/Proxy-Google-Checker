@@ -1,13 +1,13 @@
 {
-  "totalDataMB": "9531.50",
-  "totalVideos": 178,
-  "totalDurationMinutes": "3301.8",
-  "uniqueUsers": 101,
-  "failedAttempts": 12,
-  "avgProcessingTimeSec": "110.1",
-  "avgVideoSizeMB": "53.55",
+  "totalDataMB": "9544.22",
+  "totalVideos": 179,
+  "totalDurationMinutes": "3308.0",
+  "uniqueUsers": 102,
+  "failedAttempts": 13,
+  "avgProcessingTimeSec": "97.9",
+  "avgVideoSizeMB": "53.32",
   "avgVideoDurationMin": "18.5",
-  "queueLength": 9,
+  "queueLength": 7,
   "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
   "proxies": [
     {
@@ -173,10 +173,10 @@
     },
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.151.191:2",
-      "avgSpeedMBps": "4.19",
-      "samples": 2,
+      "avgSpeedMBps": "3.23",
+      "samples": 3,
       "failures": 0,
-      "lastUsed": "2026-05-01T15:16:52.275Z"
+      "lastUsed": "2026-05-01T17:21:13.413Z"
     },
     {
       "proxy": "trojan://humanity@104.18.12.149:443?security=tls&sni=www.mul",
