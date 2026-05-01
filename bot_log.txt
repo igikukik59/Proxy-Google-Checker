@@ -4581,3 +4581,16 @@ ERROR: [youtube] Mfl7mwNxvkw: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 14:56:04] 📤 لاگ و آمار push شد
 [2026-05-01 14:56:11] ⬆️ آپلود video_raw.mp4 در 6.2s
 [2026-05-01 14:56:11] 📊 آمار به‌روزرسانی شد
+[2026-05-01 14:56:12] 📤 لاگ و آمار push شد
+[2026-05-01 14:56:13] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@104.17.72.206:4...
+[2026-05-01 14:56:29] 🍪 کوکی جدید دریافت شد
+[2026-05-01 14:56:34] 🎬 درخواست از b0CC1Tc099P0d6b5b9cfe1ca5baf2522: https://www.youtube.com/watch?v=nxYPsUWAosA
+[2026-05-01 14:56:42] ⬇️ دانلود در 7.4s
+[2026-05-01 14:56:43] 🎬 درخواست از b0DNpV3099P0eec6a0253c915b11662c: https://www.youtube.com/watch?v=JoN0yxyddX0
+[2026-05-01 14:57:04] ⬆️ آپلود video_raw.mp4 در 21.6s
+[2026-05-01 14:57:04] 🎬 درخواست از b0HTulk099P00881ecb9a457e0430f95: https://www.youtube.com/watch?v=9mOm7BsEFjJbMrBG6
+[2026-05-01 14:57:04] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=9mOm7BsEFjJbMrBG6"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] 9mOm7BsEFjJ: Video unavailable
+
+[2026-05-01 14:57:05] 📊 آمار به‌روزرسانی شد
