@@ -2054,3 +2054,24 @@ ERROR: [youtube] q8wnX9y7JzU: Unable to download API page: [Errno 111] Connectio
 [2026-05-01 09:38:24] 🎬 درخواست از b0G75gi099P00120953e9a4c20ecc6ad: https://www.youtube.com/watch?v=mxHVECl3-nQ
 [2026-05-01 09:38:46] ⬆️ آپلود video_raw.mp4 در 22.7s
 [2026-05-01 09:38:47] 📊 آمار به‌روزرسانی شد
+[2026-05-01 09:38:48] 📤 لاگ و آمار push شد
+[2026-05-01 09:38:52] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=mxHVECl3-nQ"
+[2026-05-01 09:38:52] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 09:38:52] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 09:38:53] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@104.17.72.206:4...
+[2026-05-01 09:39:10] 🍪 کوکی جدید دریافت شد
+[2026-05-01 09:39:11] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=mxHVECl3-nQ"
+[2026-05-01 09:39:11] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 09:39:11] 🔄 تلاش مجدد (3/3)...
+[2026-05-01 09:39:11] 🎬 درخواست از b0GNwBd099P024de98d3410d067ad08a: https://www.youtube.com/watch?v=BhUVWXgXbuc
+[2026-05-01 09:39:12] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@104.17.72.206:4...
+[2026-05-01 09:39:28] 🍪 کوکی جدید دریافت شد
+[2026-05-01 09:39:29] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=mxHVECl3-nQ"
+[2026-05-01 09:39:29] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 09:39:30] 🔀 تلاش با پروکسی تصادفی: vless://d37a75db-76b6-4db8-b213-0d5b044d138d@104.18.12.149:4...
+[2026-05-01 09:39:41] 🎬 درخواست از b0HOpA4099P0ae874a37ffb449ba8865: https://www.youtube.com/watch?v=xjQjSyY4dzE
+[2026-05-01 09:40:00] 🎬 درخواست از b0EQK2S099P043bc42057ace07adb97d: https://www.youtube.com/watch?v=h--boc58FPE
+[2026-05-01 09:40:39] ❌ خطای کوکی: Navigation timeout of 60000 ms exceeded
+[2026-05-01 09:40:50] ⬇️ دانلود در 7.9s
+[2026-05-01 09:41:06] ⬆️ آپلود video_raw.mp4 در 16.2s
+[2026-05-01 09:41:07] 📊 آمار به‌روزرسانی شد
