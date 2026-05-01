@@ -3,7 +3,7 @@ name: 🔍 شکارچی خودکار کانفیگ با لاگ کامل
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 2 * * *'   # هر شب ساعت ۲:۰۰ UTC
+    - cron: '0 2 * * *'
 
 jobs:
   hunter:
@@ -37,10 +37,8 @@ jobs:
           BASE_PORT=10808
           WORKDIR="$(pwd)"
           export NODE_PATH="${WORKDIR}/node_modules"
-          LOCKFILE="/tmp/hunter.lock"
-          touch "$LOCKFILE"
 
-          # منابع کانفیگ
+          # منابع
           SOURCES=(
             "https://github.com/Epodonios/v2ray-configs/raw/main/All_Configs_Sub.txt"
             "https://raw.githubusercontent.com/SoliSpirit/v2ray-configs/refs/heads/main/all_configs.txt"
@@ -78,9 +76,9 @@ jobs:
           FAILED=0
           COUNTER=0
 
-          # لاگ با تاریخ
           log_ts() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
 
+          # تابع تست
           test_config() {
             local uri="$1"
             local port="$2"
@@ -134,13 +132,14 @@ jobs:
             xray_pid=$!
             sleep 2
 
-            # تست اولیه با CURL
+            # تست اولیه CURL
             if ! curl --socks5 127.0.0.1:${port} --max-time 5 -s http://ip-api.com/json >/dev/null; then
               kill $xray_pid 2>/dev/null || true
-              return 2   # کد ۲ = شکست در CURL
+              log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — شکست در CURL"
+              return 2
             fi
 
-            # اسکریپت Node.js برای تست نهایی (با ارسال خروجی yt-dlp به کنسول)
+            # اسکریپت Node.js
             cat > /tmp/hunter_test_${idx}.cjs << 'NODEEOF'
           const puppeteer = require('puppeteer-extra');
           const StealthPlugin = require('puppeteer-extra-plugin-stealth');
@@ -165,7 +164,7 @@ jobs:
               await page.goto('https://www.youtube.com/', { waitUntil:'networkidle2', timeout:30000 });
               await new Promise(r => setTimeout(r, 5000));
               const cookies = await page.cookies();
-              if (cookies.length === 0) { process.exit(3); } // کد ۳ = کوکی ناموفق
+              if (cookies.length === 0) { process.exit(3); }
               const lines = ['# Netscape HTTP Cookie File', ''];
               cookies.forEach(c => {
                 const domain = c.domain.startsWith('.') ? c.domain : '.' + c.domain;
@@ -176,7 +175,6 @@ jobs:
               fs.writeFileSync(`/tmp/cookies_hunter_${process.env.HUNTER_IDX}.txt`, lines.join('\n'));
               await browser.close();
 
-              // دانلود با نظارت سرعت
               const outPath = `/tmp/test_hunter_${process.env.HUNTER_IDX}.mp4`;
               const start = Date.now();
               const child = spawn('yt-dlp', [
@@ -190,7 +188,6 @@ jobs:
                 TEST_VIDEO
               ], { stdio: ['pipe', 'pipe', 'pipe'] });
 
-              // نمایش خروجی yt-dlp در لاگ
               child.stderr.pipe(process.stderr);
               child.stdout.pipe(process.stdout);
 
@@ -221,16 +218,16 @@ jobs:
 
               child.on('close', (code) => {
                 const elapsed = (Date.now() - start) / 1000;
-                if (killed || code !== 0) { process.exit(4); } // کد ۴ = دانلود شکست خورد
-                if (elapsed > MAX_TIME) { process.exit(5); }   // کد ۵ = مهلت زمانی تمام شد
+                if (killed || code !== 0) { process.exit(4); }
+                if (elapsed > MAX_TIME) { process.exit(5); }
                 if (fs.existsSync(outPath)) {
                   try { fs.unlinkSync(outPath); } catch(_){}
-                  process.exit(0);   // موفقیت
-                } else { process.exit(6); } // فایل خروجی ساخته نشد
+                  process.exit(0);
+                } else { process.exit(6); }
               });
 
               setTimeout(() => { child.kill('SIGTERM'); process.exit(5); }, MAX_TIME*1000);
-            } catch(e) { process.exit(7); } // خطای غیرمنتظره
+            } catch(e) { process.exit(7); }
           })();
           NODEEOF
 
@@ -243,7 +240,22 @@ jobs:
             kill $xray_pid 2>/dev/null || true
             rm -f "/tmp/xray_hunter_${idx}.json" "/tmp/cookies_hunter_${idx}.txt" "/tmp/test_hunter_${idx}.mp4" "/tmp/hunter_test_${idx}.cjs"
 
-            return $test_result
+            # تحلیل کد خروجی و لاگ
+            case $test_result in
+              0) log_ts "✅ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — قبول شد ($(grep -oP 'at [\d.]+MiB/s' /tmp/test_output 2>/dev/null || echo ''))"
+                 # اضافه به فایل با قفل
+                 (
+                   flock -x 200
+                   echo "$uri" >> "$OUTPUT_FILE"
+                 ) 200>/tmp/hunter.lock
+                 ;;
+              2) ;; # قبلاً لاگ شده
+              3) log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — کوکی دریافت نشد" ;;
+              4) log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — دانلود شکست" ;;
+              5) log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — تایم‌اوت (بیش از ${MAX_TIME}s)" ;;
+              6) log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — فایل خروجی ایجاد نشد" ;;
+              7) log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — خطای ناشناخته" ;;
+            esac
           }
 
           # حلقه اصلی تست
@@ -253,32 +265,24 @@ jobs:
             PIDS=()
             for ((j=i; j<i+PARALLEL && j<${#CONFIGS[@]}; j++)); do
               port=$((BASE_PORT + (j % PARALLEL)))
-              COUNTER=$((COUNTER+1))
               test_config "${CONFIGS[$j]}" "$port" "$j" &
               PIDS+=($!)
             done
-            # منتظر تمام شدن هر دسته
             for pid in "${PIDS[@]}"; do
               wait $pid || true
             done
-            # نمایش نتیجه
-            for ((k=0; k<${#PIDS[@]}; k++)); do
-              local exit_code=${PIDS[$k]}  # این فقط PID است نه کد خروجی؛ در bash گرفتن کد خروجی پس از wait از طریق $? ممکن نیست به راحتی در حلقه. باید از آرایه نگهداری PID->status استفاده کنیم. اما برای سادگی، درون test_config ما خروجی را خودش لاگ نمی‌کنیم ولی اینجا بر اساس exit_code می‌توانیم تصمیم بگیریم. متأسفانه bash اینجا محدود است. راه ساده: درون test_config یک echo انجام دهیم و سپس wait کنیم خروجی‌ها بین‌هایش قاطی می‌شود. ترجیح می‌دهم که test_config خودش یک خط نتیجه چاپ کند.
-            done
-            # بنابراین موارد بالا را حذف می‌کنم و به test_config یک خط echo اضافه می‌کنم.
-            # اما test_config در پس‌زمینه اجرا می‌شود و خروجی آن به ترمینال اصلی می‌آید. پس کافی است در test_config یک خط با log_ts چاپ کنیم.
           done
 
-          # تبدیل به روش ساده‌تر: حلقه را طوری تغییر می‌دهیم که test_config داخلی خودش لاگ کند.
-          # پس کل این بخش عوض می‌شود:
-          # rewrite the loop with logging inside test_config
-          # actually easier: let test_config echo its result at the end, then wait and then we don't need external logging.
-          # So I'll modify test_config to add:
-          #   echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✅ URI ... passed" or "❌ URI ... failed (code: $?)"
-          # and then after wait, we don't need additional loop.
-          # I'll edit hunter.sh accordingly.
-
-          # Let's redo this part cleanly.
+          echo "=============================="
+          echo "✅ شکار تمام شد. کانفیگ‌های سالم به $OUTPUT_FILE اضافه شدند."
           EOF
           chmod +x hunter.sh
           ./hunter.sh
+
+      - name: 📤 ذخیره و push تغییرات
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add 'کانفیگ های خوب.txt'
+          git commit -m "🔁 به‌روزرسانی خودکار پروکسی‌های خوب" || echo "بدون تغییر"
+          git push
