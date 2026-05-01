@@ -5821,3 +5821,23 @@ ERROR: [youtube] pzjgTbNRToc: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 16:44:19] 🎬 درخواست از b0DdSAg099P019e5cd13b05daee8e759: https://www.youtube.com/watch?v=O2S6MAETlyM
 [2026-05-01 16:44:27] ⬆️ آپلود video_raw.mp4 در 10.7s
 [2026-05-01 16:44:28] 📊 آمار به‌روزرسانی شد
+[2026-05-01 16:44:30] 📤 لاگ و آمار push شد
+[2026-05-01 16:44:30] 🔀 تلاش با پروکسی تصادفی: trojan://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:...
+[2026-05-01 16:44:47] 🍪 کوکی جدید دریافت شد
+[2026-05-01 16:44:53] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=sKSV7dU8sKU"
+[2026-05-01 16:44:53] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 16:44:53] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 16:44:54] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@103.116.7.138:2...
+[2026-05-01 16:45:11] 🍪 کوکی جدید دریافت شد
+[2026-05-01 16:45:17] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=sKSV7dU8sKU"
+[2026-05-01 16:45:17] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 16:45:17] 🔄 تلاش مجدد (3/3)...
+[2026-05-01 16:45:18] 🔀 تلاش با پروکسی تصادفی: vless://26524cce-d514-4014-a426-365fb266a14d@104.20.6.134:44...
+[2026-05-01 16:45:18] 🎬 درخواست از b0FhRVU099P03fa4d5275cd99161a2d8: https://www.youtube.com/watch?v=HU8qeRnLdPw
+[2026-05-01 16:45:35] 🍪 کوکی جدید دریافت شد
+[2026-05-01 16:45:43] ⬇️ دانلود در 7.5s
+[2026-05-01 16:45:43] ✂️ شروع تقسیم video_raw (71.4MB)
+[2026-05-01 16:45:43] 🎬 درخواست از b0CT32W099P0bc83391a97bea33719c4: https://www.youtube.com/watch?v=6dmyyIFPy0A
+[2026-05-01 16:45:44] 🎯 بیت‌ریت: 405kbps | مدت: 1480.1s | زمان قطعه: 911s
+[2026-05-01 16:45:57] 🎬 درخواست از b0BA1ZV099P06a6d852ec7a5a21f4b58: https://www.youtube.com/watch?v=bkxSVvYhBss
+[2026-05-01 16:46:04] 📊 آمار به‌روزرسانی شد
