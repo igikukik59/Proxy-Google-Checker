@@ -3072,3 +3072,24 @@ ERROR: [youtube] 2ahUKEwit8_: Video unavailable
 [2026-05-01 11:48:33] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 42.7s
 [2026-05-01 11:48:34] مجموع زمان آپلود قطعات: 121.4s
 [2026-05-01 11:48:34] 📊 آمار به‌روزرسانی شد
+[2026-05-01 11:48:35] 📤 لاگ و آمار push شد
+[2026-05-01 11:48:35] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@8.6.112.6:2053?...
+[2026-05-01 11:48:52] 🍪 کوکی جدید دریافت شد
+[2026-05-01 11:48:58] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=wnWxN2tmIPk"
+[2026-05-01 11:48:58] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 11:48:58] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 11:48:58] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.77.214.109:2...
+[2026-05-01 11:49:17] 🍪 کوکی جدید دریافت شد
+[2026-05-01 11:49:20] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=wnWxN2tmIPk"
+[2026-05-01 11:49:20] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 11:49:20] 🔄 تلاش مجدد (3/3)...
+[2026-05-01 11:49:21] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@8.6.112.0:443?security=tls&sni=www.multipl...
+[2026-05-01 11:49:34] 🎬 درخواست از b0e7Tl099P0fd22281aab858526a4149: https://www.youtube.com/watch?v=g7ZkMTTcwZ4
+[2026-05-01 11:49:40] 🍪 کوکی جدید دریافت شد
+[2026-05-01 11:49:42] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=wnWxN2tmIPk"
+[2026-05-01 11:49:42] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 11:49:42] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@102.177.189.30:...
+[2026-05-01 11:49:59] 🍪 کوکی جدید دریافت شد
+[2026-05-01 11:50:05] ⬇️ دانلود در 2.4s
+[2026-05-01 11:50:13] ⬆️ آپلود video_raw.mp4 در 7.5s
+[2026-05-01 11:50:14] 📊 آمار به‌روزرسانی شد
