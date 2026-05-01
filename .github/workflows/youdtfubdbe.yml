@@ -535,7 +535,7 @@ jobs:
           // ======================== گیت با rebase ========================
           function gitPushAll() {
             try {
-              execSync('git pull --rebase origin main', {stdio:'pipe'});
+              execSync('git pull --rebase --autostash origin main', {stdio:'pipe'});
               const status = execSync('git status --porcelain bot_log.txt bot_stats.json', {encoding:'utf8'}).trim();
               if (!status) return;
               execSync('git add bot_log.txt bot_stats.json', {stdio:'pipe'});
@@ -545,7 +545,7 @@ jobs:
             } catch(e) {
               err('خطا در push:', e.message);
               try {
-                execSync('git pull --rebase origin main', {stdio:'pipe'});
+                execSync('git pull --rebase --autostash origin main', {stdio:'pipe'});
                 execSync('git push', {stdio:'pipe'});
                 log('📤 تلاش مجدد push موفق بود');
               } catch(retryErr) {}
