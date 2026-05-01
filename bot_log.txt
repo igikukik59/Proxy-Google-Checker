@@ -519,3 +519,22 @@ ERROR: [youtube] OOgjCk_Thq8: This video is not available
 [2026-05-01 05:35:19] ⬇️ دانلود در 2.3s
 [2026-05-01 05:35:24] ⬆️ آپلود video_raw.mp4 در 4.5s
 [2026-05-01 05:35:25] 📊 آمار به‌روزرسانی شد
+[2026-05-01 05:35:26] 📤 لاگ و آمار push شد
+[2026-05-01 05:35:32] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=WzN-G6VNQrY"
+[2026-05-01 05:35:32] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 05:35:32] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 05:35:33] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@8.6.112.6:443?security=tls&sni=www.creatio...
+[2026-05-01 05:35:37] 🎬 درخواست از b0IhgcV099P0293bd5d36561abb0d004: https://www.youtube.com/watch?v=Q1av2Vm3AKw
+[2026-05-01 05:35:52] 🍪 کوکی جدید دریافت شد
+[2026-05-01 05:35:54] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=WzN-G6VNQrY"
+[2026-05-01 05:35:54] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 05:35:54] 🔄 تلاش مجدد (3/3)...
+[2026-05-01 05:35:55] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@104.18.12.149:443?security=tls&sni=www.mul...
+[2026-05-01 05:35:55] 🎬 درخواست از b0HOpA4099P0ae874a37ffb449ba8865: https://www.youtube.com/watch?v=7-CIOgp49Q0
+[2026-05-01 05:36:13] 🍪 کوکی جدید دریافت شد
+[2026-05-01 05:36:15] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=WzN-G6VNQrY"
+[2026-05-01 05:36:15] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 05:36:16] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.13.149:8...
+[2026-05-01 05:36:33] 🍪 کوکی جدید دریافت شد
+[2026-05-01 05:36:44] ⬇️ دانلود در 6.8s
+[2026-05-01 05:36:45] 📊 آمار به‌روزرسانی شد
