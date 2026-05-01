@@ -1,0 +1,26 @@
+name: 🧹 پاک‌سازی فایل‌های دنبال‌شده از گیت
+
+on:
+  workflow_dispatch:   # فقط دستی اجرا شود
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 📥 دریافت مخزن
+        uses: actions/checkout@v4
+
+      - name: 🧹 حذف فایل‌ها از ردیابی گیت
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git rm -r --cached node_modules 2>/dev/null || true
+          git rm -r --cached xray 2>/dev/null || true
+          git rm --cached package-lock.json 2>/dev/null || true
+          git rm --cached hunter.sh 2>/dev/null || true
+          
+          git commit -m "🧹 خارج کردن فایل‌های موقت از ردیابی گیت" 2>/dev/null || true
+          git push
