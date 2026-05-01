@@ -1,14 +1,14 @@
-name: 🔍 شکارچی خودکار کانفیگ با لاگ کامل و push آنی
+name: 🔍 شکارچی خودکار کانفیگ (۲ بار در روز، هماهنگ با استراحت ربات)
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '30 2,14 * * *'   # 02:30 و 14:30 UTC → پایان هم‌زمان با استراحت ربات
 
 jobs:
   hunter:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 180        # ۳ ساعت
     permissions:
       contents: write
     steps:
@@ -38,11 +38,9 @@ jobs:
           WORKDIR="$(pwd)"
           export NODE_PATH="${WORKDIR}/node_modules"
 
-          # تنظیم هویت git
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # منابع
           SOURCES=(
             "https://github.com/Epodonios/v2ray-configs/raw/main/All_Configs_Sub.txt"
             "https://raw.githubusercontent.com/SoliSpirit/v2ray-configs/refs/heads/main/all_configs.txt"
@@ -81,23 +79,19 @@ jobs:
 
           log_ts() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
 
-          # تابع push آنی
           push_changes() {
-            # pull --rebase برای جلوگیری از تداخل با ربات اصلی
             git pull --rebase origin main 2>/dev/null || true
             git add "$OUTPUT_FILE"
             git commit -m "🔁 به‌روزرسانی خودکار پروکسی‌های خوب" 2>/dev/null || true
             git push 2>/dev/null || true
           }
 
-          # تابع تست
           test_config() {
             local uri="$1"
             local port="$2"
             local idx="$3"
             local xray_pid=""
 
-            # ساخت کانفیگ Xray با Node.js
             node -e "
               const fs = require('fs');
               const uri = process.argv[1];
@@ -139,19 +133,16 @@ jobs:
               fs.writeFileSync('/tmp/xray_hunter_${idx}.json', JSON.stringify(cfg, null, 2));
             " "$uri"
 
-            # اجرای Xray
             ./xray/xray run -config "/tmp/xray_hunter_${idx}.json" &>/dev/null &
             xray_pid=$!
             sleep 2
 
-            # تست CURL
             if ! curl --socks5 127.0.0.1:${port} --max-time 5 -s http://ip-api.com/json >/dev/null; then
               kill $xray_pid 2>/dev/null || true
               log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — شکست در CURL"
               return 2
             fi
 
-            # اسکریپت Node.js تست نهایی
             cat > /tmp/hunter_test_${idx}.cjs << 'NODEEOF'
           const puppeteer = require('puppeteer-extra');
           const StealthPlugin = require('puppeteer-extra-plugin-stealth');
@@ -219,7 +210,7 @@ jobs:
                     else if (unit === 'M') speed *= 1024*1024;
                     else if (unit === 'G') speed *= 1024*1024*1024;
                     lastSpeed = speed;
-                    avgSpeed = speed; // ساده‌سازی: آخرین سرعت را نگه می‌داریم
+                    avgSpeed = speed;
                     if (speed < MIN_SPEED) {
                       if (!lowSpeedStart) lowSpeedStart = Date.now();
                       else if (Date.now() - lowSpeedStart > 5000) {
@@ -237,8 +228,7 @@ jobs:
                 if (elapsed > MAX_TIME) { process.exit(5); }
                 if (fs.existsSync(outPath)) {
                   try { fs.unlinkSync(outPath); } catch(_){}
-                  // سرعت میانگین (MB/s)
-                  const fileSize = 75.92 * 1024 * 1024; // approx size of test video
+                  const fileSize = 75.92 * 1024 * 1024;
                   const avgSpeedMB = (fileSize / elapsed / (1024*1024)).toFixed(2);
                   console.log(`AVG_SPEED:${avgSpeedMB}`);
                   process.exit(0);
@@ -250,29 +240,25 @@ jobs:
           })();
           NODEEOF
 
-            # اجرای تست
             HUNTER_PORT="$port" HUNTER_VIDEO="$TEST_VIDEO" HUNTER_MIN_SPEED="$MIN_SPEED_MiB" HUNTER_MAX_TIME="$MAX_TIME" HUNTER_IDX="$idx" \
             timeout $((MAX_TIME+10)) node /tmp/hunter_test_${idx}.cjs 2>&1 | tee /tmp/hunter_output_${idx}.txt
             local test_result=${PIPESTATUS[0]}
 
-            # پاک‌سازی
             kill $xray_pid 2>/dev/null || true
             rm -f "/tmp/xray_hunter_${idx}.json" "/tmp/cookies_hunter_${idx}.txt" "/tmp/test_hunter_${idx}.mp4" "/tmp/hunter_test_${idx}.cjs"
 
-            # تحلیل نتیجه
             local speed_str=""
             if [ -f "/tmp/hunter_output_${idx}.txt" ]; then
               speed_str=$(grep -oP 'AVG_SPEED:\K[\d.]+' "/tmp/hunter_output_${idx}.txt" 2>/dev/null || echo "?")
             fi
             case $test_result in
               0) log_ts "✅ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — قبول شد (≈${speed_str:-?} MB/s)"
-                 # اضافه به فایل با قفل
                  (
                    flock -x 200
                    echo "$uri" >> "$OUTPUT_FILE"
                  ) 200>/tmp/hunter.lock
                  ;;
-              2) ;; # قبلاً لاگ شده
+              2) ;;
               3) log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — کوکی دریافت نشد" ;;
               4) log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — دانلود شکست" ;;
               5) log_ts "❌ [$((++COUNTER))/$TOTAL] ${uri:0:60}... — تایم‌اوت" ;;
@@ -291,11 +277,9 @@ jobs:
               test_config "${CONFIGS[$j]}" "$port" "$j" &
               PIDS+=($!)
             done
-            # منتظر تمام شدن دسته
             for pid in "${PIDS[@]}"; do
               wait $pid || true
             done
-            # push آنی بعد از هر دسته
             push_changes
           done
 
@@ -303,6 +287,4 @@ jobs:
           echo "✅ شکار تمام شد. تمام کانفیگ‌های سالم به $OUTPUT_FILE اضافه و push شدند."
           EOF
           chmod +x hunter.sh
-          ./hunter.sh
-
-      # مرحله جداگانه push حذف شد چون اسکریپت خودش push می‌کند.
+          timeout 10800 ./hunter.sh
