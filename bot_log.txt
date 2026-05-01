@@ -4344,3 +4344,23 @@ ERROR: [youtube] XJInLQ1TSyQ: Unable to download API page: [Errno 111] Connectio
 
 [2026-05-01 14:36:00] 🔀 تلاش با پروکسی تصادفی: vless://d37a75db-76b6-4db8-b213-0d5b044d138d@172.64.152.100:...
 [2026-05-01 14:36:02] 📊 آمار به‌روزرسانی شد
+[2026-05-01 14:36:03] 📤 لاگ و آمار push شد
+[2026-05-01 14:36:08] 🔀 تلاش با پروکسی تصادفی: vless://d37a75db-76b6-4db8-b213-0d5b044d138d@172.64.152.100:...
+[2026-05-01 14:36:14] 🎬 درخواست از b0HTulk099P00881ecb9a457e0430f95: https://www.youtube.com/watch?v=hoPGgJL7fH9LgGTsz
+[2026-05-01 14:36:14] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=hoPGgJL7fH9LgGTsz"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] hoPGgJL7fH9: Video unavailable
+
+[2026-05-01 14:36:17] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.17.72.206:8...
+[2026-05-01 14:36:33] 🍪 کوکی جدید دریافت شد
+[2026-05-01 14:36:39] ⬇️ دانلود در 6.0s
+[2026-05-01 14:36:40] ✂️ شروع تقسیم video_raw (52.4MB)
+[2026-05-01 14:36:40] 🎬 درخواست از b0JbZS099P036bd4969ebdcfc3aff0b4: https://youtu.be/puPqNwNVJ5w
+[2026-05-01 14:36:41] 🎯 بیت‌ریت: 360kbps | مدت: 1222.0s | زمان قطعه: 1025s
+[2026-05-01 14:36:54] 🎬 درخواست از b0BVDuQ099P04c10126c396df005529c: https://www.youtube.com/watch?v=XJInLQ1TSyQ
+[2026-05-01 14:37:10] ⬆️ آپلود video_raw.part01.mp4 در 27.3s
+[2026-05-01 14:37:10] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 27.3s
+[2026-05-01 14:37:18] ⬆️ آپلود video_raw.part02.mp4 در 6.7s
+[2026-05-01 14:37:18] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 6.7s
+[2026-05-01 14:37:20] مجموع زمان آپلود قطعات: 34.0s
+[2026-05-01 14:37:20] 📊 آمار به‌روزرسانی شد
