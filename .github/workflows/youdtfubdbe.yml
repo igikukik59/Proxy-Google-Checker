@@ -1,4 +1,4 @@
-name: 🎬 ربات یوتیوب (نسخهٔ طلایی)
+name: 🎬 ربات یوتیوب (پیش‌آزمون + تعویض هوشمند پروکسی)
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
 jobs:
   bot:
     runs-on: ubuntu-latest
-    timeout-minutes: 290
+    timeout-minutes: 350
     permissions:
       contents: write
     steps:
@@ -24,6 +24,162 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
+      - name: 🧪 پیش‌آزمون سرعت پروکسی‌ها
+        run: |
+          cat > test_proxies.cjs << 'ENDSCRIPT'
+          const { spawn, execSync } = require('child_process');
+          const fs = require('fs');
+          const path = require('path');
+          const puppeteer = require('puppeteer-extra');
+          const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+          puppeteer.use(StealthPlugin());
+
+          const PROXY_FILE = 'کانفیگ های خوب.txt';
+          const TEST_VIDEO = 'https://www.youtube.com/watch?v=t6uzncMZpk0';
+          const MAX_DOWNLOAD_TIME = 90; // ثانیه
+
+          // تنظیم هویت git برای commit
+          execSync('git config --global user.name "github-actions[bot]"', {stdio:'pipe'});
+          execSync('git config --global user.email "github-actions[bot]@users.noreply.github.com"', {stdio:'pipe'});
+
+          function log(...args) { console.log(`[${new Date().toISOString().substring(0,19)}]`, ...args); }
+          const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+          // ======================== Xray ========================
+          function parseURI(uri) {
+            try {
+              const u = new URL(uri);
+              return {
+                protocol: u.protocol.replace(':',''),
+                uuid: u.username,
+                address: u.hostname,
+                port: u.port,
+                params: Object.fromEntries(u.searchParams.entries())
+              };
+            } catch(_) { return null; }
+          }
+          function generateXrayConfig(uri) {
+            const p = parseURI(uri); if (!p) return null;
+            const inbound = { port: 10808, protocol: 'socks', settings: { auth: 'noauth', udp: true } };
+            let outbound = { protocol: p.protocol, streamSettings: { network: p.params.type || 'tcp' } };
+            if (p.protocol === 'trojan') outbound.settings = { servers: [{ address: p.address, port: parseInt(p.port), password: p.uuid }] };
+            else outbound.settings = { vnext: [{ address: p.address, port: parseInt(p.port), users: [{ id: p.uuid, encryption: p.params.encryption || 'none', flow: p.params.flow || '' }] }] };
+            const net = p.params.type || 'tcp'; outbound.streamSettings.network = net;
+            if (net === 'ws') outbound.streamSettings.wsSettings = { path: p.params.path || '/', headers: p.params.host ? { Host: p.params.host } : {} };
+            const sec = p.params.security || 'none';
+            if (sec === 'tls' || sec === 'reality') {
+              outbound.streamSettings.security = sec;
+              const tls = { serverName: p.params.sni || p.address };
+              if (sec === 'reality') { tls.fingerprint = p.params.fp || 'chrome'; tls.publicKey = p.params.pbk || ''; tls.shortId = p.params.sid || ''; tls.spiderX = ''; }
+              if (p.params.allowInsecure === '1') tls.allowInsecure = true;
+              if (p.params.alpn) tls.alpn = p.params.alpn.split(',');
+              outbound.streamSettings.tlsSettings = tls;
+            } else outbound.streamSettings.security = 'none';
+            return { inbounds: [inbound], outbounds: [outbound] };
+          }
+          async function startXray(uri, idx) {
+            const config = generateXrayConfig(uri); if (!config) return null;
+            const cfgPath = `/tmp/xray_test_${idx}.json`;
+            fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
+            const proc = spawn(path.join(process.cwd(), 'xray', 'xray'), ['run', '-config', cfgPath], { stdio: 'pipe' });
+            await sleep(4000);
+            return proc;
+          }
+
+          async function testProxy(uri, index) {
+            const xrayProc = await startXray(uri, index);
+            if (!xrayProc) return { ok: false, time: null };
+
+            // تست اولیه با curl
+            try { execSync('curl --socks5 127.0.0.1:10808 --max-time 5 -s http://ip-api.com/json', { encoding:'utf8' }); } catch(e) { xrayProc.kill(); return { ok: false, time: null }; }
+
+            // گرفتن کوکی
+            let browser;
+            try {
+              browser = await puppeteer.launch({ headless:'new', args:['--no-sandbox','--disable-setuid-sandbox','--proxy-server=socks5://127.0.0.1:10808','--disable-dev-shm-usage'] });
+              const page = await browser.newPage();
+              await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
+              await page.goto('https://www.youtube.com/', { waitUntil:'networkidle2', timeout:30000 });
+              await sleep(5000);
+              const cookies = await page.cookies();
+              await browser.close();
+              if (cookies.length === 0) { xrayProc.kill(); return { ok: false, time: null }; }
+
+              // نوشتن کوکی‌ها به فایل موقت
+              const lines = ['# Netscape HTTP Cookie File', ''];
+              cookies.forEach(c => {
+                const domain = c.domain.startsWith('.') ? c.domain : '.' + c.domain;
+                const flag = c.secure ? 'TRUE' : 'FALSE';
+                const exp = c.expires>0 ? Math.floor(c.expires) : 0;
+                lines.push(`${domain}\tTRUE\t${c.path}\t${flag}\t${exp}\t${c.name}\t${c.value}`);
+              });
+              const tmpCookieFile = `/tmp/cookies_test_${index}.txt`;
+              fs.writeFileSync(tmpCookieFile, lines.join('\n'));
+
+              // دانلود ویدیو با مهلت ۱۲۰ ثانیه
+              const outPath = `/tmp/test_download_${index}.mp4`;
+              const startTime = Date.now();
+              try {
+                execSync(
+                  `yt-dlp --cookies ${tmpCookieFile} --proxy socks5h://127.0.0.1:10808 ` +
+                  `-N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist ` +
+                  `--format "best[height<=480][ext=mp4] / best[height<=480]" ` +
+                  `--merge-output-format mp4 --output "${outPath}" "${TEST_VIDEO}"`,
+                  { stdio: 'inherit', timeout: 120000 }
+                );
+                const elapsed = (Date.now() - startTime) / 1000;
+                log(`⏱️ پروکسی ${index+1}: دانلود در ${elapsed.toFixed(1)}s`);
+                fs.unlinkSync(outPath);
+                xrayProc.kill();
+                return { ok: true, time: elapsed };
+              } catch(e) {
+                log(`❌ پروکسی ${index+1}: دانلود شکست خورد`);
+                xrayProc.kill();
+                return { ok: false, time: null };
+              }
+            } catch(e) {
+              log(`⚠️ پروکسی ${index+1}: خطای مرورگر/کوکی`);
+              if (browser) await browser.close().catch(()=>{});
+              xrayProc.kill();
+              return { ok: false, time: null };
+            }
+          }
+
+          (async () => {
+            if (!fs.existsSync(PROXY_FILE)) {
+              log('❌ فایل پروکسی یافت نشد.');
+              process.exit(1);
+            }
+
+            const proxies = fs.readFileSync(PROXY_FILE, 'utf8').split('\n').map(l=>l.trim()).filter(l=>/^(vless|trojan|ss|vmess):\/\//.test(l));
+            log(`📋 ${proxies.length} پروکسی برای تست یافت شد.`);
+
+            const good = [];
+            for (let i = 0; i < proxies.length; i++) {
+              const result = await testProxy(proxies[i], i);
+              if (result.ok && result.time !== null && result.time <= MAX_DOWNLOAD_TIME) {
+                good.push(proxies[i]);
+              } else {
+                log(`🗑️ پروکسی ${i+1} حذف شد (${result.ok ? 'زمان ' + result.time.toFixed(1) + 's > ' + MAX_DOWNLOAD_TIME + 's' : 'ناموفق'})`);
+              }
+            }
+
+            // بازنویسی فایل با پروکسی‌های خوب
+            fs.writeFileSync(PROXY_FILE, good.join('\n') + '\n');
+            log(`✅ ${good.length} پروکسی سالم باقی ماند.`);
+
+            // commit تغییرات
+            try {
+              execSync('git add کانفیگ های خوب.txt', {stdio:'pipe'});
+              execSync('git commit -m "🧪 به‌روزرسانی پروکسی‌های خوب (پیش‌آزمون)"', {stdio:'pipe'});
+              execSync('git push', {stdio:'pipe'});
+              log('📤 فایل پروکسی push شد');
+            } catch(e) {}
+          })();
+          ENDSCRIPT
+
+          timeout 1800 node test_proxies.cjs
+
       - name: 🤖 اجرای ربات طلایی
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
@@ -36,6 +192,10 @@ jobs:
           const StealthPlugin = require('puppeteer-extra-plugin-stealth');
           puppeteer.use(StealthPlugin());
 
+          // تنظیم هویت git
+          execSync('git config --global user.name "github-actions[bot]"', {stdio:'pipe'});
+          execSync('git config --global user.email "github-actions[bot]@users.noreply.github.com"', {stdio:'pipe'});
+
           const PROXY_FILE = 'کانفیگ های خوب.txt';
           const COOKIE_FILE = '/tmp/youtube_cookies.txt';
           const LOG_FILE = 'bot_log.txt';
@@ -47,6 +207,7 @@ jobs:
           const DAILY_LIMIT = 3600;
           const MAX_PROXY_RETRIES = 3;
           const MAX_QUEUE = 200;
+          const MIN_SPEED_BYTES = 1 * 1024 * 1024;   // ۱ مگابایت بر ثانیه
 
           let proxies = [];
           const queue = [];
@@ -55,6 +216,7 @@ jobs:
           let currentProxy = null;
           let xrayProc = null;
           const userDailyUsage = new Map();
+          let consecutiveSuccess = 0;          // شمارنده موفقیت‌های متوالی
 
           // ========== Logger ==========
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
@@ -109,7 +271,7 @@ jobs:
             catch(_) { return false; }
           }
 
-          // ======================== Rubika API (با مدیریت خطای nginx) ========================
+          // ======================== Rubika API ========================
           const BASE = `https://botapi.rubika.ir/v3/${TOKEN}`;
           async function api(method, body={}, retries=5) {
             const url = `${BASE}/${method}`;
@@ -119,10 +281,9 @@ jobs:
                 const res = await fetch(url, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:ctrl.signal});
                 clearTimeout(id);
                 const t = await res.text();
-                // اگر پاسخ HTML بود (خطای nginx)
                 if (t.startsWith('<!DOCTYPE html>') || t.includes('nginx')) {
-                  log(`⚠️ خطای HTML از سرور (تلاش ${a+1})، ۲ ثانیه صبر...`);
-                  await sleep(2000);
+                  log(`⚠️ خطای HTML از سرور (تلاش ${a+1})، صبر ${1<<a} ثانیه...`);
+                  await sleep((1<<a)*1000);
                   continue;
                 }
                 let d; try { d = JSON.parse(t); } catch(_) { if (a<retries-1) { await sleep(2000*(a+1)); continue; } return {error:true, raw:t}; }
@@ -259,9 +420,9 @@ jobs:
 
             const dur = parseFloat(execSync(`ffprobe -v error -show_entries format=duration -of csv=p=0 "${videoPath}"`, {encoding:'utf8'}).trim());
             const br = parseFloat(execSync(`ffprobe -v error -show_entries format=bit_rate -of csv=p=0 "${videoPath}"`, {encoding:'utf8'}).trim());
-            const targetChunkBytes = 44 * 1024 * 1024; // هدف ۴۴ مگابایت
+            const targetChunkBytes = 44 * 1024 * 1024;
             let segTime = Math.floor((targetChunkBytes * 8) / br);
-            segTime = Math.min(1800, Math.max(30, segTime)); // بین ۳۰ ثانیه و ۳۰ دقیقه
+            segTime = Math.min(1800, Math.max(30, segTime));
             log(`🎯 بیت‌ریت: ${(br/1000).toFixed(0)}kbps | مدت: ${dur.toFixed(1)}s | زمان قطعه: ${segTime}s`);
 
             if (dur <= segTime + 10) {
@@ -311,7 +472,7 @@ jobs:
             return recentTimes.reduce((a,b)=>a+b, 0) / recentTimes.length;
           }
 
-          // ======================== آمار ========================
+          // ======================== آمار (آپلود آنی) ========================
           const stats = {
             totalBytes: 0,
             totalVideos: 0,
@@ -333,12 +494,12 @@ jobs:
               queueLength: queue.length,
               currentProxy: currentProxy ? currentProxy.substring(0,40) : 'none'
             };
-            try { fs.writeFileSync(STATS_FILE, JSON.stringify(data, null, 2)); } catch(e) { err('خطای ذخیره آمار:', e.message); }
+            try { fs.writeFileSync(STATS_FILE, JSON.stringify(data, null, 2)); log('📊 آمار به‌روزرسانی شد'); } catch(e) { err('خطای ذخیره آمار:', e.message); }
           }
-
-          let gitPushInterval;
           function gitPushAll() {
             try {
+              const status = execSync('git status --porcelain bot_log.txt bot_stats.json', {encoding:'utf8'}).trim();
+              if (!status) return;
               execSync('git add bot_log.txt bot_stats.json', {stdio:'pipe'});
               execSync('git commit -m "📊 به‌روزرسانی لاگ و آمار"', {stdio:'pipe'});
               execSync('git push', {stdio:'pipe'});
@@ -358,10 +519,12 @@ jobs:
             one_time_keyboard: false
           };
 
-          // ======================== پردازش درخواست اصلی ========================
+          // ======================== پردازش درخواست اصلی (با تعویض هوشمند) ========================
           async function processRequest(chatId, url, videoDuration) {
             const startAll = Date.now();
             let success = false;
+            let finalSize = 0;
+            let dlTime = 0;
             try {
               await sleep(Math.floor(Math.random() * 4000) + 1000);
 
@@ -389,7 +552,7 @@ jobs:
               }
 
               let videoPath = dlResult.path;
-              const dlTime = dlResult.time;
+              dlTime = dlResult.time;
 
               const compatPath = await makeCompatible(videoPath);
               if (compatPath !== videoPath) {
@@ -398,7 +561,7 @@ jobs:
               }
 
               const durationReal = parseFloat(execSync(`ffprobe -v error -show_entries format=duration -of csv=p=0 "${videoPath}"`, {encoding:'utf8'}).trim());
-              const finalSize = fs.statSync(videoPath).size;
+              finalSize = fs.statSync(videoPath).size;
               const finalMB = (finalSize/(1024*1024)).toFixed(1);
 
               userDailyUsage.set(chatId, (userDailyUsage.get(chatId) || 0) + durationReal);
@@ -435,10 +598,34 @@ jobs:
               if (success) {
                 recentTimes.push(totalTime);
                 if (recentTimes.length > 5) recentTimes.shift();
+
+                // آپلود آنی آمار
+                saveStatsToFile();
+                gitPushAll();
+
+                // تصمیم‌گیری برای تعویض پروکسی
+                const speed = finalSize / dlTime; // bytes per second
+                if (speed < MIN_SPEED_BYTES) {
+                  // سرعت پایین → تعویض فوری
+                  log(`🐢 سرعت ${(speed/1024/1024).toFixed(2)} MB/s < 1 MB/s → تعویض پروکسی`);
+                  await switchToRandomProxy();
+                  await grabCookies();
+                  consecutiveSuccess = 0;
+                } else {
+                  consecutiveSuccess++;
+                  if (consecutiveSuccess >= 3) {
+                    log(`🔄 ۳ ویدیوی متوالی با سرعت خوب → تعویض پروکسی`);
+                    await switchToRandomProxy();
+                    await grabCookies();
+                    consecutiveSuccess = 0;
+                  }
+                }
+              } else {
+                // دانلود ناموفق → تعویض پروکسی
+                await switchToRandomProxy();
+                await grabCookies();
+                consecutiveSuccess = 0;
               }
-              saveStatsToFile();
-              await switchToRandomProxy();
-              await grabCookies();
               processNext();
             }
           }
@@ -531,20 +718,25 @@ jobs:
             }
             log('✅ تاریخچه پاک شد');
 
-            // ارسال کی‌پد دائمی برای کاربران فعال
+            // ایجاد فایل آمار اولیه در صورت عدم وجود
+            if (!fs.existsSync(STATS_FILE)) {
+              saveStatsToFile();
+              gitPushAll();
+            }
+
             const sentHelp = new Set();
-            gitPushInterval = setInterval(() => { saveStatsToFile(); gitPushAll(); }, 10*60*1000);
-            const DEADLINE = Date.now() + 17380*1000;
+            const DEADLINE = Date.now() + 20940 * 1000; // ۵ ساعت و ۵۰ دقیقه
+
+            // تایمر پشتیبان برای push (هر ۱۰ دقیقه)
+            const backupPushInterval = setInterval(() => {
+              saveStatsToFile();
+              gitPushAll();
+            }, 10 * 60 * 1000);
 
             while (Date.now() < DEADLINE) {
               try {
                 const res = await api('getUpdates', { limit: 10, offset_id: offset });
-                if (res.error) {
-                  log('⚠️ خطای API:', res.message || res.raw);
-                  // اگر خطای HTML بود، ممکن است اینجا قبلاً پیام خطا داده باشیم، صبر می‌کنیم
-                  await sleep(5000);
-                  continue;
-                }
+                if (res.error) { log('⚠️ خطای API:', res.message || res.raw); await sleep(5000); continue; }
                 const updates = res?.data?.updates;
                 if (!updates || updates.length === 0) { await sleep(4000); continue; }
 
@@ -554,14 +746,8 @@ jobs:
                   const msg = u.new_message;
                   const buttonId = msg.aux_data?.button_id;
 
-                  if (buttonId === 'QUEUE_STATUS') {
-                    await handleQueueStatus(chatId);
-                    continue;
-                  }
-                  if (buttonId === 'HELP') {
-                    await handleHelp(chatId);
-                    continue;
-                  }
+                  if (buttonId === 'QUEUE_STATUS') { await handleQueueStatus(chatId); continue; }
+                  if (buttonId === 'HELP') { await handleHelp(chatId); continue; }
 
                   if (!msg?.text) continue;
                   const text = msg.text.trim();
@@ -610,7 +796,7 @@ jobs:
               }
             }
 
-            clearInterval(gitPushInterval);
+            clearInterval(backupPushInterval);
             saveStatsToFile();
             gitPushAll();
             if (xrayProc) xrayProc.kill();
@@ -618,4 +804,4 @@ jobs:
           })();
           ENDSCRIPT
 
-          timeout 17400 node agent.cjs
+          timeout 20940 node agent.cjs
