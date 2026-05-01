@@ -5298,3 +5298,20 @@ ERROR: [youtube] vshosxnfcfw: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 15:56:49] 📤 قطعه 4/4: video_raw.part04.mp4 آپلود در 32.2s
 [2026-05-01 15:56:50] مجموع زمان آپلود قطعات: 120.1s
 [2026-05-01 15:56:50] 📊 آمار به‌روزرسانی شد
+[2026-05-01 15:56:52] 📤 لاگ و آمار push شد
+[2026-05-01 15:56:52] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=qnt7wRAe-5I"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] 29745 bytes read. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+WARNING: [youtube] Unable to download webpage: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused')). Giving up after 3 retries
+ERROR: qnt7wRAe-5I: An extractor error has occurred. (caused by KeyError('INNERTUBE_CONTEXT')); please report this issue on  https://github.com/yt-dlp/yt-dlp/issues?q= , filling out the appropriate issue template. Confirm you are on the latest version using  yt-dlp -U
+
+[2026-05-01 15:56:52] 🎬 درخواست از b0HO3DV099P04b54dd77efc8e2b73cae: https://www.youtube.com/watch?v=ES5e1jUV9Xo
+[2026-05-01 15:56:52] 🔀 تلاش با پروکسی تصادفی: vless://b60e5c32-3d4e-425c-a785-a36cd0621a72@104.18.12.149:4...
+[2026-05-01 15:57:04] 🎬 درخواست از b0DdSAg099P019e5cd13b05daee8e759: https://www.youtube.com/watch?v=A9ovC9UKo2A
+[2026-05-01 15:57:09] 🍪 کوکی جدید دریافت شد
+[2026-05-01 15:57:14] ⬇️ دانلود در 2.2s
+[2026-05-01 15:57:20] 🎬 درخواست از b0Il6WK099P0f93db8ff4920e81ca1ed: https://youtu.be/lqt8KpRoyVo
+[2026-05-01 15:57:22] ⬆️ آپلود video_raw.mp4 در 7.5s
+[2026-05-01 15:57:23] 📊 آمار به‌روزرسانی شد
