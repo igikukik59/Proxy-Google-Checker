@@ -6677,3 +6677,29 @@ ERROR: [youtube] SMe8pOvQ0jk: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 18:10:32] ⬇️ دانلود در 4.3s
 [2026-05-01 18:10:48] ⬆️ آپلود video_raw.mp4 در 15.6s
 [2026-05-01 18:10:50] 📊 آمار به‌روزرسانی شد
+[2026-05-01 18:10:51] 📤 لاگ و آمار push شد
+[2026-05-01 18:10:51] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.13.149:8...
+[2026-05-01 18:11:08] 🍪 کوکی جدید دریافت شد
+[2026-05-01 18:11:24] 🎬 درخواست از b0CxpPG099P07aacde81ce00d6fddb5d: youtube.com/watch?v=P-dJE5nCwDM
+[2026-05-01 18:11:27] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-01 18:11:41] 🎬 درخواست از b0CeXyi099P0694adf84bcc20ebcec32: https://www.youtube.com/watch?v=V_V_nU_Uf7U
+[2026-05-01 18:11:41] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=V_V_nU_Uf7U"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] V_V_nU_Uf7U: Video unavailable
+
+[2026-05-01 18:11:52] 🎬 درخواست از b0H8ad2099P0e98aab940a6e9ac7e6e9: https://www.youtube.com/watch?v=EQDIehqgj6A
+[2026-05-01 18:12:24] ⬇️ دانلود در 27.6s
+[2026-05-01 18:12:24] ✂️ شروع تقسیم video_raw (114.3MB)
+[2026-05-01 18:12:25] 🎯 بیت‌ریت: 448kbps | مدت: 2138.1s | زمان قطعه: 823s
+[2026-05-01 18:12:28] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-01 18:12:30] 🎬 درخواست از b0Ez1Xs099P0387398db5cc00ef5d854: https://www.youtube.com/watch?v=glFl2_IPSAQ
+[2026-05-01 18:13:31] 🎬 درخواست از b0CxpPG099P07aacde81ce00d6fddb5d: youtube.com/watch?v=Sx2tsvvnzYw
+[2026-05-01 18:13:33] 🎬 درخواست از b0F6uNj099P0f5c5d215e58e1aeb6157: https://www.youtube.com/watch?v=PcYF-ZvemX0
+[2026-05-01 18:13:34] ❌ file_id یافت نشد
+[2026-05-01 18:13:34] 📤 قطعه 1/3: video_raw.part01.mp4 آپلود در 65.9s
+[2026-05-01 18:13:41] ❌ file_id یافت نشد
+[2026-05-01 18:13:41] 📤 قطعه 2/3: video_raw.part02.mp4 آپلود در 5.9s
+[2026-05-01 18:14:12] ⬆️ آپلود video_raw.part03.mp4 در 29.8s
+[2026-05-01 18:14:12] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 29.8s
+[2026-05-01 18:14:13] مجموع زمان آپلود قطعات: 101.6s
+[2026-05-01 18:14:13] 📊 آمار به‌روزرسانی شد
