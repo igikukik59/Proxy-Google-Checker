@@ -372,3 +372,21 @@ ERROR: [youtube] 8DgpSpkTdOY: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 05:07:35] ⬇️ دانلود در 9.6s
 [2026-05-01 05:07:53] ⬆️ آپلود video_raw.mp4 در 18.4s
 [2026-05-01 05:07:55] 📊 آمار به‌روزرسانی شد
+[2026-05-01 05:07:55] 📤 لاگ و آمار push شد
+[2026-05-01 05:07:56] 🔀 تلاش با پروکسی تصادفی: trojan://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:...
+[2026-05-01 05:08:04] 🎬 درخواست از b0H1JBV099P00a377efba2495a4d806f: https://www.youtube.com/watch?v=SQg6qXwcx0U
+[2026-05-01 05:08:13] 🍪 کوکی جدید دریافت شد
+[2026-05-01 05:11:18] 🎬 درخواست از b0Jb9c4099P0fc7e0d5c01105ab2da07: https://www.youtube.com/watch?v=ytEBnWLQBTo
+[2026-05-01 05:11:19] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=ytEBnWLQBTo"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] ytEBnWLQBTo: This video is not available
+
+[2026-05-01 05:11:47] 🎬 درخواست از b0Jb9c4099P0fc7e0d5c01105ab2da07: https://www.youtube.com/watch?v=OOgjCk_Thq8
+[2026-05-01 05:11:48] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=OOgjCk_Thq8"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] OOgjCk_Thq8: This video is not available
+
+[2026-05-01 05:12:12] 🎬 درخواست از b0Jb9c4099P0fc7e0d5c01105ab2da07: https://www.youtube.com/watch?v=NHj1YjCkDnU
+[2026-05-01 05:12:21] ⬇️ دانلود در 5.9s
+[2026-05-01 05:12:32] ⬆️ آپلود video_raw.mp4 در 10.4s
+[2026-05-01 05:12:33] 📊 آمار به‌روزرسانی شد
