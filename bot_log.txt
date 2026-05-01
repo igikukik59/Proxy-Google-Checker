@@ -3695,3 +3695,27 @@ ERROR: [youtube] pqkQu_fL7MQ: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 13:05:12] ⬇️ دانلود در 13.3s
 [2026-05-01 13:05:40] ⬆️ آپلود video_raw.mp4 در 28.2s
 [2026-05-01 13:05:41] 📊 آمار به‌روزرسانی شد
+[2026-05-01 13:05:43] 📤 لاگ و آمار push شد
+[2026-05-01 13:05:43] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@147.78.140.238:...
+[2026-05-01 13:05:47] 🎬 درخواست از b0QZyq099P079d93cd174761f8e3638c: https://www.youtube.com/watch?v=KKlwrpXbmd0
+[2026-05-01 13:05:54] 🎬 درخواست از b0IIpUs099P0d0112fcb6a564b7359d6: https://youtu.be/_-kE5OzXj-E
+[2026-05-01 13:05:55] 🎬 درخواست از b0DL6a8099P07164ca28ccde699c21e6: https://www.youtube.com/watch?v=8pSVjC3mk8M
+[2026-05-01 13:05:57] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=8pSVjC3mk8M"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] 8pSVjC3mk8M: Sign in to confirm your age. This video may be inappropriate for some users. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-01 13:06:00] 🍪 کوکی جدید دریافت شد
+[2026-05-01 13:06:18] ⬇️ دانلود در 14.2s
+[2026-05-01 13:06:18] ✂️ شروع تقسیم video_raw (63.9MB)
+[2026-05-01 13:06:19] 🎬 درخواست از b0DL6a8099P07164ca28ccde699c21e6: https://www.youtube.com/watch?v=usH66Rs5H20
+[2026-05-01 13:06:19] 🎯 بیت‌ریت: 404kbps | مدت: 1325.9s | زمان قطعه: 913s
+[2026-05-01 13:06:21] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=usH66Rs5H20"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] usH66Rs5H20: Sign in to confirm your age. This video may be inappropriate for some users. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-01 13:06:51] ⬆️ آپلود video_raw.part01.mp4 در 29.3s
+[2026-05-01 13:06:51] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 29.3s
+[2026-05-01 13:07:04] ⬆️ آپلود video_raw.part02.mp4 در 12.5s
+[2026-05-01 13:07:04] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 12.5s
+[2026-05-01 13:07:06] مجموع زمان آپلود قطعات: 41.8s
+[2026-05-01 13:07:06] 📊 آمار به‌روزرسانی شد
