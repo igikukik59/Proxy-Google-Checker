@@ -1793,3 +1793,32 @@ ERROR: [youtube] qRrPbM57Fn0: Unable to download API page: [Errno 111] Connectio
 [2026-05-01 09:00:34] ⬇️ دانلود در 1.6s
 [2026-05-01 09:00:39] ⬆️ آپلود video_raw.mp4 در 4.6s
 [2026-05-01 09:00:40] 📊 آمار به‌روزرسانی شد
+[2026-05-01 09:00:42] 📤 لاگ و آمار push شد
+[2026-05-01 09:00:56] ⬇️ دانلود در 10.2s
+[2026-05-01 09:00:56] ✂️ شروع تقسیم video_raw (174.5MB)
+[2026-05-01 09:00:57] 🎯 بیت‌ریت: 641kbps | مدت: 2284.2s | زمان قطعه: 575s
+[2026-05-01 09:01:01] 🎬 درخواست از b0EAMir099P0c2bf24a568deff9666ad: https://www.youtube.com/watch?v=Ypi-jc2A1Aw
+[2026-05-01 09:01:16] 🎬 درخواست از b0EAMir099P0c2bf24a568deff9666ad: https://www.youtube.com/watch?v=Ypi-jc2A1Aw
+[2026-05-01 09:01:16] ❌ file_id یافت نشد
+[2026-05-01 09:01:16] 📤 قطعه 1/4: video_raw.part01.mp4 آپلود در 16.4s
+[2026-05-01 09:01:38] 🎬 درخواست از b0D6mZ7099P01eea99617daee5d86adf: https://www.youtube.com/watch?v=SlkXZ_FJNMs
+[2026-05-01 09:01:53] 🎬 درخواست از b0JYmT9099P08a1db14ba924f247fc8b: https://www.youtube.com/watch?v=1PxiNOVYgmg
+[2026-05-01 09:01:56] ⬆️ آپلود video_raw.part02.mp4 در 39.1s
+[2026-05-01 09:01:56] 📤 قطعه 2/4: video_raw.part02.mp4 آپلود در 39.1s
+[2026-05-01 09:02:00] 🎬 درخواست از b0BnxTU099P060396a94ee445bc69202: https://www.youtube.com/watch?v=xOyXj23jiA0
+[2026-05-01 09:02:01] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=xOyXj23jiA0"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] xOyXj23jiA0: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-01 09:02:07] 🎬 درخواست از b0D6mZ7099P01eea99617daee5d86adf: https://www.youtube.com/watch?v=U-YLGII87f0
+[2026-05-01 09:02:08] 🎬 درخواست از b0EAMir099P0c2bf24a568deff9666ad: https://www.youtube.com/watch?v=krmn-tiQON8
+[2026-05-01 09:02:09] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=krmn-tiQON8"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] krmn-tiQON8: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-01 09:02:20] ⬆️ آپلود video_raw.part03.mp4 در 23.7s
+[2026-05-01 09:02:20] 📤 قطعه 3/4: video_raw.part03.mp4 آپلود در 23.7s
+[2026-05-01 09:02:49] ⬆️ آپلود video_raw.part04.mp4 در 27.2s
+[2026-05-01 09:02:49] 📤 قطعه 4/4: video_raw.part04.mp4 آپلود در 27.2s
+[2026-05-01 09:02:51] مجموع زمان آپلود قطعات: 106.4s
+[2026-05-01 09:02:51] 📊 آمار به‌روزرسانی شد
