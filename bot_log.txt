@@ -5599,3 +5599,23 @@ ERROR: [youtube] UtDA8FOU_cw: This video is not available
 [2026-05-01 16:22:31] ⬇️ دانلود در 23.9s
 [2026-05-01 16:23:02] ⬆️ آپلود video_raw.mp4 در 29.8s
 [2026-05-01 16:23:02] 📊 آمار به‌روزرسانی شد
+[2026-05-01 16:23:03] 📤 لاگ و آمار push شد
+[2026-05-01 16:23:04] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@8.6.112.0:443?s...
+[2026-05-01 16:23:13] 🎬 درخواست از b0JuAHb099P0bc7e177b6f7c9c3cb4da: https://www.youtube.com/watch?v=mpUPHaGCLC8
+[2026-05-01 16:23:20] 🎬 درخواست از b0IutgU099P08d98c0f5fb98c2a0580c: https://www.youtube.com/watch?v=FlB-rauKZ4Y
+[2026-05-01 16:23:21] 🍪 کوکی جدید دریافت شد
+[2026-05-01 16:23:21] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=FlB-rauKZ4Y"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] FlB-rauKZ4Y: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-01 16:23:52] ⬇️ دانلود در 27.1s
+[2026-05-01 16:23:53] 🎬 درخواست از b0JIsgK099P0906f37c289e04fe9c0d7: https://www.youtube.com/watch?v=B1VH6si5NX0
+[2026-05-01 16:23:53] ✂️ شروع تقسیم video_raw (56.6MB)
+[2026-05-01 16:23:53] 🎯 بیت‌ریت: 388kbps | مدت: 1225.5s | زمان قطعه: 952s
+[2026-05-01 16:23:55] 🎬 درخواست از b0IutgU099P08d98c0f5fb98c2a0580c: https://www.youtube.com/watch?v=FlB-rauKZ4Y
+[2026-05-01 16:24:33] ⬆️ آپلود video_raw.part01.mp4 در 37.8s
+[2026-05-01 16:24:33] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 37.8s
+[2026-05-01 16:24:45] ⬆️ آپلود video_raw.part02.mp4 در 10.0s
+[2026-05-01 16:24:45] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 10.0s
+[2026-05-01 16:24:45] مجموع زمان آپلود قطعات: 47.8s
+[2026-05-01 16:24:46] 📊 آمار به‌روزرسانی شد
