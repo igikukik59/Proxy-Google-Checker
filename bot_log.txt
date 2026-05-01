@@ -3663,3 +3663,23 @@ ERROR: [youtube] pqkQu_fL7MQ: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 13:02:33] 🎬 درخواست از b0Mw97099P03d87cdd2fe962d980c844: https://www.youtube.com/watch?v=Lm_zln5IReI
 [2026-05-01 13:02:37] ⬆️ آپلود video_raw.mp4 در 29.1s
 [2026-05-01 13:02:38] 📊 آمار به‌روزرسانی شد
+[2026-05-01 13:02:39] 📤 لاگ و آمار push شد
+[2026-05-01 13:02:45] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=UxG1Wp2Tyi4"
+[2026-05-01 13:02:45] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 13:02:45] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 13:02:46] 🔀 تلاش با پروکسی تصادفی: trojan://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:...
+[2026-05-01 13:03:02] 🍪 کوکی جدید دریافت شد
+[2026-05-01 13:03:04] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=UxG1Wp2Tyi4"
+[2026-05-01 13:03:04] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 13:03:04] 🔄 تلاش مجدد (3/3)...
+[2026-05-01 13:03:04] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@8.6.112.6:2053?...
+[2026-05-01 13:03:05] 🎬 درخواست از b0QZyq099P079d93cd174761f8e3638c: https://www.youtube.com/watch?v=uhTIZ2s28Rw
+[2026-05-01 13:03:07] 🎬 درخواست از b0FqFKh099P0115e1c0b7e7ffcc4a767: https://www.youtube.com/watch?v=qBPHBkWJGMY
+[2026-05-01 13:03:21] 🍪 کوکی جدید دریافت شد
+[2026-05-01 13:03:22] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=UxG1Wp2Tyi4"
+[2026-05-01 13:03:22] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 13:03:23] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@8.6.112.6:443?security=tls&sni=www.creatio...
+[2026-05-01 13:03:26] 🎬 درخواست از b0Ez1Xs099P0387398db5cc00ef5d854: https://youtu.be/EHs37x2yxQc
+[2026-05-01 13:03:42] 🍪 کوکی جدید دریافت شد
+[2026-05-01 13:03:55] ⬇️ دانلود در 8.3s
+[2026-05-01 13:03:55] 📊 آمار به‌روزرسانی شد
