@@ -4085,3 +4085,11 @@ ERROR: [youtube] DKV0HrazX34: This video is not available
 [2026-05-01 14:15:30] 🎬 درخواست از b0ToJ099P04456dee3033b6cc2247890: https://youtu.be/unz9ASHaxzQ
 [2026-05-01 14:15:41] ⬆️ آپلود video_raw.mp4 در 17.2s
 [2026-05-01 14:15:42] 📊 آمار به‌روزرسانی شد
+[2026-05-01 14:15:44] 📤 لاگ و آمار push شد
+[2026-05-01 14:15:54] ⬇️ دانلود در 8.1s
+[2026-05-01 14:15:55] 🎬 درخواست از b0HueWI099P0b3afd1029cd7fec55b10: https://www.youtube.com/watch?v=DKV0HrazX34
+[2026-05-01 14:15:56] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=DKV0HrazX34"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] DKV0HrazX34: This video is not available
+
+[2026-05-01 14:16:02] 📊 آمار به‌روزرسانی شد
