@@ -2075,3 +2075,14 @@ ERROR: [youtube] q8wnX9y7JzU: Unable to download API page: [Errno 111] Connectio
 [2026-05-01 09:40:50] ⬇️ دانلود در 7.9s
 [2026-05-01 09:41:06] ⬆️ آپلود video_raw.mp4 در 16.2s
 [2026-05-01 09:41:07] 📊 آمار به‌روزرسانی شد
+[2026-05-01 09:41:08] 📤 لاگ و آمار push شد
+[2026-05-01 09:41:08] 🎬 درخواست از b0Jwqo5099P0cc84a9638291ba5ceba1: https://youtube.com/watch?v=IWQO_uFVPsg
+[2026-05-01 09:41:13] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=xjQjSyY4dzE"
+[2026-05-01 09:41:13] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 09:41:13] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 09:41:14] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@54.37.51.238:44...
+[2026-05-01 09:41:33] 🍪 کوکی جدید دریافت شد
+[2026-05-01 09:41:45] ⬇️ دانلود در 12.1s
+[2026-05-01 09:42:00] 🎬 درخواست از b0Hvjqg099P08c6a205a5f202f170573: https://www.youtube.com/watch?v=X-jdl9hcCeg
+[2026-05-01 09:42:14] ⬆️ آپلود video_raw.mp4 در 28.2s
+[2026-05-01 09:42:15] 📊 آمار به‌روزرسانی شد
