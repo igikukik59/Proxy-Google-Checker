@@ -712,3 +712,23 @@ ERROR: [youtube] WMBOsPUi2uw: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 05:50:52] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 14.3s
 [2026-05-01 05:50:53] مجموع زمان آپلود قطعات: 32.7s
 [2026-05-01 05:50:53] 📊 آمار به‌روزرسانی شد
+[2026-05-01 05:50:54] 📤 لاگ و آمار push شد
+[2026-05-01 05:50:59] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=mCSWXeTs_wA"
+[2026-05-01 05:50:59] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 05:50:59] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 05:51:00] 🔀 تلاش با پروکسی تصادفی: vless://388a6c57-87e7-420b-afe2-b3eb670fd7da@creativecommons...
+[2026-05-01 05:51:00] 🎬 درخواست از b0H1JCJ099P077f3be7c69f214df48cd: https://www.youtube.com/watch?v=JUjEbTWEJKQ
+[2026-05-01 05:51:17] 🍪 کوکی جدید دریافت شد
+[2026-05-01 05:51:18] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=mCSWXeTs_wA"
+[2026-05-01 05:51:18] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 05:51:18] 🔄 تلاش مجدد (3/3)...
+[2026-05-01 05:51:19] 🔀 تلاش با پروکسی تصادفی: vless://388a6c57-87e7-420b-afe2-b3eb670fd7da@creativecommons...
+[2026-05-01 05:51:36] 🍪 کوکی جدید دریافت شد
+[2026-05-01 05:51:37] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=mCSWXeTs_wA"
+[2026-05-01 05:51:37] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 05:51:38] 🔀 تلاش با پروکسی تصادفی: vless://ce069292-c8bf-40dd-a6b1-87818a1e64e9@love.zshabai.to...
+[2026-05-01 05:51:42] 🎬 درخواست از b0IKfTh099P0f8fe8b07319c83fe7fb3: https://www.youtube.com/watch?v=WzN-G6VNQrY
+[2026-05-01 05:51:54] 🍪 کوکی جدید دریافت شد
+[2026-05-01 05:52:04] ⬇️ دانلود در 6.0s
+[2026-05-01 05:52:15] ⬆️ آپلود video_raw.mp4 در 10.1s
+[2026-05-01 05:52:15] 📊 آمار به‌روزرسانی شد
