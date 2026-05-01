@@ -4986,3 +4986,18 @@ ERROR: [youtube] jsn0fEj8f58: Requested format is not available. Use --list-form
 [2026-05-01 15:33:35] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 10.3s
 [2026-05-01 15:33:36] مجموع زمان آپلود قطعات: 58.5s
 [2026-05-01 15:33:36] 📊 آمار به‌روزرسانی شد
+[2026-05-01 15:33:37] 📤 لاگ و آمار push شد
+[2026-05-01 15:33:59] ⬇️ دانلود در 16.8s
+[2026-05-01 15:34:00] ✂️ شروع تقسیم video_raw (87.0MB)
+[2026-05-01 15:34:01] 🎯 بیت‌ریت: 569kbps | مدت: 1282.2s | زمان قطعه: 648s
+[2026-05-01 15:34:13] 🎬 درخواست از b0ChrIe099P0b4eec8ea3ca502ad82bd: https://www.youtube.com/watch?v=zHeWEgAheXI
+[2026-05-01 15:34:37] 🎬 درخواست از b0IzVnz099P0be6c0638966dc9119577: https://youtube.com/watch?v=kouman
+[2026-05-01 15:34:38] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://youtube.com/watch?v=kouman"
+ERROR: [youtube:truncated_id] kouman: Incomplete YouTube ID kouman. URL https://youtube.com/watch?v=kouman looks truncated.
+
+[2026-05-01 15:34:42] ⬆️ آپلود video_raw.part01.mp4 در 39.0s
+[2026-05-01 15:34:42] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 39.0s
+[2026-05-01 15:35:08] ⬆️ آپلود video_raw.part02.mp4 در 25.6s
+[2026-05-01 15:35:08] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 25.6s
+[2026-05-01 15:35:09] مجموع زمان آپلود قطعات: 64.6s
+[2026-05-01 15:35:09] 📊 آمار به‌روزرسانی شد
