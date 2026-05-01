@@ -1829,3 +1829,37 @@ ERROR: [youtube] krmn-tiQON8: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 09:03:33] 📤 لاگ و آمار push شد
 [2026-05-01 09:03:36] ⬆️ آپلود video_raw.mp4 در 31.9s
 [2026-05-01 09:03:36] 📊 آمار به‌روزرسانی شد
+[2026-05-01 09:03:37] 📤 لاگ و آمار push شد
+[2026-05-01 09:03:37] 🎬 درخواست از b0BvNe9099P09ca03a25e3e4c85f49cc: https://www.youtube.com/watch?v=q8wnX9y7JzU
+[2026-05-01 09:03:37] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=q8wnX9y7JzU"
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+WARNING: [youtube] Unable to download webpage: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused')). Giving up after 3 retries
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+ERROR: [youtube] q8wnX9y7JzU: Unable to download API page: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused'))
+
+[2026-05-01 09:03:38] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@104.17.72.206:4...
+[2026-05-01 09:03:54] 🍪 کوکی جدید دریافت شد
+[2026-05-01 09:04:21] ⬇️ دانلود در 22.4s
+[2026-05-01 09:04:21] ✂️ شروع تقسیم video_raw (143.8MB)
+[2026-05-01 09:04:23] 🎬 درخواست از b0CmKDW099P031c349ae1a90e74ff9f7: https://www.youtube.com/watch?v=Pkh8UtuejGw
+[2026-05-01 09:04:23] 🎯 بیت‌ریت: 548kbps | مدت: 2200.6s | زمان قطعه: 673s
+[2026-05-01 09:04:26] 🎬 درخواست از b0BvNe9099P09ca03a25e3e4c85f49cc: https://www.youtube.com/watch?v=dHq_Yw94dUU
+[2026-05-01 09:04:28] 🎬 درخواست از b0BkODH099P0632bc0d4c4c7c413aeb8: https://www.youtube.com/watch?v=A73p9vE2UYE
+[2026-05-01 09:05:07] ⬆️ آپلود video_raw.part01.mp4 در 40.7s
+[2026-05-01 09:05:07] 📤 قطعه 1/4: video_raw.part01.mp4 آپلود در 40.7s
+[2026-05-01 09:05:16] 🎬 درخواست از b0BvNe9099P09ca03a25e3e4c85f49cc: https://www.youtube.com/watch?v=9TYD2oRoscE
+[2026-05-01 09:05:36] 🎬 درخواست از b0DKSqq099P0ec753617ded960fadf9b: https://youtu.be/m5XIjgeuGfw
+[2026-05-01 09:05:41] ⬆️ آپلود video_raw.part02.mp4 در 32.2s
+[2026-05-01 09:05:41] 📤 قطعه 2/4: video_raw.part02.mp4 آپلود در 32.2s
+[2026-05-01 09:05:46] 🎬 درخواست از b0BvNe9099P09ca03a25e3e4c85f49cc: https://www.youtube.com/watch?v=U4g9judc71c
+[2026-05-01 09:06:10] 🎬 درخواست از b0BvNe9099P09ca03a25e3e4c85f49cc: https://www.youtube.com/watch?v=jsn0fEj8f58
+[2026-05-01 09:06:11] ⬆️ آپلود video_raw.part03.mp4 در 29.6s
+[2026-05-01 09:06:11] 📤 قطعه 3/4: video_raw.part03.mp4 آپلود در 29.6s
+[2026-05-01 09:06:23] ⬆️ آپلود video_raw.part04.mp4 در 10.8s
+[2026-05-01 09:06:23] 📤 قطعه 4/4: video_raw.part04.mp4 آپلود در 10.8s
+[2026-05-01 09:06:24] مجموع زمان آپلود قطعات: 113.3s
+[2026-05-01 09:06:24] 📊 آمار به‌روزرسانی شد
