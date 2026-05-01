@@ -5589,3 +5589,13 @@ ERROR: [youtube] UtDA8FOU_cw: This video is not available
 [2026-05-01 16:21:43] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 30.5s
 [2026-05-01 16:21:44] مجموع زمان آپلود قطعات: 58.2s
 [2026-05-01 16:21:44] 📊 آمار به‌روزرسانی شد
+[2026-05-01 16:21:45] 📤 لاگ و آمار push شد
+[2026-05-01 16:21:50] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=n7DpPNVaLF4"
+[2026-05-01 16:21:50] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 16:21:50] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 16:21:51] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@104.18.16.56:44...
+[2026-05-01 16:22:03] 🎬 درخواست از b0JXVEH099P0a78a80ef06f0da7776e6: https://www.youtube.com/watch?v=-vzDFOizsig
+[2026-05-01 16:22:08] 🍪 کوکی جدید دریافت شد
+[2026-05-01 16:22:31] ⬇️ دانلود در 23.9s
+[2026-05-01 16:23:02] ⬆️ آپلود video_raw.mp4 در 29.8s
+[2026-05-01 16:23:02] 📊 آمار به‌روزرسانی شد
