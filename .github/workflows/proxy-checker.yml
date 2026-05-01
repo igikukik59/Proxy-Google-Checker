@@ -1,206 +1,273 @@
-name: "🔍 بررسی پروکسی‌های یوتیوب"
+name: 🔍 شکارچی خودکار کانفیگ
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:          # اجرای دستی
+  schedule:
+    - cron: '0 2 * * *'      # هر روز ساعت ۲ بامداد (اختیاری)
 
 jobs:
-  check-proxies:
+  hunter:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
       contents: write
     steps:
-      - name: 📥 دریافت مخزن
+      - name: 📥 دریافت کد مخزن
         uses: actions/checkout@v4
 
-      - name: 🧰 نصب پیش‌نیازها
+      - name: 🧰 نصب ابزارها (Xray, Puppeteer, yt-dlp)
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y curl unzip
+          sudo apt-get update -qq && sudo apt-get install -y curl unzip python3-pip ffmpeg
+          pip install yt-dlp
           wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
           unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🔍 اجرای تست پروکسی‌ها
+      - name: 🎯 شکار کانفیگ‌های جدید
         run: |
-          cat > proxy_checker.cjs << 'ENDSCRIPT'
-          const { spawn, execSync } = require('child_process');
-          const fs = require('fs');
-          const path = require('path');
+          cat > hunter.sh << 'EOF'
+          #!/bin/bash
+          set -euo pipefail
+          OUTPUT_FILE="کانفیگ های خوب.txt"
+          TEST_VIDEO="https://www.youtube.com/watch?v=t6uzncMZpk0"
+          MAX_TIME=90
+          MIN_SPEED_MiB=2
+          PARALLEL=5
+          BASE_PORT=10808
+
+          # ─── ۱. دانلود همهٔ منابع ────────────────────────────
+          SOURCES=(
+            "https://github.com/Epodonios/v2ray-configs/raw/main/All_Configs_Sub.txt"
+            "https://raw.githubusercontent.com/SoliSpirit/v2ray-configs/refs/heads/main/all_configs.txt"
+            "https://raw.githubusercontent.com/iboxz/free-v2ray-collector/main/main/mix.txt"
+            "https://raw.githubusercontent.com/amirkma/proxykma/refs/heads/main/mix.txt"
+            "https://raw.githubusercontent.com/MrAbolfazlNorouzi/iran-configs/refs/heads/main/configs/working-configs.txt"
+            "https://raw.githubusercontent.com/electron-v2ray/Telegram-Config-Dumpr/main/config.txt"
+            "https://raw.githubusercontent.com/mohammmdmdmkdmewof/v2rayConfigsForYou/refs/heads/main/configs.txt"
+            "https://raw.githubusercontent.com/Danialsamadi/v2go/refs/heads/main/AllConfigsSub.txt"
+            "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/splitted/mixed"
+            "https://raw.githubusercontent.com/MhdiTaheri/V2rayCollector/main/sub/mix"
+          )
+          mkdir -p /tmp/sources
+          for i in "${!SOURCES[@]}"; do
+            curl -sL "${SOURCES[$i]}" -o "/tmp/sources/$i.txt" &
+          done
+          wait
+
+          # ─── ۲. استخراج هوشمند لینک‌ها ───────────────────────
+          RAW_LINKS="/tmp/raw_links.txt"
+          rm -f "$RAW_LINKS"
+          # الگوی سخت‌گیرانه برای vless, trojan, ss (با پورت و کاراکترهای مجاز)
+          grep -rhoP '(vless|trojan|ss)://[a-zA-Z0-9./?=:@&_\-]+' /tmp/sources/ | sort -u > "$RAW_LINKS"
+          # تمیزکاری: حذف خطوط خالی، اصلاح URLهای ناقص با sed
+          sed -i '/^$/d' "$RAW_LINKS"
+          # درهم‌ریزی تصادفی
+          shuf -o "$RAW_LINKS" "$RAW_LINKS"
+          TOTAL=$(wc -l < "$RAW_LINKS")
+          echo "📋 $TOTAL کانفیگ منحصربه‌فرد یافت شد."
+
+          # ─── ۳. آماده‌سازی تابع تست ─────────────────────────
+          test_config() {
+            local uri="$1"
+            local port="$2"
+            local idx="$3"
+            local xray_pid=""
+            local result=1
+
+            # ساخت فایل کانفیگ موقت Xray
+            local cfg="/tmp/xray_hunter_${idx}.json"
+            cat > "$cfg" << XRAYEOF
+          {
+            "inbounds": [{
+              "port": ${port},
+              "protocol": "socks",
+              "settings": { "auth": "noauth", "udp": true }
+            }],
+            "outbounds": [{
+              "protocol": "freedom",
+              "settings": {}
+            }]
+          }
+          XRAYEOF
+            # اینجا ما از یک اسکریپت Node.js کمکی استفاده می‌کنیم که بتواند URI را parse کند و outbound مناسب بسازد
+            # چون parse کردن URI در bash پیچیده است، یک اسکریپت کوچک Node.js inline می‌سازیم
+            node -e "
+              const uri = process.argv[1];
+              const cfg = JSON.parse(require('fs').readFileSync('/tmp/xray_hunter_${idx}.json','utf8'));
+              // parse URI
+              const u = new URL(uri);
+              const protocol = u.protocol.replace(':','');
+              const address = u.hostname;
+              const port = u.port;
+              const uuid = u.username;
+              const params = Object.fromEntries(u.searchParams.entries());
+              let outbound = { protocol, streamSettings: { network: params.type || 'tcp' } };
+              if (protocol === 'trojan') {
+                outbound.settings = { servers: [{ address, port: parseInt(port), password: uuid }] };
+              } else {
+                outbound.settings = { vnext: [{ address, port: parseInt(port), users: [{ id: uuid, encryption: params.encryption || 'none', flow: params.flow || '' }] }] };
+              }
+              const net = params.type || 'tcp';
+              outbound.streamSettings.network = net;
+              if (net === 'ws') {
+                outbound.streamSettings.wsSettings = { path: params.path || '/', headers: params.host ? { Host: params.host } : {} };
+              }
+              const sec = params.security || 'none';
+              if (sec === 'tls' || sec === 'reality') {
+                outbound.streamSettings.security = sec;
+                const tls = { serverName: params.sni || address };
+                if (sec === 'reality') {
+                  tls.fingerprint = params.fp || 'chrome';
+                  tls.publicKey = params.pbk || '';
+                  tls.shortId = params.sid || '';
+                  tls.spiderX = '';
+                }
+                if (params.allowInsecure === '1') tls.allowInsecure = true;
+                if (params.alpn) tls.alpn = params.alpn.split(',');
+                outbound.streamSettings.tlsSettings = tls;
+              } else {
+                outbound.streamSettings.security = 'none';
+              }
+              cfg.outbounds[0] = outbound;
+              require('fs').writeFileSync('/tmp/xray_hunter_${idx}.json', JSON.stringify(cfg, null, 2));
+            " "$uri"
+
+            # راه‌اندازی Xray
+            ./xray/xray run -config "$cfg" &>/dev/null &
+            xray_pid=$!
+            sleep 2
+
+            # تست سریع curl
+            if ! curl --socks5 127.0.0.1:${port} --max-time 5 -s http://ip-api.com/json >/dev/null; then
+              kill $xray_pid 2>/dev/null || true
+              return 1
+            fi
+
+            # دریافت کوکی و دانلود تست با Puppeteer + yt-dlp
+            cat > /tmp/hunter_test_${idx}.cjs << NODEEOF
           const puppeteer = require('puppeteer-extra');
           const StealthPlugin = require('puppeteer-extra-plugin-stealth');
           puppeteer.use(StealthPlugin());
+          const { execSync } = require('child_process');
+          const fs = require('fs');
 
-          const INPUT_FILE = 'proxies.txt';
-          const OUTPUT_FILE = 'کانفیگ های خوب.txt';
-          const YOUTUBE_URL = 'https://www.youtube.com/';
-
-          function log(...args) { console.log(`[${new Date().toISOString().substring(0,19)}]`, ...args); }
-          const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-          // ======================== Xray ========================
-          function parseURI(uri) {
+          (async () => {
+            let browser;
             try {
-              const u = new URL(uri);
-              return {
-                protocol: u.protocol.replace(':',''),
-                uuid: u.username,
-                address: u.hostname,
-                port: u.port,
-                params: Object.fromEntries(u.searchParams.entries())
-              };
-            } catch(_) { return null; }
-          }
-          function generateXrayConfig(uri) {
-            const p = parseURI(uri); if (!p) return null;
-            const inbound = { port: 10808, protocol: 'socks', settings: { auth: 'noauth', udp: true } };
-            let outbound = {
-              protocol: p.protocol,
-              streamSettings: { network: p.params.type || 'tcp' }
-            };
-            if (p.protocol === 'trojan') {
-              outbound.settings = {
-                servers: [{ address: p.address, port: parseInt(p.port), password: p.uuid }]
-              };
-            } else {
-              outbound.settings = {
-                vnext: [{
-                  address: p.address,
-                  port: parseInt(p.port),
-                  users: [{ id: p.uuid, encryption: p.params.encryption || 'none', flow: p.params.flow || '' }]
-                }]
-              };
-            }
-            const network = p.params.type || 'tcp';
-            outbound.streamSettings.network = network;
-            if (network === 'ws') {
-              outbound.streamSettings.wsSettings = {
-                path: p.params.path || '/',
-                headers: p.params.host ? { Host: p.params.host } : {}
-              };
-            }
-            const security = p.params.security || 'none';
-            if (security === 'tls' || security === 'reality') {
-              outbound.streamSettings.security = security;
-              const tls = { serverName: p.params.sni || p.address };
-              if (security === 'reality') {
-                tls.fingerprint = p.params.fp || 'chrome';
-                tls.publicKey = p.params.pbk || '';
-                tls.shortId = p.params.sid || '';
-                tls.spiderX = '';
-              }
-              if (p.params.allowInsecure === '1') tls.allowInsecure = true;
-              if (p.params.alpn) tls.alpn = p.params.alpn.split(',');
-              outbound.streamSettings.tlsSettings = tls;
-            } else {
-              outbound.streamSettings.security = 'none';
-            }
-            return { inbounds: [inbound], outbounds: [outbound] };
-          }
-          async function startXray(uri, idx) {
-            const config = generateXrayConfig(uri); if (!config) return null;
-            const cfgPath = `/tmp/xray_${idx}.json`;
-            fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
-            const proc = spawn(path.join(process.cwd(), 'xray', 'xray'), ['run', '-config', cfgPath], { stdio: 'pipe' });
-            await new Promise(r => setTimeout(r, 4000));
-            return proc;
-          }
-
-          async function testProxyWithYouTube(uri) {
-            let xrayProc = null;
-            let browser = null;
-            try {
-              xrayProc = await startXray(uri, Date.now());
-              if (!xrayProc) return false;
-              // تست ابتدایی با curl
-              try {
-                execSync('curl --socks5 127.0.0.1:10808 --max-time 5 -s http://ip-api.com/json', { encoding:'utf8' });
-              } catch(e) {
-                return false;
-              }
-
               browser = await puppeteer.launch({
                 headless: 'new',
-                args: [
-                  '--no-sandbox','--disable-setuid-sandbox',
-                  '--proxy-server=socks5://127.0.0.1:10808',
-                  '--disable-dev-shm-usage','--window-size=1280,720'
-                ]
+                args: ['--no-sandbox','--disable-setuid-sandbox','--proxy-server=socks5://127.0.0.1:${port}','--disable-dev-shm-usage']
               });
               const page = await browser.newPage();
               await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125.0.0.0');
-              await page.goto(YOUTUBE_URL, { waitUntil: 'networkidle2', timeout: 30000 });
-              await sleep(4000);
-              const bodyText = await page.evaluate(() => document.body.innerText.toLowerCase());
-              const blocked = ['access denied', 'you have been blocked', 'cloudflare', 'attention required'].some(t => bodyText.includes(t));
-              return !blocked;
-            } catch(e) {
-              log(`⚠️ خطا در تست پروکسی: ${e.message}`);
-              return false;
-            } finally {
-              if (browser) await browser.close().catch(()=>{});
-              if (xrayProc) { xrayProc.kill(); await sleep(500); }
-            }
+              await page.goto('https://www.youtube.com/', { waitUntil:'networkidle2', timeout:30000 });
+              await new Promise(r => setTimeout(r, 5000));
+              const cookies = await page.cookies();
+              if (cookies.length === 0) { process.exit(1); }
+              const lines = ['# Netscape HTTP Cookie File', ''];
+              cookies.forEach(c => {
+                const domain = c.domain.startsWith('.') ? c.domain : '.' + c.domain;
+                const flag = c.secure ? 'TRUE' : 'FALSE';
+                const exp = c.expires>0 ? Math.floor(c.expires) : 0;
+                lines.push('\${domain}\\tTRUE\\t\${c.path}\\t\${flag}\\t\${exp}\\t\${c.name}\\t\${c.value}');
+              });
+              fs.writeFileSync('/tmp/cookies_hunter_${idx}.txt', lines.join('\\n'));
+              await browser.close();
+
+              // دانلود با مهلت و بررسی سرعت
+              const outPath = '/tmp/test_hunter_${idx}.mp4';
+              const start = Date.now();
+              const child = require('child_process').spawn('yt-dlp', [
+                '--cookies', '/tmp/cookies_hunter_${idx}.txt',
+                '--proxy', 'socks5h://127.0.0.1:${port}',
+                '-N', '8', '--concurrent-fragments', '8',
+                '--buffer-size', '1024K', '--no-playlist',
+                '--format', 'best[height<=480][ext=mp4] / best[height<=480]',
+                '--merge-output-format', 'mp4',
+                '--output', outPath,
+                '${TEST_VIDEO}'
+              ], { stdio: ['pipe', 'pipe', 'pipe'] });
+
+              let lastSpeed = 0;
+              let lowSpeedStart = null;
+              let killed = false;
+              child.stderr.on('data', (data) => {
+                const lines = data.toString().split('\\n');
+                for (const line of lines) {
+                  const match = line.match(/(\\d+\\.?\\d*)\\s*(K|M|G)?iB\\/s/);
+                  if (match) {
+                    let speed = parseFloat(match[1]);
+                    const unit = match[2] || '';
+                    if (unit === 'K') speed *= 1024;
+                    else if (unit === 'M') speed *= 1024*1024;
+                    else if (unit === 'G') speed *= 1024*1024*1024;
+                    lastSpeed = speed;
+                    if (speed < ${MIN_SPEED_MiB}*1024*1024) {
+                      if (!lowSpeedStart) lowSpeedStart = Date.now();
+                      else if (Date.now() - lowSpeedStart > 5000) {
+                        child.kill('SIGTERM');
+                        killed = true;
+                      }
+                    } else { lowSpeedStart = null; }
+                  }
+                }
+              });
+
+              child.on('close', (code) => {
+                const elapsed = (Date.now() - start) / 1000;
+                if (killed || code !== 0) { process.exit(1); }
+                if (elapsed > ${MAX_TIME}) { process.exit(1); }
+                if (fs.existsSync(outPath)) {
+                  try { fs.unlinkSync(outPath); } catch(_){}
+                  process.exit(0);
+                } else { process.exit(1); }
+              });
+
+              // timeout کلی
+              setTimeout(() => { child.kill('SIGTERM'); process.exit(1); }, ${MAX_TIME}*1000);
+            } catch(e) { process.exit(1); }
+          })();
+          NODEEOF
+
+            timeout ${MAX_TIME} node /tmp/hunter_test_${idx}.cjs
+            result=$?
+            kill $xray_pid 2>/dev/null || true
+            rm -f "$cfg" /tmp/cookies_hunter_${idx}.txt /tmp/test_hunter_${idx}.mp4 /tmp/hunter_test_${idx}.cjs
+            return $result
           }
 
-          (async () => {
-            // خواندن پروکسی‌های جدید از proxies.txt
-            if (!fs.existsSync(INPUT_FILE)) {
-              log(`❌ فایل ${INPUT_FILE} یافت نشد.`);
-              process.exit(1);
-            }
-            const newProxies = fs.readFileSync(INPUT_FILE, 'utf8')
-              .split('\n').map(l => l.trim())
-              .filter(l => /^(vless|trojan|ss|vmess):\/\//.test(l));
-            log(`📋 ${newProxies.length} پروکسی جدید برای بررسی یافت شد.`);
+          # ─── ۴. اجرای موازی در دسته‌های ۵ تایی ───────────────
+          mapfile -t CONFIGS < "$RAW_LINKS"
+          COUNT=0
+          for ((i=0; i<${#CONFIGS[@]}; i+=PARALLEL)); do
+            PIDS=()
+            for ((j=i; j<i+PARALLEL && j<${#CONFIGS[@]}; j++)); do
+              port=$((BASE_PORT + (j % PARALLEL)))
+              test_config "${CONFIGS[$j]}" "$port" "$j" &
+              PIDS+=($!)
+            done
+            for pid in "${PIDS[@]}"; do
+              wait $pid
+              if [ $? -eq 0 ]; then
+                # استفاده از flock برای نوشتن ایمن
+                (
+                  flock -x 200
+                  echo "${CONFIGS[$j]}" >> "$OUTPUT_FILE"
+                ) 200>/tmp/hunter.lock
+              fi
+            done
+          done
 
-            // خواندن پروکسی‌های خوب فعلی
-            let goodProxies = [];
-            if (fs.existsSync(OUTPUT_FILE)) {
-              goodProxies = fs.readFileSync(OUTPUT_FILE, 'utf8')
-                .split('\n').map(l => l.trim())
-                .filter(l => /^(vless|trojan|ss|vmess):\/\//.test(l));
-              log(`✅ ${goodProxies.length} پروکسی از قبل در فایل خوب‌ها وجود دارد.`);
-            }
+          echo "✅ شکار تمام شد. فایل $OUTPUT_FILE به‌روزرسانی شد."
+          EOF
+          chmod +x hunter.sh
+          ./hunter.sh
 
-            const added = [];
-            for (const proxy of newProxies) {
-              // بررسی تکراری نبودن
-              if (goodProxies.includes(proxy)) {
-                log(`⏭️ پروکسی تکراری، رد شد: ${proxy.substring(0,60)}...`);
-                continue;
-              }
-              log(`🔍 تست پروکسی: ${proxy.substring(0,60)}...`);
-              const ok = await testProxyWithYouTube(proxy);
-              if (ok) {
-                log(`✅ پروکسی خوب است.`);
-                goodProxies.push(proxy);
-                added.push(proxy);
-              } else {
-                log(`❌ پروکسی ناموفق.`);
-              }
-            }
-
-            if (added.length > 0) {
-              // اضافه کردن به فایل (با حفظ خط‌های خالی مناسب)
-              const currentContent = fs.existsSync(OUTPUT_FILE) ? fs.readFileSync(OUTPUT_FILE, 'utf8') : '';
-              // اگر فایل خالی یا بدون خط جدید تمام می‌شود، یک خط خالی اضافه کن
-              const separator = currentContent.endsWith('\n') ? '' : '\n';
-              const newLines = added.map(p => p + '\n').join('');
-              fs.appendFileSync(OUTPUT_FILE, separator + newLines);
-              log(`📤 ${added.length} پروکسی جدید به ${OUTPUT_FILE} اضافه شد.`);
-            } else {
-              log(`ℹ️ هیچ پروکسی جدیدی اضافه نشد.`);
-            }
-          })();
-          ENDSCRIPT
-
-          timeout 1800 node proxy_checker.cjs
-
-      - name: 📤 ذخیره‌سازی تغییرات در مخزن
+      - name: 📤 ذخیره و push تغییرات
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add 'کانفیگ های خوب.txt'
-          git commit -m "📡 به‌روزرسانی پروکسی‌های خوب" || echo "تغییری برای ثبت وجود ندارد"
+          git commit -m "🔁 به‌روزرسانی خودکار پروکسی‌های خوب" || echo "بدون تغییر"
           git push
