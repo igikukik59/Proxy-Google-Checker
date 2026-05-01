@@ -5760,3 +5760,20 @@ ERROR: [youtube] swdSZZIKzJk: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-01 16:39:08] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 10.6s
 [2026-05-01 16:39:10] مجموع زمان آپلود قطعات: 91.1s
 [2026-05-01 16:39:10] 📊 آمار به‌روزرسانی شد
+[2026-05-01 16:39:12] 📤 لاگ و آمار push شد
+[2026-05-01 16:39:12] 🔀 تلاش با پروکسی تصادفی: trojan://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:...
+[2026-05-01 16:39:29] 🍪 کوکی جدید دریافت شد
+[2026-05-01 16:39:33] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=mhxB8JSJrW0"
+[2026-05-01 16:39:33] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 16:39:33] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 16:39:33] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@198.71.189.51:4...
+[2026-05-01 16:39:50] 🍪 کوکی جدید دریافت شد
+[2026-05-01 16:39:51] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=mhxB8JSJrW0"
+[2026-05-01 16:39:51] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 16:39:51] 🔄 تلاش مجدد (3/3)...
+[2026-05-01 16:39:52] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@8.6.112.0:443?a...
+[2026-05-01 16:40:09] 🍪 کوکی جدید دریافت شد
+[2026-05-01 16:40:17] ⬇️ دانلود در 8.3s
+[2026-05-01 16:40:28] 🎬 درخواست از b0DpnIi099P0b8b8bea79601c804491e: https://www.youtube.com/watch?v=KxSZnaXW4qU
+[2026-05-01 16:40:43] ⬆️ آپلود video_raw.mp4 در 25.6s
+[2026-05-01 16:40:43] 📊 آمار به‌روزرسانی شد
