@@ -6259,3 +6259,24 @@ ERROR: [youtube] 0D16nQRpXPg: This video is not available
 [2026-05-01 17:28:16] ⬇️ دانلود در 3.9s
 [2026-05-01 17:28:24] ⬆️ آپلود video_raw.mp4 در 7.3s
 [2026-05-01 17:28:24] 📊 آمار به‌روزرسانی شد
+[2026-05-01 17:28:26] 📤 لاگ و آمار push شد
+[2026-05-01 17:28:26] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@198.71.189.51:4...
+[2026-05-01 17:28:27] 🎬 درخواست از b0DIgbG099P020d09ad9b8a3e56950e2: https://youtu.be/bwElHcmPBcM
+[2026-05-01 17:28:28] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://youtu.be/bwElHcmPBcM"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] bwElHcmPBcM: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-01 17:28:38] 🎬 درخواست از b0DIgbG099P020d09ad9b8a3e56950e2: https://youtu.be/bwElHcmPBcM
+[2026-05-01 17:28:43] 🍪 کوکی جدید دریافت شد
+[2026-05-01 17:28:51] ⬇️ دانلود در 4.9s
+[2026-05-01 17:28:52] ✂️ شروع تقسیم video_raw (54.1MB)
+[2026-05-01 17:28:54] 🎯 بیت‌ریت: 684kbps | مدت: 663.7s | زمان قطعه: 539s
+[2026-05-01 17:28:57] 🎬 درخواست از b0HWtdz099P01787db0dfe01b23d231b: https://www.youtube.com/watch?v=gRkWifh3_Q8
+[2026-05-01 17:29:04] 🎬 درخواست از b0IOH6b099P0b8910f14b04f41699adb: https://www.youtube.com/watch?v=5A5fTxkcYgU
+[2026-05-01 17:29:38] ⬆️ آپلود video_raw.part01.mp4 در 43.3s
+[2026-05-01 17:29:38] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 43.3s
+[2026-05-01 17:29:52] ⬆️ آپلود video_raw.part02.mp4 در 12.7s
+[2026-05-01 17:29:52] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 12.7s
+[2026-05-01 17:29:54] مجموع زمان آپلود قطعات: 56.0s
+[2026-05-01 17:29:54] 📊 آمار به‌روزرسانی شد
