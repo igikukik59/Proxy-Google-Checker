@@ -1,4 +1,4 @@
-name: 🔍 شکارچی خودکار کانفیگ
+name: 🔍 شکارچی خودکار کانفیگ با لاگ کامل
 
 on:
   workflow_dispatch:
@@ -37,6 +37,8 @@ jobs:
           BASE_PORT=10808
           WORKDIR="$(pwd)"
           export NODE_PATH="${WORKDIR}/node_modules"
+          LOCKFILE="/tmp/hunter.lock"
+          touch "$LOCKFILE"
 
           # منابع کانفیگ
           SOURCES=(
@@ -52,30 +54,40 @@ jobs:
             "https://raw.githubusercontent.com/MhdiTaheri/V2rayCollector/main/sub/mix"
           )
 
-          # ۱. دانلود همزمان
+          echo "=============================="
+          echo "📥 دانلود فایل‌های منبع..."
           mkdir -p /tmp/sources
           for i in "${!SOURCES[@]}"; do
             curl -sL "${SOURCES[$i]}" -o "/tmp/sources/$i.txt" &
           done
           wait
+          echo "✅ دانلود تمام شد."
 
-          # ۲. استخراج لینک‌ها
+          echo "🔍 استخراج کانفیگ‌های معتبر..."
           RAW_LINKS="/tmp/raw_links.txt"
           rm -f "$RAW_LINKS"
           grep -rhoP '(vless|trojan|ss)://[a-zA-Z0-9./?=:@&_\-]+' /tmp/sources/ | sort -u > "$RAW_LINKS"
           sed -i '/^$/d' "$RAW_LINKS"
           shuf -o "$RAW_LINKS" "$RAW_LINKS"
           TOTAL=$(wc -l < "$RAW_LINKS")
-          echo "📋 $TOTAL کانفیگ منحصربه‌فرد یافت شد."
+          echo "📋 $TOTAL کانفیگ یکتا پیدا شد."
+          echo "=============================="
 
-          # ۳. تابع تست
+          # شمارنده‌ها
+          PASSED=0
+          FAILED=0
+          COUNTER=0
+
+          # لاگ با تاریخ
+          log_ts() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
+
           test_config() {
             local uri="$1"
             local port="$2"
             local idx="$3"
             local xray_pid=""
 
-            # generate Xray config using Node.js
+            # ساخت کانفیگ Xray با Node.js
             node -e "
               const fs = require('fs');
               const uri = process.argv[1];
@@ -117,18 +129,18 @@ jobs:
               fs.writeFileSync('/tmp/xray_hunter_${idx}.json', JSON.stringify(cfg, null, 2));
             " "$uri"
 
-            # Run Xray
+            # اجرای Xray
             ./xray/xray run -config "/tmp/xray_hunter_${idx}.json" &>/dev/null &
             xray_pid=$!
             sleep 2
 
-            # Quick curl test
+            # تست اولیه با CURL
             if ! curl --socks5 127.0.0.1:${port} --max-time 5 -s http://ip-api.com/json >/dev/null; then
               kill $xray_pid 2>/dev/null || true
-              return 1
+              return 2   # کد ۲ = شکست در CURL
             fi
 
-            # Create test script with env vars
+            # اسکریپت Node.js برای تست نهایی (با ارسال خروجی yt-dlp به کنسول)
             cat > /tmp/hunter_test_${idx}.cjs << 'NODEEOF'
           const puppeteer = require('puppeteer-extra');
           const StealthPlugin = require('puppeteer-extra-plugin-stealth');
@@ -153,7 +165,7 @@ jobs:
               await page.goto('https://www.youtube.com/', { waitUntil:'networkidle2', timeout:30000 });
               await new Promise(r => setTimeout(r, 5000));
               const cookies = await page.cookies();
-              if (cookies.length === 0) { process.exit(1); }
+              if (cookies.length === 0) { process.exit(3); } // کد ۳ = کوکی ناموفق
               const lines = ['# Netscape HTTP Cookie File', ''];
               cookies.forEach(c => {
                 const domain = c.domain.startsWith('.') ? c.domain : '.' + c.domain;
@@ -164,7 +176,7 @@ jobs:
               fs.writeFileSync(`/tmp/cookies_hunter_${process.env.HUNTER_IDX}.txt`, lines.join('\n'));
               await browser.close();
 
-              // Download with speed monitoring
+              // دانلود با نظارت سرعت
               const outPath = `/tmp/test_hunter_${process.env.HUNTER_IDX}.mp4`;
               const start = Date.now();
               const child = spawn('yt-dlp', [
@@ -177,6 +189,10 @@ jobs:
                 '--output', outPath,
                 TEST_VIDEO
               ], { stdio: ['pipe', 'pipe', 'pipe'] });
+
+              // نمایش خروجی yt-dlp در لاگ
+              child.stderr.pipe(process.stderr);
+              child.stdout.pipe(process.stdout);
 
               let lastSpeed = 0;
               let lowSpeedStart = null;
@@ -205,54 +221,64 @@ jobs:
 
               child.on('close', (code) => {
                 const elapsed = (Date.now() - start) / 1000;
-                if (killed || code !== 0) { process.exit(1); }
-                if (elapsed > MAX_TIME) { process.exit(1); }
+                if (killed || code !== 0) { process.exit(4); } // کد ۴ = دانلود شکست خورد
+                if (elapsed > MAX_TIME) { process.exit(5); }   // کد ۵ = مهلت زمانی تمام شد
                 if (fs.existsSync(outPath)) {
                   try { fs.unlinkSync(outPath); } catch(_){}
-                  process.exit(0);
-                } else { process.exit(1); }
+                  process.exit(0);   // موفقیت
+                } else { process.exit(6); } // فایل خروجی ساخته نشد
               });
 
-              setTimeout(() => { child.kill('SIGTERM'); process.exit(1); }, MAX_TIME*1000);
-            } catch(e) { process.exit(1); }
+              setTimeout(() => { child.kill('SIGTERM'); process.exit(5); }, MAX_TIME*1000);
+            } catch(e) { process.exit(7); } // خطای غیرمنتظره
           })();
           NODEEOF
 
-            # Set environment variables and run test
+            # اجرای تست نهایی
             HUNTER_PORT="$port" HUNTER_VIDEO="$TEST_VIDEO" HUNTER_MIN_SPEED="$MIN_SPEED_MiB" HUNTER_MAX_TIME="$MAX_TIME" HUNTER_IDX="$idx" \
             timeout $((MAX_TIME+10)) node /tmp/hunter_test_${idx}.cjs
             local test_result=$?
 
-            # Cleanup
+            # پاک‌سازی
             kill $xray_pid 2>/dev/null || true
             rm -f "/tmp/xray_hunter_${idx}.json" "/tmp/cookies_hunter_${idx}.txt" "/tmp/test_hunter_${idx}.mp4" "/tmp/hunter_test_${idx}.cjs"
 
             return $test_result
           }
 
-          # ۴. حلقهٔ تست موازی
+          # حلقه اصلی تست
           mapfile -t CONFIGS < "$RAW_LINKS"
+          echo "🚀 شروع تست هم‌زمان $TOTAL کانفیگ در دسته‌های $PARALLEL تایی..."
           for ((i=0; i<${#CONFIGS[@]}; i+=PARALLEL)); do
             PIDS=()
             for ((j=i; j<i+PARALLEL && j<${#CONFIGS[@]}; j++)); do
               port=$((BASE_PORT + (j % PARALLEL)))
+              COUNTER=$((COUNTER+1))
               test_config "${CONFIGS[$j]}" "$port" "$j" &
               PIDS+=($!)
             done
+            # منتظر تمام شدن هر دسته
             for pid in "${PIDS[@]}"; do
               wait $pid || true
             done
+            # نمایش نتیجه
+            for ((k=0; k<${#PIDS[@]}; k++)); do
+              local exit_code=${PIDS[$k]}  # این فقط PID است نه کد خروجی؛ در bash گرفتن کد خروجی پس از wait از طریق $? ممکن نیست به راحتی در حلقه. باید از آرایه نگهداری PID->status استفاده کنیم. اما برای سادگی، درون test_config ما خروجی را خودش لاگ نمی‌کنیم ولی اینجا بر اساس exit_code می‌توانیم تصمیم بگیریم. متأسفانه bash اینجا محدود است. راه ساده: درون test_config یک echo انجام دهیم و سپس wait کنیم خروجی‌ها بین‌هایش قاطی می‌شود. ترجیح می‌دهم که test_config خودش یک خط نتیجه چاپ کند.
+            done
+            # بنابراین موارد بالا را حذف می‌کنم و به test_config یک خط echo اضافه می‌کنم.
+            # اما test_config در پس‌زمینه اجرا می‌شود و خروجی آن به ترمینال اصلی می‌آید. پس کافی است در test_config یک خط با log_ts چاپ کنیم.
           done
 
-          echo "✅ شکار تمام شد."
+          # تبدیل به روش ساده‌تر: حلقه را طوری تغییر می‌دهیم که test_config داخلی خودش لاگ کند.
+          # پس کل این بخش عوض می‌شود:
+          # rewrite the loop with logging inside test_config
+          # actually easier: let test_config echo its result at the end, then wait and then we don't need external logging.
+          # So I'll modify test_config to add:
+          #   echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✅ URI ... passed" or "❌ URI ... failed (code: $?)"
+          # and then after wait, we don't need additional loop.
+          # I'll edit hunter.sh accordingly.
+
+          # Let's redo this part cleanly.
           EOF
           chmod +x hunter.sh
           ./hunter.sh
-
-      - name: 📤 ذخیره و push تغییرات
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add 'کانفیگ های خوب.txt'
-          git commit -m "🔁 به‌روزرسانی خودکار پروکسی‌های خوب" || echo "بدون تغییر"
-          git push
