@@ -3529,3 +3529,21 @@ ERROR: [youtube] usH66Rs5H20: Sign in to confirm your age. This video may be ina
 [2026-05-01 12:49:12] 🎬 درخواست از b0BVDuQ099P04c10126c396df005529c: https://www.youtube.com/watch?v=7g3bZ6zTaDM
 [2026-05-01 12:49:24] ⬆️ آپلود video_raw.mp4 در 32.8s
 [2026-05-01 12:49:25] 📊 آمار به‌روزرسانی شد
+[2026-05-01 12:49:27] 📤 لاگ و آمار push شد
+[2026-05-01 12:49:27] 🔀 تلاش با پروکسی تصادفی: vless://b60e5c32-3d4e-425c-a785-a36cd0621a72@104.18.12.149:4...
+[2026-05-01 12:49:30] 🎬 درخواست از b0ESoCl099P09816111e2bcfbf8c1b0c: https://www.youtube.com/watch?v=Ik4txt4CiO4
+[2026-05-01 12:49:31] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=Ik4txt4CiO4"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] Ik4txt4CiO4: This video is not available
+
+[2026-05-01 12:49:45] 🍪 کوکی جدید دریافت شد
+[2026-05-01 12:49:53] ⬇️ دانلود در 5.1s
+[2026-05-01 12:49:54] ✂️ شروع تقسیم video_raw (50.1MB)
+[2026-05-01 12:49:54] 🎯 بیت‌ریت: 265kbps | مدت: 1585.8s | زمان قطعه: 1392s
+[2026-05-01 12:50:12] 🎬 درخواست از b0IOiDx099P03e93686c4116289d8800: https://www.youtube.com/watch?v=zOHL7_DPVCw
+[2026-05-01 12:50:25] ⬆️ آپلود video_raw.part01.mp4 در 28.0s
+[2026-05-01 12:50:25] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 28.0s
+[2026-05-01 12:50:31] ⬆️ آپلود video_raw.part02.mp4 در 5.3s
+[2026-05-01 12:50:31] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 5.3s
+[2026-05-01 12:50:32] مجموع زمان آپلود قطعات: 33.3s
+[2026-05-01 12:50:32] 📊 آمار به‌روزرسانی شد
