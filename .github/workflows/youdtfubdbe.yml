@@ -3,12 +3,12 @@ name: 🎬 ربات یوتیوب (نسخهٔ طلایی نهایی)
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */5 * * *'
+    - cron: '0 */6 * * *'        # هر ۶ ساعت → ۵:۳۰ کار / ۰:۳۰ استراحت
 
 jobs:
   bot:
     runs-on: ubuntu-latest
-    timeout-minutes: 350
+    timeout-minutes: 330         # ۵ ساعت و ۳۰ دقیقه
     permissions:
       contents: write
     steps:
@@ -146,7 +146,6 @@ jobs:
             log(`📋 ${allProxies.length} پروکسی برای تست پیدا شد.`);
 
             const good = [];
-            // اجرای هم‌زمان با محدودیت CONCURRENCY
             for (let i = 0; i < allProxies.length; i += CONCURRENCY) {
               const batch = allProxies.slice(i, i + CONCURRENCY);
               const results = await Promise.all(batch.map((p, idx) => testProxy(p, i + idx)));
@@ -503,15 +502,54 @@ jobs:
             };
             try { fs.writeFileSync(STATS_FILE, JSON.stringify(data, null, 2)); log('📊 آمار به‌روزرسانی شد'); } catch(e) { err('خطای ذخیره آمار:', e.message); }
           }
+
+          // ======================== ذخیره آمار جامع پایان چرخه ========================
+          function saveSessionStats() {
+            const now = new Date();
+            const dateStr = now.toISOString().replace(/T/, '_').replace(/:/g, '-').substring(0,19);
+            const sessionFile = `session_stats_${dateStr}.json`;
+            const avgTime = getAverageTime();
+            const data = {
+              sessionStart: new Date(now - (DEADLINE_END - Date.now())).toISOString(), // تقریبی
+              sessionEnd: now.toISOString(),
+              totalDataMB: (stats.totalBytes / (1024*1024)).toFixed(2),
+              totalVideos: stats.totalVideos,
+              totalDurationMinutes: (stats.totalDuration / 60).toFixed(1),
+              uniqueUsers: stats.uniqueUsers.size,
+              failedAttempts: stats.failedAttempts,
+              avgProcessingTimeSec: avgTime.toFixed(1),
+              avgVideoSizeMB: stats.totalVideos > 0 ? (stats.totalBytes / stats.totalVideos / (1024*1024)).toFixed(2) : 0,
+              avgVideoDurationMin: stats.totalVideos > 0 ? (stats.totalDuration / stats.totalVideos / 60).toFixed(1) : 0
+            };
+            try {
+              fs.writeFileSync(sessionFile, JSON.stringify(data, null, 2));
+              log(`📄 آمار چرخه در ${sessionFile} ذخیره شد.`);
+              // add and push this file
+              execSync(`git add ${sessionFile}`, {stdio:'pipe'});
+              execSync(`git commit -m "📊 آمار جامع چرخه ${dateStr}"`, {stdio:'pipe'});
+              execSync('git push', {stdio:'pipe'});
+              log('📤 آمار چرخه push شد');
+            } catch(e) { err('خطا در ذخیره آمار چرخه:', e.message); }
+          }
+
+          // ======================== گیت با rebase ========================
           function gitPushAll() {
             try {
+              execSync('git pull --rebase origin main', {stdio:'pipe'});
               const status = execSync('git status --porcelain bot_log.txt bot_stats.json', {encoding:'utf8'}).trim();
               if (!status) return;
               execSync('git add bot_log.txt bot_stats.json', {stdio:'pipe'});
               execSync('git commit -m "📊 به‌روزرسانی لاگ و آمار"', {stdio:'pipe'});
               execSync('git push', {stdio:'pipe'});
               log('📤 لاگ و آمار push شد');
-            } catch(e) {}
+            } catch(e) {
+              err('خطا در push:', e.message);
+              try {
+                execSync('git pull --rebase origin main', {stdio:'pipe'});
+                execSync('git push', {stdio:'pipe'});
+                log('📤 تلاش مجدد push موفق بود');
+              } catch(retryErr) {}
+            }
           }
 
           const mainKeypad = {
@@ -707,10 +745,10 @@ jobs:
             if (!fs.existsSync(STATS_FILE)) { saveStatsToFile(); gitPushAll(); }
 
             const sentHelp = new Set();
-            const DEADLINE = Date.now() + 20940 * 1000;
+            const DEADLINE_END = Date.now() + 19740 * 1000; // ۵ ساعت و ۲۹ دقیقه
             const backupPushInterval = setInterval(() => { saveStatsToFile(); gitPushAll(); }, 10 * 60 * 1000);
 
-            while (Date.now() < DEADLINE) {
+            while (Date.now() < DEADLINE_END) {
               try {
                 const res = await api('getUpdates', { limit: 10, offset_id: offset });
                 if (res.error) { log('⚠️ خطای API:', res.message || res.raw); await sleep(5000); continue; }
@@ -759,10 +797,12 @@ jobs:
             }
 
             clearInterval(backupPushInterval);
-            saveStatsToFile(); gitPushAll();
+            saveStatsToFile();
+            gitPushAll();
+            saveSessionStats();      // ذخیره آمار جامع چرخه
             if (xrayProc) xrayProc.kill();
             log('⏹️ ربات خاموش شد');
           })();
           ENDSCRIPT
 
-          timeout 20940 node agent.cjs
+          timeout 19740 node agent.cjs   # ۵ ساعت و ۲۹ دقیقه
