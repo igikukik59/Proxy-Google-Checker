@@ -5080,3 +5080,39 @@ ERROR: [youtube] orxj-AfvEZI: Sign in to confirm your age. This video may be ina
 [2026-05-01 15:40:27] 🎬 درخواست از b0BS5J8099P0e2d56c4ce3f3201a98d7: https://youtube.com/watch?v=mUynHJj8S-o
 [2026-05-01 15:40:54] ⬆️ آپلود video_raw.mp4 در 27.7s
 [2026-05-01 15:40:55] 📊 آمار به‌روزرسانی شد
+[2026-05-01 15:40:56] 📤 لاگ و آمار push شد
+[2026-05-01 15:41:01] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/lqYIR35iVFw"
+[2026-05-01 15:41:01] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 15:41:01] 🔄 تلاش مجدد (2/3)...
+[2026-05-01 15:41:02] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@88.216.66.43:44...
+[2026-05-01 15:41:19] 🍪 کوکی جدید دریافت شد
+[2026-05-01 15:41:20] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/lqYIR35iVFw"
+[2026-05-01 15:41:20] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 15:41:20] 🔄 تلاش مجدد (3/3)...
+[2026-05-01 15:41:21] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@188.114.96.3:20...
+[2026-05-01 15:41:38] 🍪 کوکی جدید دریافت شد
+[2026-05-01 15:41:39] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/lqYIR35iVFw"
+[2026-05-01 15:41:39] ❌ دانلود با این پروکسی ناموفق
+[2026-05-01 15:41:40] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@8.6.112.0:443?s...
+[2026-05-01 15:41:56] 🍪 کوکی جدید دریافت شد
+[2026-05-01 15:42:14] ⬇️ دانلود در 15.1s
+[2026-05-01 15:42:14] ✂️ شروع تقسیم video_raw (51.2MB)
+[2026-05-01 15:42:15] 🎯 بیت‌ریت: 501kbps | مدت: 855.7s | زمان قطعه: 736s
+[2026-05-01 15:42:26] 🎬 درخواست از b0CxpPG099P07aacde81ce00d6fddb5d: youtube.com/watch?v=tWj47V5FF2U
+[2026-05-01 15:42:28] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "youtube.com/watch?v=tWj47V5FF2U"
+WARNING: [generic] The url doesn't specify the protocol, trying with https
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] tWj47V5FF2U: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-01 15:42:43] 🎬 درخواست از b0E9b9m099P0a1410e056623d065ff11: https://www.youtube.com/watch?v=Loxp-6AHdew
+[2026-05-01 15:42:44] ⬆️ آپلود video_raw.part01.mp4 در 27.2s
+[2026-05-01 15:42:44] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 27.2s
+[2026-05-01 15:42:45] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=Loxp-6AHdew"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] Loxp-6AHdew: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-01 15:42:45] 🎬 درخواست از b0CxpPG099P07aacde81ce00d6fddb5d: youtube.com/watch?v=tWj47V5FF2U
+[2026-05-01 15:42:55] ⬆️ آپلود video_raw.part02.mp4 در 10.2s
+[2026-05-01 15:42:55] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 10.2s
+[2026-05-01 15:42:56] مجموع زمان آپلود قطعات: 37.4s
+[2026-05-01 15:42:56] 📊 آمار به‌روزرسانی شد
