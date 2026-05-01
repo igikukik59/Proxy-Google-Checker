@@ -3601,3 +3601,12 @@ ERROR: [youtube] Ik4txt4CiO4: This video is not available
 [2026-05-01 12:55:39] ⬇️ دانلود در 12.2s
 [2026-05-01 12:56:22] ⬆️ آپلود video_raw.mp4 در 43.0s
 [2026-05-01 12:56:24] 📊 آمار به‌روزرسانی شد
+[2026-05-01 12:56:25] 📤 لاگ و آمار push شد
+[2026-05-01 12:56:33] ⬇️ دانلود در 6.9s
+[2026-05-01 12:56:35] 🎬 درخواست از b0IOiDx099P03e93686c4116289d8800: https://www.youtube.com/watch?v=x5ClcH1_RMk
+[2026-05-01 12:56:36] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=x5ClcH1_RMk"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] x5ClcH1_RMk: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-01 12:56:56] ⬆️ آپلود video_raw.mp4 در 22.3s
+[2026-05-01 12:56:57] 📊 آمار به‌روزرسانی شد
