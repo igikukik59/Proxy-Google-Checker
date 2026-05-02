@@ -7246,3 +7246,14 @@ ERROR: [youtube] WgnHiu63n9o: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-02 05:41:15] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 5.1s
 [2026-05-02 05:41:17] مجموع زمان آپلود قطعات: 36.1s
 [2026-05-02 05:41:17] 📊 آمار به‌روزرسانی شد
+[2026-05-02 05:41:18] 📤 لاگ و آمار push شد
+[2026-05-02 05:41:24] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --format "best[height<=480][ext=mp4] / best[height<=480] / best" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=EolnlrJ2tJw"
+[2026-05-02 05:41:24] ❌ دانلود با این پروکسی ناموفق
+[2026-05-02 05:41:24] 🔄 تلاش مجدد (2/3)...
+[2026-05-02 05:41:25] 🔀 تلاش با پروکسی تصادفی: vless://b60e5c32-3d4e-425c-a785-a36cd0621a72@104.18.12.149:4...
+[2026-05-02 05:41:39] 🎬 درخواست از b0DnxL3099P070daa2db975f7f8b95bb: https://www.youtube.com/watch?v=4agXAltNCV0
+[2026-05-02 05:41:42] 🍪 کوکی جدید دریافت شد
+[2026-05-02 05:41:50] ⬇️ دانلود در 8.4s
+[2026-05-02 05:42:07] ⬆️ آپلود video_raw.mp4 در 16.3s
+[2026-05-02 05:42:07] 🎬 درخواست از b0DnxL3099P070daa2db975f7f8b95bb: https://www.youtube.com/watch?v=4agXAltNCV0
+[2026-05-02 05:42:08] 📊 آمار به‌روزرسانی شد
