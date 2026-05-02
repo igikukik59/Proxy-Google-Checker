@@ -14428,3 +14428,26 @@ ERROR: [youtube] tnYhvfn6LxA: Unable to download API page: [Errno 111] Connectio
 [2026-05-02 23:15:48] 📤 لاگ و آمار push شد
 [2026-05-02 23:16:06] ⬆️ آپلود video_raw.mp4 در 19.5s
 [2026-05-02 23:16:07] 📊 آمار به‌روزرسانی شد
+[2026-05-02 23:16:08] 📤 لاگ و آمار push شد
+[2026-05-02 23:16:08] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.137.199:...
+[2026-05-02 23:16:26] 🍪 کوکی جدید دریافت شد
+[2026-05-02 23:18:24] 🎬 درخواست از b0CxZql099P063d149d55d17917b111f: https://www.youtube.com/watch?v=4lUVGqtNk6U
+[2026-05-02 23:18:26] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=4lUVGqtNk6U"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] 4lUVGqtNk6U: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-02 23:20:29] 🎬 درخواست از b0CxZql099P063d149d55d17917b111f: https://www.youtube.com/watch?v=0K1jYqUO8rw
+[2026-05-02 23:20:38] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --format "best[height<=480][ext=mp4] / best[height<=480] / best" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=0K1jYqUO8rw"
+[2026-05-02 23:20:38] ❌ دانلود با این پروکسی ناموفق
+[2026-05-02 23:20:38] 🔄 تلاش مجدد (2/3)...
+[2026-05-02 23:20:39] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@8.6.112.0:443?security=tls&sni=www.multipl...
+[2026-05-02 23:20:58] 🍪 کوکی جدید دریافت شد
+[2026-05-02 23:21:09] ⬇️ دانلود در 10.9s
+[2026-05-02 23:21:09] ✂️ شروع تقسیم video_raw (57.6MB)
+[2026-05-02 23:21:10] 🎯 بیت‌ریت: 265kbps | مدت: 1824.6s | زمان قطعه: 1393s
+[2026-05-02 23:21:32] ⬆️ آپلود video_raw.part01.mp4 در 18.3s
+[2026-05-02 23:21:32] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 18.3s
+[2026-05-02 23:21:40] ⬆️ آپلود video_raw.part02.mp4 در 6.6s
+[2026-05-02 23:21:40] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 6.6s
+[2026-05-02 23:21:42] مجموع زمان آپلود قطعات: 24.9s
+[2026-05-02 23:21:42] 📊 آمار به‌روزرسانی شد
