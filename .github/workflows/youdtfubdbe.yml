@@ -1,4 +1,4 @@
-name: 🎬 ربات یوتیوب (جستجو، Shorts، لغو درخواست)
+name: 🎬 ربات یوتیوب (جستجو، Shorts، لغو درخواست) + PO Token
 
 on:
   workflow_dispatch:
@@ -19,13 +19,19 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y curl unzip python3-pip ffmpeg
           pip install yt-dlp
+          # نصب PO Token Provider
+          pip install bgutil-ytdlp-pot-provider
           wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
           unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
+      - name: 🚀 راه‌اندازی PO Token Server
+        run: |
+          bgutil-ytdlp-pot-provider --port 4416 &
+          sleep 5
+
       - name: 🧪 پیش‌آزمون هم‌زمان پروکسی‌ها
-        # ... (این بخش بدون تغییر باقی می‌ماند)
         run: |
           cat > test_proxies.cjs << 'ENDTEST'
           const { spawn, execSync } = require('child_process');
@@ -118,6 +124,7 @@ jobs:
                 execSync(
                   `yt-dlp --cookies ${tmpCookieFile} --proxy socks5h://127.0.0.1:10808 ` +
                   `-N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist ` +
+                  `--extractor-args "youtube:pot-server=http://127.0.0.1:4416" ` +
                   `--format "best[height<=480][ext=mp4] / best[height<=480]" ` +
                   `--merge-output-format mp4 --output "${outPath}" "${TEST_VIDEO}"`,
                   { stdio: 'inherit', timeout: 120000 }
@@ -173,7 +180,7 @@ jobs:
 
           timeout 1800 node test_proxies.cjs
 
-      - name: 🤖 اجرای ربات طلایی با جستجوی تصویری، Shorts و لغو
+      - name: 🤖 اجرای ربات طلایی با جستجوی تصویری، Shorts، لغو و PO Token
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
@@ -318,7 +325,6 @@ jobs:
             log(`⬆️ آپلود ${path.basename(filePath)} در ${elapsed}s`);
             return !!s?.data?.message_id;
           }
-          // تابع کمکی برای آپلود ویدیو (از uploadAndSendFile استفاده می‌کند)
           async function uploadAndSendVideo(chatId, videoPath, caption='') {
             return await uploadAndSendFile(chatId, videoPath, 'Video', caption);
           }
@@ -375,7 +381,7 @@ jobs:
 
           // ======================== دریافت غیرهمگام اطلاعات ویدیو ========================
           function getVideoInfo(url) {
-            const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "${url}"`;
+            const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "${url}"`;
             return new Promise((resolve) => {
               exec(cmd, { timeout: 15000 }, (error, stdout) => {
                 if (error) { log('⚠️ دریافت اطلاعات ویدیو ممکن نشد:', error.message); resolve(null); return; }
@@ -387,7 +393,7 @@ jobs:
             });
           }
 
-          // ======================== دانلود ویدیو ========================
+          // ======================== دانلود ویدیو (با PO Token) ========================
           async function downloadYouTube(url) {
             const out = '/tmp/video_raw.mp4';
             const fmt = `best[height<=480][ext=mp4] / best[height<=480]`;
@@ -396,6 +402,7 @@ jobs:
               execSync(
                 `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 ` +
                 `-N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist ` +
+                `--extractor-args "youtube:pot-server=http://127.0.0.1:4416" ` +
                 `--format "${fmt}" --merge-output-format mp4 --output "${out}" "${url}"`,
                 {stdio:'inherit', timeout:600000}
               );
@@ -573,10 +580,10 @@ jobs:
             resize_keyboard: true, one_time_keyboard: false
           };
 
-          // ======================== جستجوی یوتیوب (تصویری) با لاگ کامل ========================
+          // ======================== جستجوی یوتیوب (تصویری) با PO Token ========================
           async function performImageSearch(chatId, query) {
             await sendMessage(chatId, '🔍 در حال جستجو...');
-            const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --dump-json "ytsearch10:${query}"`;
+            const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "ytsearch10:${query}"`;
             log(`🔎 اجرای دستور جستجو: ${cmd}`);
             try {
               const stdout = execSync(cmd, { encoding: 'utf8', timeout: 30000 });
@@ -834,7 +841,6 @@ jobs:
             return chatStates.get(chatId);
           }
 
-          // تابع کمکی برای انتخاب از نتایج جستجو (همانند قبل)
           async function handleSearchSelection(chatId, numberText) {
             const state = chatStates.get(chatId);
             if (!state.searchResults || state.searchResults.length === 0) {
