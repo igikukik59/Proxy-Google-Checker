@@ -9533,3 +9533,31 @@ ERROR: [youtube:truncated_id] 6yR4gbK4: Incomplete YouTube ID 6yR4gbK4. URL http
 [2026-05-02 11:03:18] 🎬 درخواست از b0Ju6O8099P0a263c7d888b53e06be41: https://www.youtube.com/watch?v=joFx3jzCCRA
 [2026-05-02 11:04:16] ❌ file_id یافت نشد
 [2026-05-02 11:04:17] 📊 آمار به‌روزرسانی شد
+[2026-05-02 11:04:18] 📤 لاگ و آمار push شد
+[2026-05-02 11:04:18] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@185.148.106.30:...
+[2026-05-02 11:04:29] 🎬 درخواست از b0CiVO9099P0e34e93878de55c30b9c0: https://www.youtube.com/watch?v=ZcwVCLgfoIg
+[2026-05-02 11:04:29] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=ZcwVCLgfoIg"
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+WARNING: [youtube] Unable to download webpage: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused')). Giving up after 3 retries
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+ERROR: [youtube] ZcwVCLgfoIg: Unable to download API page: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused'))
+
+[2026-05-02 11:04:29] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@167.88.160.144:...
+[2026-05-02 11:04:45] 🎬 درخواست از b0JGxFq099P07d2f880eaae40d0c4da8: https://www.youtube.com/watch?v=N3cVEwOs1hU
+[2026-05-02 11:04:46] 🍪 کوکی جدید دریافت شد
+[2026-05-02 11:05:06] ⬇️ دانلود در 14.5s
+[2026-05-02 11:05:07] ✂️ شروع تقسیم video_raw (53.0MB)
+[2026-05-02 11:05:07] 🎯 بیت‌ریت: 289kbps | مدت: 1540.9s | زمان قطعه: 1279s
+[2026-05-02 11:05:10] 🎬 درخواست از b0JQnDy099P0ac8ce64018dd023e825b: https://www.youtube.com/watch?v=cmQJYtP3Egk
+[2026-05-02 11:05:46] 🎬 درخواست از b0CiVO9099P0e34e93878de55c30b9c0: https://www.youtube.com/watch?v=8_otO1gFISs
+[2026-05-02 11:06:14] ❌ file_id یافت نشد
+[2026-05-02 11:06:14] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 64.9s
+[2026-05-02 11:06:31] 🎬 درخواست از b0BBSsG099P0b326c91d9afa1cb8333e: https://www.youtube.com/watch?v=ukKr2TTPJPA
+[2026-05-02 11:06:46] ❌ file_id یافت نشد
+[2026-05-02 11:06:46] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 30.3s
+[2026-05-02 11:06:47] مجموع زمان آپلود قطعات: 95.2s
+[2026-05-02 11:06:47] 📊 آمار به‌روزرسانی شد
