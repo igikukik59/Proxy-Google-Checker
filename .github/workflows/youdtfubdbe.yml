@@ -172,7 +172,7 @@ jobs:
 
           timeout 1800 node test_proxies.cjs
 
-      - name: 🤖 اجرای ربات طلایی با جستجو، Shorts و لغو
+      - name: 🤖 اجرای ربات طلایی با جستجوی تصویری، Shorts و لغو
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
@@ -299,14 +299,14 @@ jobs:
             if (keypad) { body.chat_keypad = keypad; body.chat_keypad_type = 'New'; }
             return await api('sendMessage', body);
           }
-          async function uploadAndSendVideo(chatId, videoPath, caption='') {
+          async function uploadAndSendFile(chatId, filePath, fileType, caption='') {
             const start = Date.now();
-            const req = await api('requestSendFile', {type:'Video'});
+            const req = await api('requestSendFile', {type: fileType});
             const upUrl = req?.data?.upload_url;
             if (!upUrl) { err('upload_url نگرفت'); return false; }
-            const buf = fs.readFileSync(videoPath);
+            const buf = fs.readFileSync(filePath);
             const form = new FormData();
-            form.append('file', new Blob([buf], {type:'application/octet-stream'}), path.basename(videoPath));
+            form.append('file', new Blob([buf], {type:'application/octet-stream'}), path.basename(filePath));
             const upRes = await fetch(upUrl, {method:'POST', body:form});
             const upText = await upRes.text();
             let j = {}; try { j = JSON.parse(upText); } catch(_){}
@@ -314,8 +314,12 @@ jobs:
             if (!fileId) { err('file_id یافت نشد'); return false; }
             const s = await api('sendFile', {chat_id:chatId, file_id:fileId, text:caption});
             const elapsed = ((Date.now()-start)/1000).toFixed(1);
-            log(`⬆️ آپلود ${path.basename(videoPath)} در ${elapsed}s`);
+            log(`⬆️ آپلود ${path.basename(filePath)} در ${elapsed}s`);
             return !!s?.data?.message_id;
+          }
+          // تابع کمکی برای آپلود ویدیو (از uploadAndSendFile استفاده می‌کند)
+          async function uploadAndSendVideo(chatId, videoPath, caption='') {
+            return await uploadAndSendFile(chatId, videoPath, 'Video', caption);
           }
 
           // ======================== کوکی یوتیوب ========================
@@ -568,28 +572,67 @@ jobs:
             resize_keyboard: true, one_time_keyboard: false
           };
 
-          // ======================== جستجوی یوتیوب ========================
-          function searchYouTube(query) {
+          // ======================== جستجوی یوتیوب (تصویری) ========================
+          async function downloadThumbnail(url, filename) {
+            try {
+              execSync(`curl --socks5 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "${filename}" "${url}"`, { stdio: 'ignore', timeout: 10000 });
+              return fs.existsSync(filename);
+            } catch(e) { return false; }
+          }
+
+          async function performImageSearch(chatId, query) {
+            await sendMessage(chatId, '🔍 در حال جستجو...');
             const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --flat-playlist --dump-json "ytsearch10:${query}"`;
-            return new Promise((resolve) => {
-              exec(cmd, { timeout: 20000 }, (error, stdout) => {
-                if (error) { log('⚠️ جستجو ناموفق:', error.message); resolve([]); return; }
-                const results = [];
-                const lines = stdout.trim().split('\n');
-                for (const line of lines) {
-                  try {
-                    const data = JSON.parse(line);
+            const results = [];
+            try {
+              const stdout = execSync(cmd, { encoding: 'utf8', timeout: 20000 });
+              const lines = stdout.trim().split('\n');
+              for (const line of lines) {
+                try {
+                  const data = JSON.parse(line);
+                  if (data.id && data.title && data.thumbnail) {
                     results.push({
                       id: data.id,
-                      title: data.title || 'بدون عنوان',
+                      title: data.title,
                       duration: data.duration || 0,
+                      thumbnail: data.thumbnail,
+                      uploadDate: data.upload_date || 'نامشخص',
                       url: `https://www.youtube.com/watch?v=${data.id}`
                     });
-                  } catch(e) {}
-                }
-                resolve(results);
-              });
-            });
+                  }
+                } catch(e) {}
+              }
+            } catch(e) { log('⚠️ جستجو ناموفق:', e.message); }
+
+            if (results.length === 0) {
+              await sendMessage(chatId, '❌ نتیجه‌ای یافت نشد.');
+              return;
+            }
+
+            // ارسال هر نتیجه به صورت تصویر با کپشن
+            for (let i = 0; i < results.length; i++) {
+              const r = results[i];
+              const imgPath = `/tmp/thumb_${Date.now()}_${i}.jpg`;
+              const ok = await downloadThumbnail(r.thumbnail, imgPath);
+              if (ok) {
+                const durationMin = Math.floor(r.duration / 60);
+                const durationSec = Math.floor(r.duration % 60);
+                const durationStr = `${durationMin}:${String(durationSec).padStart(2,'0')}`;
+                const uploadDateStr = r.uploadDate.length === 8
+                  ? `${r.uploadDate.substring(0,4)}/${r.uploadDate.substring(4,6)}/${r.uploadDate.substring(6,8)}`
+                  : r.uploadDate;
+                const caption = `🎬 ${r.title}\n⏱ مدت: ${durationStr}\n📅 بارگذاری: ${uploadDateStr}\n🔗 ${r.url}`;
+                await uploadAndSendFile(chatId, imgPath, 'Image', caption);
+                try { fs.unlinkSync(imgPath); } catch(_){}
+              } else {
+                // اگر تامنیل دانلود نشد، پیام متنی ساده
+                await sendMessage(chatId, `${i+1}. ${r.title} (${Math.floor(r.duration/60)}:${String(Math.floor(r.duration%60)).padStart(2,'0')})\n${r.url}`);
+              }
+              await sleep(1000); // فاصله بین ارسال‌ها
+            }
+            await sendMessage(chatId, '✅ شماره ویدیوی مورد نظر (۱ تا ۱۰) را ارسال کنید.');
+            // ذخیره نتایج برای انتخاب بعدی
+            chatStates.get(chatId).searchResults = results;
           }
 
           // ======================== پردازش درخواست اصلی ========================
@@ -747,22 +790,38 @@ jobs:
             await sendMessage(chatId, `📍 شما نفر ${position} در صف هستید.\n⏳ حدود ${timeText} دیگر نوبت شماست.`);
           }
 
-          async function handleSearch(chatId, query) {
-            if (!query || query.length < 2) {
-              await sendMessage(chatId, '⚠️ برای جستجو حداقل ۲ حرف وارد کنید.');
-              return;
-            }
-            await sendMessage(chatId, '🔍 در حال جستجو...');
-            const results = await searchYouTube(query);
-            if (results.length === 0) {
-              await sendMessage(chatId, '❌ نتیجه‌ای یافت نشد.');
-              return;
-            }
-            const list = results.map((r, i) => `${i+1}. ${r.title} (${Math.floor(r.duration/60)}:${String(Math.floor(r.duration%60)).padStart(2,'0')})`).join('\n');
-            await sendMessage(chatId, `🎬 نتایج جستجو:\n${list}\n\nشماره مورد نظر را ارسال کنید.`);
-            chatStates.get(chatId).searchResults = results;
+          async function handleHelp(chatId) {
+            const helpText =
+              'راهنمای ربات دانلود یوتیوب\n\n' +
+              '(1) یک ویدیو در یوتیوب پیدا کنید (در گوگل سرچ کنید یا از لینک مستقیم استفاده کنید).\n' +
+              '(2) لینک کامل ویدیو (مثلاً https://youtube.com/watch?v=... یا https://youtu.be/...) یا Shorts را کپی کنید و در همین چت بفرستید.\n' +
+              '(3) با دکمه «سرچ در یوتیوب» می‌توانید جستجو کنید و نتایج را با تصویر ببینید.\n' +
+              '(4) ربات ابتدا مدت ویدیو را بررسی می‌کند (حداکثر ۶۰ دقیقه) و در صورت تأیید، دانلود را شروع می‌کند.\n' +
+              '(5) در صورت شلوغ بودن ربات، درخواست شما در صف قرار می‌گیرد و می‌توانید با دکمه «چقدر مونده؟» وضعیت خود را بپرسید.\n' +
+              '(6) با دکمه «لغو درخواست» می‌توانید درخواست در صف را پاک کنید.\n\n' +
+              'محدودیت‌ها:\n- هر ویدیو حداکثر ۱ ساعت\n- هر کاربر مجموعاً ۱ ساعت در این بازه (۶ ساعت) می‌تواند دانلود کند.\n\n' +
+              'نحوه اتصال و شفاف‌سازی:\n' +
+              'این ربات برای دانلود محتوای درخواستی شما، از منابع و مسیرهای ارتباطی استفاده می‌کند که توسط نهادهای رسمی و مسئول در کشور برای دسترسی به اینترنت بین‌الملل مجاز شمرده شده است. ' +
+              'این سرویس صرفاً یک واسط برای دریافت محتوای آموزشی و عمومی بوده و هیچ‌گونه ترافیک حساس، ارتباط رمزنگاری‌شده غیرمتعارف، یا داده‌ای که به امنیت ملی یا منافع کشور آسیب برساند، از طریق آن رد و بدل نمی‌شود. ' +
+              'هدف ما تسهیل دسترسی هموطنان به اطلاعات مفید و دانش جهانی، در چارچوب قوانین و مصالح کشور عزیزمان ایران است.\n\n' +
+              'کانال رسمی ما در روبیکا:\nhttps://rubika.ir/joinc/EIJHJDBI0JVRYRXAUOPHHLSQFFKWQBCB\n\n' +
+              'با فرستادن لینک شروع کنید!';
+            await sendMessage(chatId, helpText);
           }
 
+          // ======================== مدیریت حالت چت‌ها ========================
+          const chatStates = new Map();
+          function getState(chatId) {
+            if (!chatStates.has(chatId)) {
+              chatStates.set(chatId, {
+                searchMode: false,
+                searchResults: []
+              });
+            }
+            return chatStates.get(chatId);
+          }
+
+          // تابع کمکی برای انتخاب از نتایج جستجو (همانند قبل)
           async function handleSearchSelection(chatId, numberText) {
             const state = chatStates.get(chatId);
             if (!state.searchResults || state.searchResults.length === 0) {
@@ -796,37 +855,6 @@ jobs:
               }
             }
             addToQueue(chatId, videoUrl, info.duration);
-          }
-
-          async function handleHelp(chatId) {
-            const helpText =
-              'راهنمای ربات دانلود یوتیوب\n\n' +
-              '(1) یک ویدیو در یوتیوب پیدا کنید (در گوگل سرچ کنید یا از لینک مستقیم استفاده کنید).\n' +
-              '(2) لینک کامل ویدیو (مثلاً https://youtube.com/watch?v=... یا https://youtu.be/...) یا Shorts را کپی کنید و در همین چت بفرستید.\n' +
-              '(3) با دکمه «سرچ در یوتیوب» می‌توانید مستقیماً جستجو کرده و از نتایج انتخاب کنید.\n' +
-              '(4) ربات ابتدا مدت ویدیو را بررسی می‌کند (حداکثر ۶۰ دقیقه) و در صورت تأیید، دانلود را شروع می‌کند.\n' +
-              '(5) در صورت شلوغ بودن ربات، درخواست شما در صف قرار می‌گیرد و می‌توانید با دکمه «چقدر مونده؟» وضعیت خود را بپرسید.\n' +
-              '(6) با دکمه «لغو درخواست» می‌توانید درخواست در صف را پاک کنید.\n\n' +
-              'محدودیت‌ها:\n- هر ویدیو حداکثر ۱ ساعت\n- هر کاربر مجموعاً ۱ ساعت در این بازه (۶ ساعت) می‌تواند دانلود کند.\n\n' +
-              'نحوه اتصال و شفاف‌سازی:\n' +
-              'این ربات برای دانلود محتوای درخواستی شما، از منابع و مسیرهای ارتباطی استفاده می‌کند که توسط نهادهای رسمی و مسئول در کشور برای دسترسی به اینترنت بین‌الملل مجاز شمرده شده است. ' +
-              'این سرویس صرفاً یک واسط برای دریافت محتوای آموزشی و عمومی بوده و هیچ‌گونه ترافیک حساس، ارتباط رمزنگاری‌شده غیرمتعارف، یا داده‌ای که به امنیت ملی یا منافع کشور آسیب برساند، از طریق آن رد و بدل نمی‌شود. ' +
-              'هدف ما تسهیل دسترسی هموطنان به اطلاعات مفید و دانش جهانی، در چارچوب قوانین و مصالح کشور عزیزمان ایران است.\n\n' +
-              'کانال رسمی ما در روبیکا:\nhttps://rubika.ir/joinc/EIJHJDBI0JVRYRXAUOPHHLSQFFKWQBCB\n\n' +
-              'با فرستادن لینک شروع کنید!';
-            await sendMessage(chatId, helpText);
-          }
-
-          // ======================== مدیریت حالت چت‌ها ========================
-          const chatStates = new Map();
-          function getState(chatId) {
-            if (!chatStates.has(chatId)) {
-              chatStates.set(chatId, {
-                searchMode: false,
-                searchResults: []
-              });
-            }
-            return chatStates.get(chatId);
           }
 
           // ======================== اجرای اصلی ========================
@@ -905,7 +933,7 @@ jobs:
                   // state search mode
                   if (state.searchMode) {
                     state.searchMode = false;
-                    await handleSearch(chatId, text);
+                    await performImageSearch(chatId, text);
                     continue;
                   }
 
