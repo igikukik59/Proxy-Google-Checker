@@ -13870,3 +13870,14 @@ ERROR: [youtube] IfxMEPN_H3g: This video is not available
 [2026-05-02 21:11:04] ⬇️ دانلود در 5.6s
 [2026-05-02 21:12:03] ⬆️ آپلود video_raw.mp4 در 58.7s
 [2026-05-02 21:12:04] 📊 آمار به‌روزرسانی شد
+[2026-05-02 21:12:05] 📤 لاگ و آمار push شد
+[2026-05-02 21:12:06] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@8.6.112.0:443?a...
+[2026-05-02 21:12:23] 🍪 کوکی جدید دریافت شد
+[2026-05-02 21:12:29] ⬇️ دانلود در 2.5s
+[2026-05-02 21:12:36] 🎬 درخواست از b0CBjjq099P09afd10a0b82425d65b43: https://www.youtube.com/watch?v=IfxMEPN_H3g
+[2026-05-02 21:12:37] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=IfxMEPN_H3g"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] IfxMEPN_H3g: This video is not available
+
+[2026-05-02 21:12:43] ⬆️ آپلود video_raw.mp4 در 13.2s
+[2026-05-02 21:12:44] 📊 آمار به‌روزرسانی شد
