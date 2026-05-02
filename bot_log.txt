@@ -14088,3 +14088,34 @@ ERROR: [youtube] IfxMEPN_H3g: This video is not available
 [2026-05-02 21:42:19] ⬇️ دانلود در 4.6s
 [2026-05-02 21:42:42] ⬆️ آپلود video_raw.mp4 در 22.6s
 [2026-05-02 21:42:43] 📊 آمار به‌روزرسانی شد
+[2026-05-02 21:42:44] 📤 لاگ و آمار push شد
+[2026-05-02 21:43:04] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --format "best[height<=480][ext=mp4] / best[height<=480] / best" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=hQt4D4771Wo"
+[2026-05-02 21:43:04] ❌ دانلود با این پروکسی ناموفق
+[2026-05-02 21:43:04] 🔄 تلاش مجدد (2/3)...
+[2026-05-02 21:43:05] 🔀 تلاش با پروکسی تصادفی: vless://a01daac7-1e65-4645-854d-b47d226f6b08@104.20.6.134:44...
+[2026-05-02 21:43:36] 🎬 درخواست از b0JsOu3099P0128781cc3e18ca0dcf3f: https://www.youtube.com/watch?v=PKT8Geglx20
+[2026-05-02 21:43:38] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=PKT8Geglx20"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] PKT8Geglx20: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-02 21:43:49] 🎬 درخواست از b0JsOu3099P0128781cc3e18ca0dcf3f: https://www.youtube.com/watch?v=PKT8Geglx20
+[2026-05-02 21:43:50] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=PKT8Geglx20"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] PKT8Geglx20: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-02 21:43:56] 🎬 درخواست از b0JsOu3099P0128781cc3e18ca0dcf3f: https://www.youtube.com/watch?v=PKT8Geglx20
+[2026-05-02 21:43:58] 🎬 درخواست از b0CGhnz099P02655baeb10e4c3be63c2: https://www.youtube.com/watch?v=b9yp_wddmTI
+[2026-05-02 21:44:14] ❌ خطای کوکی: Navigation timeout of 60000 ms exceeded
+[2026-05-02 21:44:14] 🔄 تلاش مجدد (3/3)...
+[2026-05-02 21:44:14] 🔀 تلاش با پروکسی تصادفی: vless://981fca81-5be1-41f8-ac9b-d138e8109943@43.133.23.88:83...
+[2026-05-02 21:44:38] 🍪 کوکی جدید دریافت شد
+[2026-05-02 21:44:41] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --format "best[height<=480][ext=mp4] / best[height<=480] / best" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=hQt4D4771Wo"
+[2026-05-02 21:44:41] ❌ دانلود با این پروکسی ناموفق
+[2026-05-02 21:44:42] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.63.60:20...
+[2026-05-02 21:45:00] 🍪 کوکی جدید دریافت شد
+[2026-05-02 21:45:06] ⬇️ دانلود در 4.0s
+[2026-05-02 21:45:07] ✂️ شروع تقسیم video_raw (66.4MB)
+[2026-05-02 21:45:08] 🎯 بیت‌ریت: 406kbps | مدت: 1370.5s | زمان قطعه: 908s
+[2026-05-02 21:45:42] ⬆️ آپلود video_raw.part01.mp4 در 31.5s
+[2026-05-02 21:45:42] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 31.5s
+[2026-05-02 21:45:45] 📊 آمار به‌روزرسانی شد
