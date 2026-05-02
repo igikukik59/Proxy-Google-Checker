@@ -11931,3 +11931,33 @@ ERROR: [youtube] E5qrNXAQ6Wg: Requested format is not available. Use --list-form
 [2026-05-02 16:18:28] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 31.0s
 [2026-05-02 16:18:30] مجموع زمان آپلود قطعات: 64.5s
 [2026-05-02 16:18:31] 📊 آمار به‌روزرسانی شد
+[2026-05-02 16:18:32] 📤 لاگ و آمار push شد
+[2026-05-02 16:18:33] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@172.64.149.54:4...
+[2026-05-02 16:18:50] 🍪 کوکی جدید دریافت شد
+[2026-05-02 16:19:12] ⬇️ دانلود در 19.6s
+[2026-05-02 16:19:13] ✂️ شروع تقسیم video_raw (191.6MB)
+[2026-05-02 16:19:15] 🎯 بیت‌ریت: 501kbps | مدت: 3206.9s | زمان قطعه: 736s
+[2026-05-02 16:19:52] 🎬 درخواست از b0ILtkC099P08ccdc0fa1e0f7d3709f3: https://www.youtube.com/shorts/tMOe0y62mwc
+[2026-05-02 16:20:06] ⬆️ آپلود video_raw.part01.mp4 در 46.8s
+[2026-05-02 16:20:06] 📤 قطعه 1/5: video_raw.part01.mp4 آپلود در 46.8s
+[2026-05-02 16:20:07] 🎬 درخواست از b0J2wUg099P0c8581e0bd11d52a17dc9: https://www.youtube.com/watch?v=ij_7ztgXTaA
+[2026-05-02 16:20:42] 🎬 درخواست از b0ChrIe099P0b4eec8ea3ca502ad82bd: https://www.youtube.com/watch?v=5zld64kJ35c
+[2026-05-02 16:20:53] ⬆️ آپلود video_raw.part02.mp4 در 45.4s
+[2026-05-02 16:20:53] 📤 قطعه 2/5: video_raw.part02.mp4 آپلود در 45.4s
+[2026-05-02 16:21:00] 🎬 درخواست از b0Hgu19099P05524d1408a65a604cb89: https://youtu.be/wWzmhChhB2DhyQ2P0
+[2026-05-02 16:21:01] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://youtu.be/wWzmhChhB2DhyQ2P0"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] wWzmhChhB2D: Video unavailable
+
+[2026-05-02 16:21:01] 🎬 درخواست از b0GN4af099P0b61eaa5d2d65670b3022: https://www.youtube.com/watch?v=3a5VYaLb45o
+[2026-05-02 16:21:28] ⬆️ آپلود video_raw.part03.mp4 در 34.2s
+[2026-05-02 16:21:28] 📤 قطعه 3/5: video_raw.part03.mp4 آپلود در 34.2s
+[2026-05-02 16:21:59] 🎬 درخواست از b0COOXe099P057c302c33f21c67f8e6e: https://www.youtube.com/watch?v=NAMNQDsFetg
+[2026-05-02 16:22:09] ⬆️ آپلود video_raw.part04.mp4 در 39.7s
+[2026-05-02 16:22:09] 📤 قطعه 4/5: video_raw.part04.mp4 آپلود در 39.7s
+[2026-05-02 16:22:09] 🎬 درخواست از b0D7xke099P0398dcba7abd95b6738c5: https://www.youtube.com/watch?v=Lds_DyEYAk0
+[2026-05-02 16:22:23] ⬆️ آپلود video_raw.part05.mp4 در 12.6s
+[2026-05-02 16:22:23] 📤 قطعه 5/5: video_raw.part05.mp4 آپلود در 12.6s
+[2026-05-02 16:22:24] 🎬 درخواست از b0HsQKk099P046b8b3d7b2cc21cb6c98: https://www.youtube.com/watch?v=OfCn9LCjeDM
+[2026-05-02 16:22:26] مجموع زمان آپلود قطعات: 178.7s
+[2026-05-02 16:22:26] 📊 آمار به‌روزرسانی شد
