@@ -7674,3 +7674,45 @@ ERROR: [youtube] 8p86zO_qNqM: Video unavailable
 [2026-05-02 06:01:24] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701684595_1.jpg" "https://i.ytimg.com/vi/KY2KHonrezk/maxresdefault.jpg"
 [2026-05-02 06:01:25] ⬆️ آپلود video_raw.mp4 در 3.5s
 [2026-05-02 06:01:25] 📊 آمار به‌روزرسانی شد
+[2026-05-02 06:01:26] 📤 لاگ و آمار push شد
+[2026-05-02 06:01:26] ⬆️ آپلود thumb_1777701684595_1.jpg در 2.0s
+[2026-05-02 06:01:26] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.91.248.215:8...
+[2026-05-02 06:01:27] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701687745_2.jpg" "https://i.ytimg.com/vi/X9p80ghLoQo/maxresdefault.jpg"
+[2026-05-02 06:01:29] ⬆️ آپلود thumb_1777701687745_2.jpg در 1.3s
+[2026-05-02 06:01:30] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701690827_3.jpg" "https://i.ytimg.com/vi/-mAETx6hH04/maxresdefault.jpg"
+[2026-05-02 06:01:32] ⬆️ آپلود thumb_1777701690827_3.jpg در 1.3s
+[2026-05-02 06:01:33] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701693887_4.jpg" "https://i.ytimg.com/vi/f2sREoPijnQ/maxresdefault.jpg"
+[2026-05-02 06:01:36] ⬆️ آپلود thumb_1777701693887_4.jpg در 1.8s
+[2026-05-02 06:01:37] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701697454_5.jpg" "https://i.ytimg.com/vi/3kf3HOFpDOU/maxresdefault.jpg"
+[2026-05-02 06:01:39] ⬆️ آپلود thumb_1777701697454_5.jpg در 1.3s
+[2026-05-02 06:01:40] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701700542_6.jpg" "https://i.ytimg.com/vi/AA8j8kD3kjc/maxresdefault.jpg"
+[2026-05-02 06:01:43] ⬆️ آپلود thumb_1777701700542_6.jpg در 2.3s
+[2026-05-02 06:01:44] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701704531_7.jpg" "https://i.ytimg.com/vi/L2gKJVFtD5o/maxresdefault.jpg"
+[2026-05-02 06:01:46] 🍪 کوکی جدید دریافت شد
+[2026-05-02 06:01:48] ⬆️ آپلود thumb_1777701704531_7.jpg در 2.7s
+[2026-05-02 06:01:49] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701709008_8.jpg" "https://i.ytimg.com/vi/1Kd6e0vcFj8/maxresdefault.jpg"
+[2026-05-02 06:01:51] ⬆️ آپلود thumb_1777701709008_8.jpg در 1.6s
+[2026-05-02 06:01:52] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701712413_9.jpg" "https://i.ytimg.com/vi/4Qv1MEYHwOo/maxresdefault.jpg"
+[2026-05-02 06:01:54] ⬆️ آپلود thumb_1777701712413_9.jpg در 1.3s
+[2026-05-02 06:02:35] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 06:02:36] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 06:02:37] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 06:02:39] 🔎 اجرای دستور جستجو: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "ytsearch10:Tena asmr"
+[2026-05-02 06:03:09] ❌ خطای کلی در جستجو: spawnSync /bin/sh ETIMEDOUT
+[2026-05-02 06:03:10] 🔎 اجرای دستور جستجو: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "ytsearch10:rdr 2 edits"
+[2026-05-02 06:03:34] ❌ خطای کلی در جستجو: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "ytsearch10:rdr 2 edits"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] 0vBPasjmw-E: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+
+[2026-05-02 06:03:35] 🎬 درخواست از b0BoEL8099P0361acc100d7f70ca85e5: https://www.youtube.com/watch?v=BSbr_8AlxV0
+[2026-05-02 06:03:59] ⬇️ دانلود در 19.9s
+[2026-05-02 06:03:59] 📊 آمار به‌روزرسانی شد
