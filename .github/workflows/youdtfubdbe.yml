@@ -1,4 +1,4 @@
-name: 🎬 ربات یوتیوب (جستجو، Shorts، لغو درخواست) + PO Token
+name: 🎬 ربات یوتیوب (Shorts، لغو درخواست) + PO Token - نسخه ۱.۵ ساعته
 
 on:
   workflow_dispatch:
@@ -179,7 +179,7 @@ jobs:
 
           timeout 1800 node test_proxies.cjs
 
-      - name: 🤖 اجرای ربات طلایی با جستجوی تصویری، Shorts، لغو و PO Token
+      - name: 🤖 اجرای ربات طلایی با Shorts، لغو و PO Token (۱.۵ ساعت)
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
@@ -203,8 +203,8 @@ jobs:
           const ADMIN_SECRET = process.env.ADMIN_SECRET || '';
           if (!TOKEN) { console.error('❌ TOKEN تنظیم نشده'); process.exit(1); }
 
-          const MAX_DURATION = 3600;
-          const DAILY_LIMIT = 3600;
+          const MAX_DURATION = 5400;          // ۱.۵ ساعت
+          const DAILY_LIMIT = 5400;          // ۱.۵ ساعت
           const MAX_PROXY_RETRIES = 3;
           const MAX_QUEUE = 200;
           const MIN_SPEED_BYTES = 1 * 1024 * 1024;
@@ -395,7 +395,6 @@ jobs:
           // ======================== دانلود ویدیو (با پشتیبانی از Shorts) ========================
           async function downloadYouTube(url) {
             const out = '/tmp/video_raw.mp4';
-            // فرمت بهبودیافته: ابتدا MP4 با ارتفاع ≤480، سپس هر ویدیوی ≤480، و در نهایت بهترین موجود برای Shorts
             const fmt = `best[height<=480][ext=mp4] / best[height<=480] / best`;
             const start = Date.now();
             try {
@@ -569,8 +568,7 @@ jobs:
           const mainKeypad = {
             rows: [
               { buttons: [
-                  { id: 'QUEUE_STATUS', type: 'Simple', button_text: '⏳ چقدر مونده؟' },
-                  { id: 'SEARCH', type: 'Simple', button_text: '🔍 سرچ در یوتیوب' }
+                  { id: 'QUEUE_STATUS', type: 'Simple', button_text: '⏳ چقدر مونده؟' }
               ]},
               { buttons: [
                   { id: 'CANCEL_REQUEST', type: 'Simple', button_text: '✖️ لغو درخواست' },
@@ -579,78 +577,6 @@ jobs:
             ],
             resize_keyboard: true, one_time_keyboard: false
           };
-
-          // ======================== جستجوی یوتیوب (تصویری) با بافر بزرگ و PO Token ========================
-          async function performImageSearch(chatId, query) {
-            await sendMessage(chatId, '🔍 در حال جستجو...');
-            const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "ytsearch10:${query}"`;
-            log(`🔎 اجرای دستور جستجو: ${cmd}`);
-            try {
-              const stdout = execSync(cmd, { encoding: 'utf8', timeout: 30000, maxBuffer: 10 * 1024 * 1024 });
-              log(`📄 خروجی جستجو (اولین ۲۰۰ کاراکتر): ${stdout.substring(0, 200)}`);
-              const lines = stdout.trim().split('\n');
-              const results = [];
-              for (const line of lines) {
-                try {
-                  const data = JSON.parse(line);
-                  const thumbnail = data.thumbnail || (data.thumbnails && data.thumbnails.length > 0 ? data.thumbnails[0].url : null);
-                  if (data.id && data.title && thumbnail) {
-                    results.push({
-                      id: data.id,
-                      title: data.title,
-                      duration: data.duration || 0,
-                      thumbnail: thumbnail,
-                      uploadDate: data.upload_date || 'نامشخص',
-                      url: `https://www.youtube.com/watch?v=${data.id}`
-                    });
-                  } else {
-                    log(`⚠️ نتیجه ناقص: id=${data.id}, title=${data.title?.substring(0,30)}, thumbnail=${thumbnail ? 'دارد' : 'ندارد'}`);
-                  }
-                } catch(e) {
-                  log('⚠️ خطای parse خط:', e.message);
-                }
-              }
-              log(`📊 تعداد نتایج معتبر: ${results.length}`);
-
-              if (results.length === 0) {
-                await sendMessage(chatId, '❌ نتیجه‌ای یافت نشد.');
-                return;
-              }
-
-              for (let i = 0; i < results.length; i++) {
-                const r = results[i];
-                const imgPath = `/tmp/thumb_${Date.now()}_${i}.jpg`;
-                const downloadCmd = `curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "${imgPath}" "${r.thumbnail}"`;
-                log(`⬇️ دانلود تامنیل: ${downloadCmd}`);
-                try {
-                  execSync(downloadCmd, { stdio: 'pipe', timeout: 10000 });
-                  if (fs.existsSync(imgPath)) {
-                    const durationMin = Math.floor(r.duration / 60);
-                    const durationSec = Math.floor(r.duration % 60);
-                    const durationStr = `${durationMin}:${String(durationSec).padStart(2,'0')}`;
-                    const uploadDateStr = r.uploadDate.length === 8
-                      ? `${r.uploadDate.substring(0,4)}/${r.uploadDate.substring(4,6)}/${r.uploadDate.substring(6,8)}`
-                      : r.uploadDate;
-                    const caption = `🎬 ${r.title}\n⏱ مدت: ${durationStr}\n📅 بارگذاری: ${uploadDateStr}\n🔗 ${r.url}`;
-                    await uploadAndSendFile(chatId, imgPath, 'Image', caption);
-                    try { fs.unlinkSync(imgPath); } catch(_){}
-                  } else {
-                    log('⚠️ فایل تامنیل ایجاد نشد');
-                    await sendMessage(chatId, `${i+1}. ${r.title} (${Math.floor(r.duration/60)}:${String(Math.floor(r.duration%60)).padStart(2,'0')})\n${r.url}`);
-                  }
-                } catch(e) {
-                  log(`❌ خطای دانلود تامنیل: ${e.message}`);
-                  await sendMessage(chatId, `${i+1}. ${r.title} (${Math.floor(r.duration/60)}:${String(Math.floor(r.duration%60)).padStart(2,'0')})\n${r.url}`);
-                }
-                await sleep(1000);
-              }
-              await sendMessage(chatId, '✅ شماره ویدیوی مورد نظر (۱ تا ۱۰) را ارسال کنید.');
-              chatStates.get(chatId).searchResults = results;
-            } catch(e) {
-              log(`❌ خطای کلی در جستجو: ${e.message}`);
-              await sendMessage(chatId, '❌ خطایی در جستجو رخ داد. لطفاً دوباره تلاش کنید.');
-            }
-          }
 
           // ======================== پردازش درخواست اصلی ========================
           async function processRequest(chatId, url, videoDuration) {
@@ -810,13 +736,12 @@ jobs:
           async function handleHelp(chatId) {
             const helpText =
               'راهنمای ربات دانلود یوتیوب\n\n' +
-              '(1) یک ویدیو در یوتیوب پیدا کنید (در گوگل سرچ کنید یا از لینک مستقیم استفاده کنید).\n' +
-              '(2) لینک کامل ویدیو (مثلاً https://youtube.com/watch?v=... یا https://youtu.be/...) یا Shorts را کپی کنید و در همین چت بفرستید.\n' +
-              '(3) با دکمه «سرچ در یوتیوب» می‌توانید جستجو کنید و نتایج را با تصویر ببینید.\n' +
-              '(4) ربات ابتدا مدت ویدیو را بررسی می‌کند (حداکثر ۶۰ دقیقه) و در صورت تأیید، دانلود را شروع می‌کند.\n' +
-              '(5) در صورت شلوغ بودن ربات، درخواست شما در صف قرار می‌گیرد و می‌توانید با دکمه «چقدر مونده؟» وضعیت خود را بپرسید.\n' +
-              '(6) با دکمه «لغو درخواست» می‌توانید درخواست در صف را پاک کنید.\n\n' +
-              'محدودیت‌ها:\n- هر ویدیو حداکثر ۱ ساعت\n- هر کاربر مجموعاً ۱ ساعت در این بازه (۶ ساعت) می‌تواند دانلود کند.\n\n' +
+              '(1) لینک ویدیو یا Shorts را کپی کرده و در همین چت بفرستید.\n' +
+              '(2) ربات ابتدا مدت ویدیو را بررسی می‌کند (حداکثر ۱.۵ ساعت) و در صورت تأیید، دانلود را شروع می‌کند.\n' +
+              '(3) در صورت شلوغ بودن ربات، درخواست شما در صف قرار می‌گیرد و می‌توانید با دکمه «⏳ چقدر مونده؟» وضعیت خود را بپرسید.\n' +
+              '(4) با دکمه «✖️ لغو درخواست» می‌توانید درخواست در صف را پاک کنید.\n' +
+              '(5) پس از دانلود، ویدیو به صورت قطعات زیر ۵۰ مگابایت برای شما ارسال می‌شود.\n\n' +
+              'محدودیت‌ها:\n- هر ویدیو حداکثر ۱.۵ ساعت\n- هر کاربر مجموعاً ۱.۵ ساعت در این بازه (۶ ساعت) می‌تواند دانلود کند.\n\n' +
               'نحوه اتصال و شفاف‌سازی:\n' +
               'این ربات برای دانلود محتوای درخواستی شما، از منابع و مسیرهای ارتباطی استفاده می‌کند که توسط نهادهای رسمی و مسئول در کشور برای دسترسی به اینترنت بین‌الملل مجاز شمرده شده است. ' +
               'این سرویس صرفاً یک واسط برای دریافت محتوای آموزشی و عمومی بوده و هیچ‌گونه ترافیک حساس، ارتباط رمزنگاری‌شده غیرمتعارف، یا داده‌ای که به امنیت ملی یا منافع کشور آسیب برساند، از طریق آن رد و بدل نمی‌شود. ' +
@@ -824,53 +749,6 @@ jobs:
               'کانال رسمی ما در روبیکا:\nhttps://rubika.ir/joinc/EIJHJDBI0JVRYRXAUOPHHLSQFFKWQBCB\n\n' +
               'با فرستادن لینک شروع کنید!';
             await sendMessage(chatId, helpText);
-          }
-
-          // ======================== مدیریت حالت چت‌ها ========================
-          const chatStates = new Map();
-          function getState(chatId) {
-            if (!chatStates.has(chatId)) {
-              chatStates.set(chatId, {
-                searchMode: false,
-                searchResults: []
-              });
-            }
-            return chatStates.get(chatId);
-          }
-
-          async function handleSearchSelection(chatId, numberText) {
-            const state = chatStates.get(chatId);
-            if (!state.searchResults || state.searchResults.length === 0) {
-              await sendMessage(chatId, '⚠️ ابتدا یک جستجو انجام دهید.');
-              return;
-            }
-            const num = parseInt(numberText);
-            if (isNaN(num) || num < 1 || num > state.searchResults.length) {
-              await sendMessage(chatId, '⚠️ شماره نامعتبر.');
-              return;
-            }
-            const selected = state.searchResults[num-1];
-            state.searchResults = [];
-            const videoUrl = selected.url;
-            log(`🎬 انتخاب از جستجو: ${videoUrl}`);
-            const info = await getVideoInfo(videoUrl);
-            if (!info || !info.duration) {
-              await sendMessage(chatId, '⚠️ نتوانستم اطلاعات ویدیو را دریافت کنم.');
-              return;
-            }
-            if (!adminUsers.has(chatId)) {
-              if (info.duration > MAX_DURATION) {
-                await sendMessage(chatId, `⚠️ مدت ویدیو (${Math.floor(info.duration/60)} دقیقه) بیش از ۶۰ دقیقه مجاز است.`);
-                return;
-              }
-              const used = userDailyUsage.get(chatId) || 0;
-              const remaining = DAILY_LIMIT - used;
-              if (info.duration > remaining) {
-                await sendMessage(chatId, `⚠️ شما امروز ${Math.floor(used/60)} دقیقه دانلود کرده‌اید. سهمیهٔ باقی‌مانده: ${Math.floor(remaining/60)} دقیقه.`);
-                return;
-              }
-            }
-            addToQueue(chatId, videoUrl, info.duration);
           }
 
           // ======================== اجرای اصلی ========================
@@ -924,16 +802,10 @@ jobs:
                   const chatId = u.chat_id;
                   const msg = u.new_message;
                   const buttonId = msg.aux_data?.button_id;
-                  const state = getState(chatId);
 
                   if (buttonId === 'QUEUE_STATUS') { await handleQueueStatus(chatId); continue; }
                   if (buttonId === 'HELP') { await handleHelp(chatId); continue; }
                   if (buttonId === 'CANCEL_REQUEST') { await handleCancelRequest(chatId); continue; }
-                  if (buttonId === 'SEARCH') {
-                    state.searchMode = true;
-                    await sendMessage(chatId, '🔍 چه چیزی را جستجو کنم؟');
-                    continue;
-                  }
 
                   if (!msg?.text) continue;
                   const text = msg.text.trim();
@@ -941,17 +813,6 @@ jobs:
                   if (ADMIN_SECRET && text === ADMIN_SECRET) {
                     adminUsers.add(chatId);
                     await sendMessage(chatId, '🔑 دسترسی ادمین فعال شد. محدودیت‌ها برداشته شد.');
-                    continue;
-                  }
-
-                  if (state.searchMode) {
-                    state.searchMode = false;
-                    await performImageSearch(chatId, text);
-                    continue;
-                  }
-
-                  if (state.searchResults && state.searchResults.length > 0) {
-                    await handleSearchSelection(chatId, text);
                     continue;
                   }
 
@@ -969,7 +830,7 @@ jobs:
                   if (!info || !info.duration) { await sendMessage(chatId, '⚠️ نتوانستم اطلاعات ویدیو را دریافت کنم.'); continue; }
 
                   if (!adminUsers.has(chatId)) {
-                    if (info.duration > MAX_DURATION) { await sendMessage(chatId, `⚠️ مدت ویدیو (${Math.floor(info.duration/60)} دقیقه) بیش از ۶۰ دقیقه مجاز است.`); continue; }
+                    if (info.duration > MAX_DURATION) { await sendMessage(chatId, `⚠️ مدت ویدیو (${Math.floor(info.duration/60)} دقیقه) بیش از ۱.۵ ساعت مجاز است.`); continue; }
                     const used = userDailyUsage.get(chatId) || 0;
                     const remaining = DAILY_LIMIT - used;
                     if (info.duration > remaining) {
