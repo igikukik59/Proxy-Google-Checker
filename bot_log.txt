@@ -9869,3 +9869,13 @@ WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is 
 [2026-05-02 11:43:56] 🎬 درخواست از b0IuRij099P0bdaf323aa0a6976e341e: https://youtu.be/5mdTptXtgc0
 [2026-05-02 11:44:29] ❌ file_id یافت نشد
 [2026-05-02 11:44:30] 📊 آمار به‌روزرسانی شد
+[2026-05-02 11:44:31] 📤 لاگ و آمار push شد
+[2026-05-02 11:44:34] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --format "best[height<=480][ext=mp4] / best[height<=480] / best" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/shorts/PAgmTCv0jLU"
+[2026-05-02 11:44:34] ❌ دانلود با این پروکسی ناموفق
+[2026-05-02 11:44:34] 🔄 تلاش مجدد (2/3)...
+[2026-05-02 11:44:35] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@8.6.112.0:443?a...
+[2026-05-02 11:44:52] 🍪 کوکی جدید دریافت شد
+[2026-05-02 11:44:53] ⬇️ دانلود در 1.6s
+[2026-05-02 11:45:03] 🎬 درخواست از b0DLB9R099P05f4ba1bd2d91022af09a: https://www.youtube.com/watch?v=zGWs6fPUuBI
+[2026-05-02 11:45:11] ⬆️ آپلود video_raw.mp4 در 17.2s
+[2026-05-02 11:45:12] 📊 آمار به‌روزرسانی شد
