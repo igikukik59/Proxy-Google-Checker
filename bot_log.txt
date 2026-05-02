@@ -14079,3 +14079,12 @@ ERROR: [youtube] IfxMEPN_H3g: This video is not available
 [2026-05-02 21:41:46] ⬇️ دانلود در 1.4s
 [2026-05-02 21:41:53] ⬆️ آپلود video_raw.mp4 در 5.9s
 [2026-05-02 21:41:53] 📊 آمار به‌روزرسانی شد
+[2026-05-02 21:41:54] 📤 لاگ و آمار push شد
+[2026-05-02 21:41:57] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --format "best[height<=480][ext=mp4] / best[height<=480] / best" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=BNnXG_HTVnY"
+[2026-05-02 21:41:57] ❌ دانلود با این پروکسی ناموفق
+[2026-05-02 21:41:57] 🔄 تلاش مجدد (2/3)...
+[2026-05-02 21:41:58] 🔀 تلاش با پروکسی تصادفی: vless://89b3cbba-e6ac-485a-9481-976a0415eab9@ciallo-egb.page...
+[2026-05-02 21:42:15] 🍪 کوکی جدید دریافت شد
+[2026-05-02 21:42:19] ⬇️ دانلود در 4.6s
+[2026-05-02 21:42:42] ⬆️ آپلود video_raw.mp4 در 22.6s
+[2026-05-02 21:42:43] 📊 آمار به‌روزرسانی شد
