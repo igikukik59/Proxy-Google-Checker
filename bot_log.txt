@@ -7080,3 +7080,37 @@ ERROR: [youtube] V_V_nU_Uf7U: Video unavailable
 [2026-05-02 04:30:39] ⬇️ دانلود در 2.1s
 [2026-05-02 04:30:47] ⬆️ آپلود video_raw.mp4 در 7.3s
 [2026-05-02 04:30:49] 📊 آمار به‌روزرسانی شد
+[2026-05-02 05:14:47] ✅ ربات: youtuberubikabot
+[2026-05-02 05:14:47] 5 پروکسی خوب
+[2026-05-02 05:14:47] 🔁 تلاش اولیه برای پروکسی 1/5
+[2026-05-02 05:14:47] 🔀 تلاش با پروکسی تصادفی: vless://1de37726-744b-46e1-9101-c926b3402e82@104.17.72.206:8...
+[2026-05-02 05:15:04] 🍪 کوکی جدید دریافت شد
+[2026-05-02 05:15:04] 🧹 پاکسازی پیام‌های قدیمی...
+[2026-05-02 05:16:36] ✅ تاریخچه پاک شد
+[2026-05-02 05:16:57] 🔎 اجرای دستور جستجو: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "ytsearch10:اخبار ایران"
+[2026-05-02 05:17:00] ❌ خطای کلی در جستجو: spawnSync /bin/sh ENOBUFS
+[2026-05-02 05:17:27] 🎬 درخواست از b0H13Gx099P020ac88457a467f99e1e2: https://www.youtube.com/shorts/iyIYrxb65QQ
+[2026-05-02 05:17:35] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/shorts/iyIYrxb65QQ"
+[2026-05-02 05:17:35] ❌ دانلود با این پروکسی ناموفق
+[2026-05-02 05:17:35] 🔄 تلاش مجدد (2/3)...
+[2026-05-02 05:17:37] 🔀 تلاش با پروکسی تصادفی: trojan://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:...
+[2026-05-02 05:17:54] 🍪 کوکی جدید دریافت شد
+[2026-05-02 05:17:55] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/shorts/iyIYrxb65QQ"
+[2026-05-02 05:17:55] ❌ دانلود با این پروکسی ناموفق
+[2026-05-02 05:17:55] 🔄 تلاش مجدد (3/3)...
+[2026-05-02 05:17:56] 🔀 تلاش با پروکسی تصادفی: trojan://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:...
+[2026-05-02 05:18:13] 🍪 کوکی جدید دریافت شد
+[2026-05-02 05:18:14] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/shorts/iyIYrxb65QQ"
+[2026-05-02 05:18:14] ❌ دانلود با این پروکسی ناموفق
+[2026-05-02 05:18:15] 🔀 تلاش با پروکسی تصادفی: vless://1de37726-744b-46e1-9101-c926b3402e82@104.17.72.206:8...
+[2026-05-02 05:18:32] 🍪 کوکی جدید دریافت شد
+[2026-05-02 05:18:58] 🎬 درخواست از b0HzYLp099P09f6d436146f8a59f2da2: https://youtu.be/zPdqkp2UOIo
+[2026-05-02 05:19:10] ⬇️ دانلود در 6.8s
+[2026-05-02 05:19:10] ✂️ شروع تقسیم video_raw (51.0MB)
+[2026-05-02 05:19:11] 🎯 بیت‌ریت: 412kbps | مدت: 1039.0s | زمان قطعه: 895s
+[2026-05-02 05:19:31] ⬆️ آپلود video_raw.part01.mp4 در 19.1s
+[2026-05-02 05:19:31] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 19.1s
+[2026-05-02 05:19:37] ⬆️ آپلود video_raw.part02.mp4 در 4.6s
+[2026-05-02 05:19:37] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 4.6s
+[2026-05-02 05:19:40] مجموع زمان آپلود قطعات: 23.7s
+[2026-05-02 05:19:40] 📊 آمار به‌روزرسانی شد
