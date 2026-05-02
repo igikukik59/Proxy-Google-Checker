@@ -760,7 +760,6 @@ jobs:
             }
             const list = results.map((r, i) => `${i+1}. ${r.title} (${Math.floor(r.duration/60)}:${String(Math.floor(r.duration%60)).padStart(2,'0')})`).join('\n');
             await sendMessage(chatId, `🎬 نتایج جستجو:\n${list}\n\nشماره مورد نظر را ارسال کنید.`);
-            // ذخیره نتایج برای انتخاب بعدی
             chatStates.get(chatId).searchResults = results;
           }
 
@@ -777,7 +776,6 @@ jobs:
             }
             const selected = state.searchResults[num-1];
             state.searchResults = [];
-            // افزودن به صف (مانند لینک معمولی)
             const videoUrl = selected.url;
             log(`🎬 انتخاب از جستجو: ${videoUrl}`);
             const info = await getVideoInfo(videoUrl);
@@ -801,7 +799,7 @@ jobs:
           }
 
           async function handleHelp(chatId) {
-            const helpText = 
+            const helpText =
               'راهنمای ربات دانلود یوتیوب\n\n' +
               '(1) یک ویدیو در یوتیوب پیدا کنید (در گوگل سرچ کنید یا از لینک مستقیم استفاده کنید).\n' +
               '(2) لینک کامل ویدیو (مثلاً https://youtube.com/watch?v=... یا https://youtu.be/...) یا Shorts را کپی کنید و در همین چت بفرستید.\n' +
@@ -841,8 +839,18 @@ jobs:
             if (proxies.length === 0) { err('هیچ پروکسی وجود ندارد'); process.exit(1); }
             log(`${proxies.length} پروکسی خوب`);
 
-            if (!(await switchToRandomProxy())) { err('❌ هیچ پروکسی سالمی یافت نشد'); process.exit(1); }
-            if (!(await grabCookies())) { err('❌ کوکی اولیه شکست'); process.exit(1); }
+            // تلاش برای یافتن پروکسی و کوکی اولیه (با امتحان همه پروکسی‌ها)
+            let started = false;
+            for (let i = 0; i < proxies.length; i++) {
+              log(`🔁 تلاش اولیه برای پروکسی ${i+1}/${proxies.length}`);
+              if (await switchToRandomProxy()) {
+                if (await grabCookies()) {
+                  started = true;
+                  break;
+                }
+              }
+            }
+            if (!started) { err('❌ هیچ پروکسی و کوکی اولیه سالمی یافت نشد'); process.exit(1); }
 
             log('🧹 پاکسازی پیام‌های قدیمی...');
             let offset = null;
