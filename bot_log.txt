@@ -7378,3 +7378,38 @@ ERROR: [youtube] QL1L8C_9-U8: Video unavailable. This video is no longer availab
 [2026-05-02 05:49:59] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777700999746_0.jpg" "https://i.ytimg.com/vi/ArstR4ZACMY/maxresdefault.jpg"
 [2026-05-02 05:50:00] ⬆️ آپلود video_raw.mp4 در 26.1s
 [2026-05-02 05:50:00] 📊 آمار به‌روزرسانی شد
+[2026-05-02 05:50:01] 📤 لاگ و آمار push شد
+[2026-05-02 05:50:01] ⬆️ آپلود thumb_1777700999746_0.jpg در 1.8s
+[2026-05-02 05:50:02] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701002656_1.jpg" "https://i.ytimg.com/vi/MRhgCMHN5PQ/maxresdefault.jpg"
+[2026-05-02 05:50:03] ⬆️ آپلود thumb_1777701002656_1.jpg در 1.2s
+[2026-05-02 05:50:04] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701004994_2.jpg" "https://i.ytimg.com/vi/jCsL4Wmndho/maxresdefault.jpg"
+[2026-05-02 05:50:06] ⬆️ آپلود thumb_1777701004994_2.jpg در 1.4s
+[2026-05-02 05:50:07] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701007443_3.jpg" "https://i.ytimg.com/vi/eDw9xPXXJ3U/maxresdefault.jpg"
+[2026-05-02 05:50:08] ⬆️ آپلود thumb_1777701007443_3.jpg در 1.3s
+[2026-05-02 05:50:09] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701009860_4.jpg" "https://i.ytimg.com/vi/Mt5fwHaPPsM/maxresdefault.jpg"
+[2026-05-02 05:50:11] ⬆️ آپلود thumb_1777701009860_4.jpg در 1.3s
+[2026-05-02 05:50:12] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701012260_5.jpg" "https://i.ytimg.com/vi/NW6HvRuGFLQ/maxresdefault.jpg"
+[2026-05-02 05:50:13] ⬆️ آپلود thumb_1777701012260_5.jpg در 1.1s
+[2026-05-02 05:50:14] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701014476_6.jpg" "https://i.ytimg.com/vi/yTXsG8MFuJk/maxresdefault.jpg"
+[2026-05-02 05:50:15] ⬆️ آپلود thumb_1777701014476_6.jpg در 1.3s
+[2026-05-02 05:50:16] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701016889_7.jpg" "https://i.ytimg.com/vi/WgnHiu63n9o/maxresdefault.jpg"
+[2026-05-02 05:50:18] ⬆️ آپلود thumb_1777701016889_7.jpg در 1.3s
+[2026-05-02 05:50:19] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701019252_8.jpg" "https://i.ytimg.com/vi/wazHi7N-KnI/maxresdefault.jpg"
+[2026-05-02 05:50:20] ⬆️ آپلود thumb_1777701019252_8.jpg در 1.1s
+[2026-05-02 05:50:21] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701021485_9.jpg" "https://i.ytimg.com/vi/eaQO1zxbT-s/maxresdefault.jpg"
+[2026-05-02 05:50:23] ⬆️ آپلود thumb_1777701021485_9.jpg در 1.8s
+[2026-05-02 05:50:26] 🎬 درخواست از b0DMdcC099P004f793dab55126bf72f1: https://www.youtube.com/watch?v=0P69MCqTYj4
+[2026-05-02 05:50:27] 🎬 درخواست از b0IWRE099P067b38294e2b5c8ffd02c9: https://www.youtube.com/watch?v=uhaS-Jc6bdU
+[2026-05-02 05:50:29] 🎬 درخواست از b0BvNe9099P09ca03a25e3e4c85f49cc: https://www.youtube.com/watch?v=QL1L8C_9-U8
+[2026-05-02 05:50:29] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=QL1L8C_9-U8"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] QL1L8C_9-U8: Video unavailable. This video is no longer available due to a copyright claim by CARACOL TELEVISION S.A
+
+[2026-05-02 05:50:35] ⬇️ دانلود در 2.9s
+[2026-05-02 05:50:40] 🔎 اجرای دستور جستجو: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "ytsearch10:بهترین منابع برای یادگیری زبان المانی"
+[2026-05-02 05:50:50] 📄 خروجی جستجو (اولین ۲۰۰ کاراکتر): {"id": "3butLcGgWBE", "title": "\u0628\u0647\u062a\u0631\u06cc\u0646 \u06a9\u062a\u0627\u0628 \u0628\u0631\u0627\u06cc \u06cc\u0627\u062f\u06af\u06cc\u0631\u06cc \u0632\u0628\u0627\u0646 \u0627\u0653\
+[2026-05-02 05:50:50] 📊 تعداد نتایج معتبر: 10
+[2026-05-02 05:50:50] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701050534_0.jpg" "https://i.ytimg.com/vi/3butLcGgWBE/sddefault.jpg"
+[2026-05-02 05:50:52] ⬆️ آپلود video_raw.mp4 در 16.3s
+[2026-05-02 05:50:52] ⬆️ آپلود thumb_1777701050534_0.jpg در 2.2s
+[2026-05-02 05:50:53] 📊 آمار به‌روزرسانی شد
