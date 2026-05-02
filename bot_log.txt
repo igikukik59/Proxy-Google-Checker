@@ -7213,3 +7213,36 @@ ERROR: [youtube] WgnHiu63n9o: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-02 05:40:09] 🎬 درخواست از b0IWRE099P067b38294e2b5c8ffd02c9: https://www.youtube.com/watch?v=EolnlrJ2tJw
 [2026-05-02 05:40:17] ⬆️ آپلود video_raw.mp4 در 17.7s
 [2026-05-02 05:40:18] 📊 آمار به‌روزرسانی شد
+[2026-05-02 05:40:19] 📤 لاگ و آمار push شد
+[2026-05-02 05:40:34] ⬇️ دانلود در 11.9s
+[2026-05-02 05:40:34] ✂️ شروع تقسیم video_raw (51.9MB)
+[2026-05-02 05:40:35] 🎯 بیت‌ریت: 233kbps | مدت: 1866.3s | زمان قطعه: 1582s
+[2026-05-02 05:40:37] 🔎 اجرای دستور جستجو: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "ytsearch10:کومان"
+[2026-05-02 05:40:48] 📄 خروجی جستجو (اولین ۲۰۰ کاراکتر): {"id": "6yZWLV-vT5o", "title": "\u0647\u06cc\u062c\u0627\u0646\u200c\u0627\u0646\u06af\u06cc\u0632 \u062a\u0631\u06cc\u0646 \u0645\u0633\u0627\u0628\u0642\u0647 \u06a9\u0648\u0645\u0627\u0646\u062f\u0
+[2026-05-02 05:40:48] 📊 تعداد نتایج معتبر: 10
+[2026-05-02 05:40:48] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777700448837_0.jpg" "https://i.ytimg.com/vi/6yZWLV-vT5o/maxresdefault.jpg"
+[2026-05-02 05:40:51] ⬆️ آپلود thumb_1777700448837_0.jpg در 2.2s
+[2026-05-02 05:40:52] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777700452172_1.jpg" "https://i.ytimg.com/vi/lfHi3pNt7AE/maxresdefault.jpg"
+[2026-05-02 05:40:53] ⬆️ آپلود thumb_1777700452172_1.jpg در 1.5s
+[2026-05-02 05:40:54] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777700454792_2.jpg" "https://i.ytimg.com/vi/zPdqkp2UOIo/maxresdefault.jpg"
+[2026-05-02 05:40:56] ⬆️ آپلود thumb_1777700454792_2.jpg در 1.8s
+[2026-05-02 05:40:57] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777700457664_3.jpg" "https://i.ytimg.com/vi/6EsMDBmAhVc/maxresdefault.jpg"
+[2026-05-02 05:40:58] ⬆️ آپلود thumb_1777700457664_3.jpg در 1.1s
+[2026-05-02 05:40:59] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777700459854_4.jpg" "https://i.ytimg.com/vi/H2baO4zSzHE/maxresdefault.jpg"
+[2026-05-02 05:41:01] ⬆️ آپلود thumb_1777700459854_4.jpg در 1.3s
+[2026-05-02 05:41:02] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777700462296_5.jpg" "https://i.ytimg.com/vi/_sc4KTVvxcI/maxresdefault.jpg"
+[2026-05-02 05:41:03] ⬆️ آپلود thumb_1777700462296_5.jpg در 1.5s
+[2026-05-02 05:41:04] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777700464905_6.jpg" "https://i.ytimg.com/vi/ae3JMZhWgno/maxresdefault.jpg"
+[2026-05-02 05:41:06] ⬆️ آپلود thumb_1777700464905_6.jpg در 1.4s
+[2026-05-02 05:41:07] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777700467378_7.jpg" "https://i.ytimg.com/vi/DLOzAM_qC_o/maxresdefault.jpg"
+[2026-05-02 05:41:08] ⬆️ آپلود video_raw.part01.mp4 در 31.0s
+[2026-05-02 05:41:08] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 31.0s
+[2026-05-02 05:41:08] ⬆️ آپلود thumb_1777700467378_7.jpg در 1.4s
+[2026-05-02 05:41:09] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777700469922_8.jpg" "https://i.ytimg.com/vi/MA4HVA2BrLo/maxresdefault.jpg"
+[2026-05-02 05:41:11] ⬆️ آپلود thumb_1777700469922_8.jpg در 1.5s
+[2026-05-02 05:41:12] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777700472512_9.jpg" "https://i.ytimg.com/vi/KpDLYbqJwQU/maxresdefault.jpg"
+[2026-05-02 05:41:13] ⬆️ آپلود thumb_1777700472512_9.jpg در 1.1s
+[2026-05-02 05:41:15] ⬆️ آپلود video_raw.part02.mp4 در 5.1s
+[2026-05-02 05:41:15] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 5.1s
+[2026-05-02 05:41:17] مجموع زمان آپلود قطعات: 36.1s
+[2026-05-02 05:41:17] 📊 آمار به‌روزرسانی شد
