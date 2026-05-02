@@ -8058,3 +8058,12 @@ ERROR: [youtube] v5q6wqKuY9k: Requested format is not available. Use --list-form
 [2026-05-02 08:10:00] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 20.2s
 [2026-05-02 08:10:01] مجموع زمان آپلود قطعات: 136.7s
 [2026-05-02 08:10:01] 📊 آمار به‌روزرسانی شد
+[2026-05-02 08:10:02] 📤 لاگ و آمار push شد
+[2026-05-02 08:10:12] ⬇️ دانلود در 7.3s
+[2026-05-02 08:10:13] 🎬 درخواست از b0CkO6n099P016de6a5a616df72a8183: https://www.youtube.com/watch?v=r-14u7rA5ug
+[2026-05-02 08:10:16] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=r-14u7rA5ug"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] r-14u7rA5ug: This video is available to this channel's members on level: Manoto Fans (or any higher level). Join this channel to get access to members-only content and other exclusive perks.
+
+[2026-05-02 08:10:37] ⬆️ آپلود video_raw.mp4 در 24.1s
+[2026-05-02 08:10:37] 📊 آمار به‌روزرسانی شد
