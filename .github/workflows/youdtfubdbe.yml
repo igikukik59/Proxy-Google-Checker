@@ -25,6 +25,7 @@ jobs:
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
       - name: 🧪 پیش‌آزمون هم‌زمان پروکسی‌ها
+        # ... (این بخش بدون تغییر باقی می‌ماند)
         run: |
           cat > test_proxies.cjs << 'ENDTEST'
           const { spawn, execSync } = require('child_process');
@@ -572,67 +573,79 @@ jobs:
             resize_keyboard: true, one_time_keyboard: false
           };
 
-          // ======================== جستجوی یوتیوب (تصویری) ========================
-          async function downloadThumbnail(url, filename) {
-            try {
-              execSync(`curl --socks5 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "${filename}" "${url}"`, { stdio: 'ignore', timeout: 10000 });
-              return fs.existsSync(filename);
-            } catch(e) { return false; }
-          }
-
+          // ======================== جستجوی یوتیوب (تصویری) با لاگ کامل ========================
           async function performImageSearch(chatId, query) {
             await sendMessage(chatId, '🔍 در حال جستجو...');
-            const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --flat-playlist --dump-json "ytsearch10:${query}"`;
-            const results = [];
+            const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --dump-json "ytsearch10:${query}"`;
+            log(`🔎 اجرای دستور جستجو: ${cmd}`);
             try {
-              const stdout = execSync(cmd, { encoding: 'utf8', timeout: 20000 });
+              const stdout = execSync(cmd, { encoding: 'utf8', timeout: 30000 });
+              log(`📄 خروجی جستجو (اولین ۲۰۰ کاراکتر): ${stdout.substring(0, 200)}`);
               const lines = stdout.trim().split('\n');
+              const results = [];
               for (const line of lines) {
                 try {
                   const data = JSON.parse(line);
-                  if (data.id && data.title && data.thumbnail) {
+                  // استفاده از thumbnail مستقیم یا آرایه thumbnails
+                  const thumbnail = data.thumbnail || (data.thumbnails && data.thumbnails.length > 0 ? data.thumbnails[0].url : null);
+                  if (data.id && data.title && thumbnail) {
                     results.push({
                       id: data.id,
                       title: data.title,
                       duration: data.duration || 0,
-                      thumbnail: data.thumbnail,
+                      thumbnail: thumbnail,
                       uploadDate: data.upload_date || 'نامشخص',
                       url: `https://www.youtube.com/watch?v=${data.id}`
                     });
+                  } else {
+                    log(`⚠️ نتیجه ناقص: id=${data.id}, title=${data.title?.substring(0,30)}, thumbnail=${thumbnail ? 'دارد' : 'ندارد'}`);
                   }
-                } catch(e) {}
+                } catch(e) {
+                  log('⚠️ خطای parse خط:', e.message);
+                }
               }
-            } catch(e) { log('⚠️ جستجو ناموفق:', e.message); }
+              log(`📊 تعداد نتایج معتبر: ${results.length}`);
 
-            if (results.length === 0) {
-              await sendMessage(chatId, '❌ نتیجه‌ای یافت نشد.');
-              return;
-            }
-
-            // ارسال هر نتیجه به صورت تصویر با کپشن
-            for (let i = 0; i < results.length; i++) {
-              const r = results[i];
-              const imgPath = `/tmp/thumb_${Date.now()}_${i}.jpg`;
-              const ok = await downloadThumbnail(r.thumbnail, imgPath);
-              if (ok) {
-                const durationMin = Math.floor(r.duration / 60);
-                const durationSec = Math.floor(r.duration % 60);
-                const durationStr = `${durationMin}:${String(durationSec).padStart(2,'0')}`;
-                const uploadDateStr = r.uploadDate.length === 8
-                  ? `${r.uploadDate.substring(0,4)}/${r.uploadDate.substring(4,6)}/${r.uploadDate.substring(6,8)}`
-                  : r.uploadDate;
-                const caption = `🎬 ${r.title}\n⏱ مدت: ${durationStr}\n📅 بارگذاری: ${uploadDateStr}\n🔗 ${r.url}`;
-                await uploadAndSendFile(chatId, imgPath, 'Image', caption);
-                try { fs.unlinkSync(imgPath); } catch(_){}
-              } else {
-                // اگر تامنیل دانلود نشد، پیام متنی ساده
-                await sendMessage(chatId, `${i+1}. ${r.title} (${Math.floor(r.duration/60)}:${String(Math.floor(r.duration%60)).padStart(2,'0')})\n${r.url}`);
+              if (results.length === 0) {
+                await sendMessage(chatId, '❌ نتیجه‌ای یافت نشد.');
+                return;
               }
-              await sleep(1000); // فاصله بین ارسال‌ها
+
+              // ارسال هر نتیجه به صورت تصویر با کپشن
+              for (let i = 0; i < results.length; i++) {
+                const r = results[i];
+                const imgPath = `/tmp/thumb_${Date.now()}_${i}.jpg`;
+                const downloadCmd = `curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "${imgPath}" "${r.thumbnail}"`;
+                log(`⬇️ دانلود تامنیل: ${downloadCmd}`);
+                try {
+                  execSync(downloadCmd, { stdio: 'pipe', timeout: 10000 });
+                  if (fs.existsSync(imgPath)) {
+                    const durationMin = Math.floor(r.duration / 60);
+                    const durationSec = Math.floor(r.duration % 60);
+                    const durationStr = `${durationMin}:${String(durationSec).padStart(2,'0')}`;
+                    const uploadDateStr = r.uploadDate.length === 8
+                      ? `${r.uploadDate.substring(0,4)}/${r.uploadDate.substring(4,6)}/${r.uploadDate.substring(6,8)}`
+                      : r.uploadDate;
+                    const caption = `🎬 ${r.title}\n⏱ مدت: ${durationStr}\n📅 بارگذاری: ${uploadDateStr}\n🔗 ${r.url}`;
+                    await uploadAndSendFile(chatId, imgPath, 'Image', caption);
+                    try { fs.unlinkSync(imgPath); } catch(_){}
+                  } else {
+                    log('⚠️ فایل تامنیل ایجاد نشد');
+                    await sendMessage(chatId, `${i+1}. ${r.title} (${Math.floor(r.duration/60)}:${String(Math.floor(r.duration%60)).padStart(2,'0')})\n${r.url}`);
+                  }
+                } catch(e) {
+                  log(`❌ خطای دانلود تامنیل: ${e.message}`);
+                  await sendMessage(chatId, `${i+1}. ${r.title} (${Math.floor(r.duration/60)}:${String(Math.floor(r.duration%60)).padStart(2,'0')})\n${r.url}`);
+                }
+                await sleep(1000);
+              }
+              await sendMessage(chatId, '✅ شماره ویدیوی مورد نظر (۱ تا ۱۰) را ارسال کنید.');
+              // ذخیره نتایج برای انتخاب بعدی
+              chatStates.get(chatId).searchResults = results;
+            } catch(e) {
+              log(`❌ خطای کلی در جستجو: ${e.message}`);
+              await sendMessage(chatId, '❌ خطایی در جستجو رخ داد. لطفاً دوباره تلاش کنید.');
             }
-            await sendMessage(chatId, '✅ شماره ویدیوی مورد نظر (۱ تا ۱۰) را ارسال کنید.');
-            // ذخیره نتایج برای انتخاب بعدی
-            chatStates.get(chatId).searchResults = results;
           }
 
           // ======================== پردازش درخواست اصلی ========================
