@@ -8533,3 +8533,22 @@ ERROR: [youtube] svYBcv4bSzo: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-02 08:59:14] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
 [2026-05-02 08:59:20] ⬆️ آپلود video_raw.mp4 در 9.3s
 [2026-05-02 08:59:21] 📊 آمار به‌روزرسانی شد
+[2026-05-02 08:59:22] 📤 لاگ و آمار push شد
+[2026-05-02 08:59:22] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.155.106:4...
+[2026-05-02 08:59:23] 🎬 درخواست از b0FzW45099P0f6598f4f9112471bab0d: https://www.youtube.com/watch?v=tOqitcaGqHI
+[2026-05-02 08:59:25] 🎬 درخواست از b0H8a6S099P035e9ed7eb2ebb1a56581: https://youtube.com/watch?v=h10xbMW8xDc
+[2026-05-02 08:59:39] 🍪 کوکی جدید دریافت شد
+[2026-05-02 08:59:42] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --format "best[height<=480][ext=mp4] / best[height<=480] / best" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=m18dRRu9-V4"
+[2026-05-02 08:59:42] ❌ دانلود با این پروکسی ناموفق
+[2026-05-02 08:59:42] 🔄 تلاش مجدد (2/3)...
+[2026-05-02 08:59:43] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.155.106:4...
+[2026-05-02 08:59:59] 🍪 کوکی جدید دریافت شد
+[2026-05-02 09:00:01] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --format "best[height<=480][ext=mp4] / best[height<=480] / best" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=m18dRRu9-V4"
+[2026-05-02 09:00:01] ❌ دانلود با این پروکسی ناموفق
+[2026-05-02 09:00:01] 🔄 تلاش مجدد (3/3)...
+[2026-05-02 09:00:02] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.91.255.152:4...
+[2026-05-02 09:00:20] 🍪 کوکی جدید دریافت شد
+[2026-05-02 09:00:24] ⬇️ دانلود در 4.0s
+[2026-05-02 09:00:30] 🎬 درخواست از b0HVhiw099P0ce98fa0fae6508beeda9: https://www.youtube.com/watch?v=18lywdScFjg
+[2026-05-02 09:00:46] ⬆️ آپلود video_raw.mp4 در 21.2s
+[2026-05-02 09:00:47] 📊 آمار به‌روزرسانی شد
