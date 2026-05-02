@@ -1,4 +1,4 @@
-name: 🎬 ربات یوتیوب (جستجو، Shorts، لغو درخواست) + PO Token
+name: 🎬 ربات یوتیوب (Shorts، لغو درخواست) + PO Token
 
 on:
   workflow_dispatch:
@@ -179,7 +179,7 @@ jobs:
 
           timeout 1800 node test_proxies.cjs
 
-      - name: 🤖 اجرای ربات طلایی با جستجوی تصویری، Shorts، لغو و PO Token
+      - name: 🤖 اجرای ربات طلایی با Shorts، لغو و PO Token (بدون جستجو)
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
@@ -204,7 +204,7 @@ jobs:
           if (!TOKEN) { console.error('❌ TOKEN تنظیم نشده'); process.exit(1); }
 
           const MAX_DURATION = 3600;
-          const DAILY_LIMIT = 5400;                  // ۱.۵ ساعت (۹۰ دقیقه)
+          const DAILY_LIMIT = 3600;
           const MAX_PROXY_RETRIES = 3;
           const MAX_QUEUE = 200;
           const MIN_SPEED_BYTES = 1 * 1024 * 1024;
@@ -578,8 +578,6 @@ jobs:
             resize_keyboard: true, one_time_keyboard: false
           };
 
-          // ======================== جستجوی یوتیوب (حذف شده) ========================
-
           // ======================== پردازش درخواست اصلی ========================
           async function processRequest(chatId, url, videoDuration) {
             const startAll = Date.now();
@@ -738,12 +736,12 @@ jobs:
           async function handleHelp(chatId) {
             const helpText =
               'راهنمای ربات دانلود یوتیوب\n\n' +
-              '(1) یک ویدیو در یوتیوب پیدا کنید (در گوگل سرچ کنید یا از لینک مستقیم استفاده کنید).\n' +
-              '(2) لینک کامل ویدیو (مثلاً https://youtube.com/watch?v=... یا https://youtu.be/...) یا Shorts را کپی کنید و در همین چت بفرستید.\n' +
-              '(3) ربات ابتدا مدت ویدیو را بررسی می‌کند (حداکثر ۶۰ دقیقه) و در صورت تأیید، دانلود را شروع می‌کند.\n' +
-              '(4) در صورت شلوغ بودن ربات، درخواست شما در صف قرار می‌گیرد و می‌توانید با دکمه «چقدر مونده؟» وضعیت خود را بپرسید.\n' +
-              '(5) با دکمه «لغو درخواست» می‌توانید درخواست در صف را پاک کنید.\n\n' +
-              'محدودیت‌ها:\n- هر ویدیو حداکثر ۱ ساعت\n- هر کاربر مجموعاً ۱.۵ ساعت (۹۰ دقیقه) در این بازه (۶ ساعت) می‌تواند دانلود کند.\n\n' +
+              '(1) لینک ویدیو یا Shorts را کپی کرده و در همین چت بفرستید.\n' +
+              '(2) ربات ابتدا مدت ویدیو را بررسی می‌کند (حداکثر ۱.۵ ساعت) و در صورت تأیید، دانلود را شروع می‌کند.\n' +
+              '(3) در صورت شلوغ بودن ربات، درخواست شما در صف قرار می‌گیرد و می‌توانید با دکمه «⏳ چقدر مونده؟» وضعیت خود را بپرسید.\n' +
+              '(4) با دکمه «✖️ لغو درخواست» می‌توانید درخواست در صف را پاک کنید.\n' +
+              '(5) پس از دانلود، ویدیو به صورت قطعات زیر ۵۰ مگابایت برای شما ارسال می‌شود.\n\n' +
+              'محدودیت‌ها:\n- هر ویدیو حداکثر ۱.۵ ساعت\n- هر کاربر مجموعاً ۱.۵ ساعت در این بازه (۶ ساعت) می‌تواند دانلود کند.\n\n' +
               'نحوه اتصال و شفاف‌سازی:\n' +
               'این ربات برای دانلود محتوای درخواستی شما، از منابع و مسیرهای ارتباطی استفاده می‌کند که توسط نهادهای رسمی و مسئول در کشور برای دسترسی به اینترنت بین‌الملل مجاز شمرده شده است. ' +
               'این سرویس صرفاً یک واسط برای دریافت محتوای آموزشی و عمومی بوده و هیچ‌گونه ترافیک حساس، ارتباط رمزنگاری‌شده غیرمتعارف، یا داده‌ای که به امنیت ملی یا منافع کشور آسیب برساند، از طریق آن رد و بدل نمی‌شود. ' +
@@ -752,10 +750,6 @@ jobs:
               'با فرستادن لینک شروع کنید!';
             await sendMessage(chatId, helpText);
           }
-
-          // ======================== مدیریت حالت چت‌ها (حذف جستجو) ========================
-          // chatStates دیگر نیازی نیست، اما برای جلوگیری از تغییرات عمده آن را خالی می‌گذاریم.
-          const chatStates = new Map(); // بدون استفاده
 
           // ======================== اجرای اصلی ========================
           (async () => {
@@ -812,7 +806,6 @@ jobs:
                   if (buttonId === 'QUEUE_STATUS') { await handleQueueStatus(chatId); continue; }
                   if (buttonId === 'HELP') { await handleHelp(chatId); continue; }
                   if (buttonId === 'CANCEL_REQUEST') { await handleCancelRequest(chatId); continue; }
-                  // دکمه جستجو حذف شد
 
                   if (!msg?.text) continue;
                   const text = msg.text.trim();
@@ -822,8 +815,6 @@ jobs:
                     await sendMessage(chatId, '🔑 دسترسی ادمین فعال شد. محدودیت‌ها برداشته شد.');
                     continue;
                   }
-
-                  // منطق جستجو حذف شد
 
                   const ytReg = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([\w-]+)/;
                   const m = text.match(ytReg);
@@ -858,10 +849,10 @@ jobs:
             clearInterval(backupPushInterval);
             saveStatsToFile();
             gitPushAll();
-            saveSessionStats();
+            saveSessionStats();      // ذخیره آمار جامع چرخه
             if (xrayProc) xrayProc.kill();
             log('⏹️ ربات خاموش شد');
           })();
           ENDSCRIPT
 
-          timeout 19740 node agent.cjs
+          timeout 19740 node agent.cjs   # ۵ ساعت و ۲۹ دقیقه
