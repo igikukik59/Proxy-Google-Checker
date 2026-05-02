@@ -8485,3 +8485,17 @@ ERROR: [youtube] svYBcv4bSzo: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-02 08:54:24] 🎬 درخواست از b0FzW45099P0f6598f4f9112471bab0d: https://www.youtube.com/watch?v=9Fs7AqGJRcI
 [2026-05-02 08:54:25] ⬆️ آپلود video_raw.mp4 در 5.2s
 [2026-05-02 08:54:26] 📊 آمار به‌روزرسانی شد
+[2026-05-02 08:54:27] 📤 لاگ و آمار push شد
+[2026-05-02 08:54:27] 🔀 تلاش با پروکسی تصادفی: vless://d37a75db-76b6-4db8-b213-0d5b044d138d@104.18.12.149:4...
+[2026-05-02 08:55:35] 🎬 درخواست از b0JQtbA099P0c23f7d822031656c4b58: https://www.youtube.com/watch?v=A61opI5wAmM
+[2026-05-02 08:55:36] ❌ خطای کوکی: Navigation timeout of 60000 ms exceeded
+[2026-05-02 08:55:39] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --format "best[height<=480][ext=mp4] / best[height<=480] / best" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=etHAb_tiChE"
+[2026-05-02 08:55:39] ❌ دانلود با این پروکسی ناموفق
+[2026-05-02 08:55:39] 🔄 تلاش مجدد (2/3)...
+[2026-05-02 08:55:39] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.63.37:84...
+[2026-05-02 08:55:58] 🍪 کوکی جدید دریافت شد
+[2026-05-02 08:56:04] ⬇️ دانلود در 5.7s
+[2026-05-02 08:56:05] 🎬 درخواست از b0FVMmv099P0c2138711480f1c4ff133: https://youtube.com/watch?v=MEmZjUb75O8
+[2026-05-02 08:56:14] 🎬 درخواست از b0D6Zym099P06ce8b149ce4c162add4c: https://youtu.be/_U6cRWRaawg
+[2026-05-02 08:56:22] ⬆️ آپلود video_raw.mp4 در 17.8s
+[2026-05-02 08:56:23] 📊 آمار به‌روزرسانی شد
