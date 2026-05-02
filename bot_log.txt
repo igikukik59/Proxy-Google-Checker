@@ -10751,3 +10751,27 @@ ERROR: [youtube] 6ym4qtVnB2k: Unable to download API page: [Errno 111] Connectio
 [2026-05-02 14:07:56] ⬆️ آپلود video_raw.mp4 در 13.3s
 [2026-05-02 14:07:58] 🎬 درخواست از b0Ekebv099P084bcdbb56c7af7aeb5e4: https://www.youtube.com/watch?v=YQO1XPRZ1zg
 [2026-05-02 14:07:58] 📊 آمار به‌روزرسانی شد
+[2026-05-02 14:08:00] 📤 لاگ و آمار push شد
+[2026-05-02 14:08:19] ⬇️ دانلود در 16.3s
+[2026-05-02 14:08:20] ✂️ شروع تقسیم video_raw (152.6MB)
+[2026-05-02 14:08:21] 🎯 بیت‌ریت: 580kbps | مدت: 2209.0s | زمان قطعه: 636s
+[2026-05-02 14:09:07] ⬆️ آپلود video_raw.part01.mp4 در 43.4s
+[2026-05-02 14:09:07] 📤 قطعه 1/4: video_raw.part01.mp4 آپلود در 43.4s
+[2026-05-02 14:09:14] 🎬 درخواست از b0JExdd099P0898cddf30e30aa7f67db: https://www.youtube.com/watch?v=DD_0h7H_k2w
+[2026-05-02 14:09:15] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=DD_0h7H_k2w"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] DD_0h7H_k2w: Video unavailable
+
+[2026-05-02 14:09:25] 🎬 درخواست از b0JExdd099P0898cddf30e30aa7f67db: https://www.youtube.com/watch?v=ASO_zypdnsQ
+[2026-05-02 14:10:04] 🎬 درخواست از b0ToJ099P04456dee3033b6cc2247890: https://youtu.be/L3lJZrAqqUQ
+[2026-05-02 14:10:08] ⬆️ آپلود video_raw.part02.mp4 در 59.2s
+[2026-05-02 14:10:08] 📤 قطعه 2/4: video_raw.part02.mp4 آپلود در 59.2s
+[2026-05-02 14:10:11] 🎬 درخواست از b0CmKDW099P031c349ae1a90e74ff9f7: https://www.youtube.com/watch?v=8ULqwVlLFhs
+[2026-05-02 14:10:42] ⬆️ آپلود video_raw.part03.mp4 در 33.3s
+[2026-05-02 14:10:42] 📤 قطعه 3/4: video_raw.part03.mp4 آپلود در 33.3s
+[2026-05-02 14:10:56] 🎬 درخواست از b0Jq7kA099P062e2c21bb323d5b3f803: https://www.youtube.com/watch?v=8MMtBB8Bvog
+[2026-05-02 14:10:58] 🎬 درخواست از b0DQTZ1099P0fe0c380ec0df2f7601fe: https://www.youtube.com/watch?v=S2KORevcrp4
+[2026-05-02 14:11:00] ⬆️ آپلود video_raw.part04.mp4 در 17.3s
+[2026-05-02 14:11:00] 📤 قطعه 4/4: video_raw.part04.mp4 آپلود در 17.3s
+[2026-05-02 14:11:02] مجموع زمان آپلود قطعات: 153.2s
+[2026-05-02 14:11:02] 📊 آمار به‌روزرسانی شد
