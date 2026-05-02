@@ -8973,3 +8973,24 @@ ERROR: [youtube] TDcP6HB9TxQ: Sign in to confirm your age. This video may be ina
 [2026-05-02 09:48:49] 🎬 درخواست از b0CT32W099P0bc83391a97bea33719c4: https://www.youtube.com/shorts/PAgmTCv0jLU
 [2026-05-02 09:49:53] ❌ file_id یافت نشد
 [2026-05-02 09:49:53] 📊 آمار به‌روزرسانی شد
+[2026-05-02 09:49:54] 📤 لاگ و آمار push شد
+[2026-05-02 09:49:55] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.74.118:4...
+[2026-05-02 09:50:12] 🍪 کوکی جدید دریافت شد
+[2026-05-02 09:50:16] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --format "best[height<=480][ext=mp4] / best[height<=480] / best" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=cV4oB6d90kw"
+[2026-05-02 09:50:16] ❌ دانلود با این پروکسی ناموفق
+[2026-05-02 09:50:16] 🔄 تلاش مجدد (2/3)...
+[2026-05-02 09:50:17] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@156.225.72.238:...
+[2026-05-02 09:50:33] 🍪 کوکی جدید دریافت شد
+[2026-05-02 09:50:34] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --format "best[height<=480][ext=mp4] / best[height<=480] / best" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=cV4oB6d90kw"
+[2026-05-02 09:50:34] ❌ دانلود با این پروکسی ناموفق
+[2026-05-02 09:50:34] 🔄 تلاش مجدد (3/3)...
+[2026-05-02 09:50:35] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@104.17.72.206:4...
+[2026-05-02 09:50:52] 🍪 کوکی جدید دریافت شد
+[2026-05-02 09:50:57] ⬇️ دانلود در 5.7s
+[2026-05-02 09:50:58] ✂️ شروع تقسیم video_raw (135.8MB)
+[2026-05-02 09:50:59] 🎬 درخواست از b0JCT4w099P0d80237a8efa6676d5ec9: https://www.youtube.com/watch?v=oyuxssMjrDg
+[2026-05-02 09:50:59] 🎯 بیت‌ریت: 590kbps | مدت: 1931.2s | زمان قطعه: 625s
+[2026-05-02 09:52:06] ❌ file_id یافت نشد
+[2026-05-02 09:52:06] 📤 قطعه 1/4: video_raw.part01.mp4 آپلود در 65.1s
+[2026-05-02 09:52:46] 🎬 درخواست از b0IzaBM099P06a0ca7f605cd0f7e2a36: https://www.youtube.com/shorts/qxwcPr0Ii1o
+[2026-05-02 09:52:59] 📊 آمار به‌روزرسانی شد
