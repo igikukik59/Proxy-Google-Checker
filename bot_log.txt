@@ -10288,3 +10288,22 @@ WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is 
 [2026-05-02 12:41:24] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 33.1s
 [2026-05-02 12:41:26] مجموع زمان آپلود قطعات: 85.0s
 [2026-05-02 12:41:26] 📊 آمار به‌روزرسانی شد
+[2026-05-02 12:41:27] 📤 لاگ و آمار push شد
+[2026-05-02 12:41:28] 🔀 تلاش با پروکسی تصادفی: trojan://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:...
+[2026-05-02 12:41:44] 🍪 کوکی جدید دریافت شد
+[2026-05-02 12:41:46] 🎬 درخواست از b0BB6MN099P03ffafdc5b84f178a7fff: https://www.youtube.com/watch?v=ne9QAJUQoA0
+[2026-05-02 12:41:50] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --format "best[height<=480][ext=mp4] / best[height<=480] / best" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=4y3mB9V4PI4"
+[2026-05-02 12:41:50] ❌ دانلود با این پروکسی ناموفق
+[2026-05-02 12:41:50] 🔄 تلاش مجدد (2/3)...
+[2026-05-02 12:41:50] 🔀 تلاش با پروکسی تصادفی: vless://394f6981-a782-4779-9a85-e6cf22935d93@uk1.fromblancwi...
+[2026-05-02 12:42:08] 🍪 کوکی جدید دریافت شد
+[2026-05-02 12:42:24] ⬇️ دانلود در 16.2s
+[2026-05-02 12:42:25] ✂️ شروع تقسیم video_raw (59.7MB)
+[2026-05-02 12:42:26] 🎬 درخواست از b0CD2p099P05d1067ce6b130b541ea2b: https://www.youtube.com/watch?v=aPFeLf3qZ3M
+[2026-05-02 12:42:26] 🎯 بیت‌ریت: 263kbps | مدت: 1904.2s | زمان قطعه: 1402s
+[2026-05-02 12:42:30] 🎬 درخواست از b0BhDcV099P05976cebda558dc0f7427: https://www.youtube.com/watch?v=yuAuCNO-qL4
+[2026-05-02 12:43:02] 🎬 درخواست از b0E6zPT099P03de55ed4e7c2c4dab0c5: https://www.youtube.com/watch?v=SJZzB7OH9KQ
+[2026-05-02 12:43:06] 🎬 درخواست از b0D6cFe099P05732e320b4415703dca3: https://www.youtube.com/watch?v=Cnmy08JgakM
+[2026-05-02 12:43:24] ⬆️ آپلود video_raw.part01.mp4 در 54.7s
+[2026-05-02 12:43:24] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 54.7s
+[2026-05-02 12:43:39] 📊 آمار به‌روزرسانی شد
