@@ -12016,3 +12016,45 @@ ERROR: [youtube] wWzmhChhB2D: Video unavailable
 [2026-05-02 16:29:22] ⬇️ دانلود در 14.3s
 [2026-05-02 16:29:57] ⬆️ آپلود video_raw.mp4 در 34.0s
 [2026-05-02 16:29:58] 📊 آمار به‌روزرسانی شد
+[2026-05-02 16:30:00] 📤 لاگ و آمار push شد
+[2026-05-02 16:30:00] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.74.118:4...
+[2026-05-02 16:30:17] 🍪 کوکی جدید دریافت شد
+[2026-05-02 16:30:17] 🎬 درخواست از b0IIpUs099P0d0112fcb6a564b7359d6: https://youtube.com/shorts/tm1eT56qAKg
+[2026-05-02 16:30:18] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://youtube.com/shorts/tm1eT56qAKg"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] tm1eT56qAKg: Video unavailable
+
+[2026-05-02 16:30:26] ⬇️ دانلود در 3.7s
+[2026-05-02 16:30:26] ✂️ شروع تقسیم video_raw (73.0MB)
+[2026-05-02 16:30:27] 🎬 درخواست از b0IIpUs099P0d0112fcb6a564b7359d6: https://youtube.com/shorts/Qon_rBuQq_w
+[2026-05-02 16:30:28] 🎯 بیت‌ریت: 590kbps | مدت: 1038.9s | زمان قطعه: 625s
+[2026-05-02 16:30:29] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://youtube.com/shorts/Qon_rBuQq_w"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] Qon_rBuQq_w: Video unavailable
+
+[2026-05-02 16:30:45] 🎬 درخواست از b0JCT4w099P0d80237a8efa6676d5ec9: https://www.youtube.com/watch?v=ChJLVy6ImWk
+[2026-05-02 16:30:47] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=ChJLVy6ImWk"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] ChJLVy6ImWk: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-02 16:30:59] 🎬 درخواست از b0JCT4w099P0d80237a8efa6676d5ec9: https://www.youtube.com/watch?v=ChJLVy6ImWk
+[2026-05-02 16:31:01] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=ChJLVy6ImWk"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] ChJLVy6ImWk: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-02 16:31:11] 🎬 درخواست از b0JCT4w099P0d80237a8efa6676d5ec9: https://www.youtube.com/watch?v=ChJLVy6ImWk
+[2026-05-02 16:31:12] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=ChJLVy6ImWk"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] ChJLVy6ImWk: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-02 16:31:14] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 16:31:20] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 16:31:22] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 16:31:24] ⬆️ آپلود video_raw.part01.mp4 در 54.3s
+[2026-05-02 16:31:24] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 54.3s
+[2026-05-02 16:31:24] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 16:31:27] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 16:32:02] ⬆️ آپلود video_raw.part02.mp4 در 36.3s
+[2026-05-02 16:32:02] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 36.3s
+[2026-05-02 16:32:05] مجموع زمان آپلود قطعات: 90.6s
+[2026-05-02 16:32:05] 📊 آمار به‌روزرسانی شد
