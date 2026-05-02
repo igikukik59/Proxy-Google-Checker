@@ -9433,3 +9433,29 @@ ERROR: [youtube] KZOY9bsVGMV: Video unavailable
 [2026-05-02 10:45:58] ⬇️ دانلود در 2.8s
 [2026-05-02 10:46:23] ❌ file_id یافت نشد
 [2026-05-02 10:46:25] 📊 آمار به‌روزرسانی شد
+[2026-05-02 10:46:26] 📤 لاگ و آمار push شد
+[2026-05-02 10:46:26] 🔀 تلاش با پروکسی تصادفی: vless://d37a75db-76b6-4db8-b213-0d5b044d138d@172.64.152.100:...
+[2026-05-02 10:46:35] ❌ خطای کوکی: net::ERR_CONNECTION_CLOSED at https://www.youtube.com/
+[2026-05-02 10:46:36] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 10:46:37] ⚠️ خطای HTML از سرور (تلاش 2)، صبر 2 ثانیه...
+[2026-05-02 10:46:39] ⚠️ خطای HTML از سرور (تلاش 3)، صبر 4 ثانیه...
+[2026-05-02 10:46:44] ⚠️ خطای HTML از سرور (تلاش 4)، صبر 8 ثانیه...
+[2026-05-02 10:46:47] 🎬 درخواست از b0ETl4l099P00cd9cc7b7c0a442b4371: https://youtu.be/p5UYzlOtYV0
+[2026-05-02 10:46:50] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 10:47:13] ⬇️ دانلود در 17.1s
+[2026-05-02 10:47:13] ✂️ شروع تقسیم video_raw (65.5MB)
+[2026-05-02 10:47:14] 🎬 درخواست از b0HTulk099P00881ecb9a457e0430f95: https://www.youtube.com/watch?v=6yR4gbK4
+[2026-05-02 10:47:14] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=6yR4gbK4"
+ERROR: [youtube:truncated_id] 6yR4gbK4: Incomplete YouTube ID 6yR4gbK4. URL https://www.youtube.com/watch?v=6yR4gbK4 looks truncated.
+
+[2026-05-02 10:47:14] 🎯 بیت‌ریت: 442kbps | مدت: 1243.6s | زمان قطعه: 835s
+[2026-05-02 10:47:16] 🎬 درخواست از b0Ixasv099P0501b0231cbb9cd3d7ad0: https://www.youtube.com/watch?v=tJ6KS_LEXUA
+[2026-05-02 10:47:28] 🎬 درخواست از b0ETl4l099P00cd9cc7b7c0a442b4371: https://youtu.be/z-ifver1cfE
+[2026-05-02 10:48:03] 🎬 درخواست از b0BxHSW099P070212bf15bf77f35c962: https://www.youtube.com/watch?v=Hsp0GQXKvV4
+[2026-05-02 10:48:24] ❌ file_id یافت نشد
+[2026-05-02 10:48:24] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 67.5s
+[2026-05-02 10:48:26] 🎬 درخواست از b0BNdfg099P07941996fb9985a6cac45: https://www.youtube.com/watch?v=BRHWlliBFfo
+[2026-05-02 10:49:27] ❌ file_id یافت نشد
+[2026-05-02 10:49:27] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 62.7s
+[2026-05-02 10:49:28] مجموع زمان آپلود قطعات: 130.2s
+[2026-05-02 10:49:29] 📊 آمار به‌روزرسانی شد
