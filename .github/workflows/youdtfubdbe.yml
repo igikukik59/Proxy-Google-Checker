@@ -19,7 +19,6 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y curl unzip python3-pip ffmpeg
           pip install yt-dlp
-          # نصب PO Token Provider
           pip install bgutil-ytdlp-pot-provider
           wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
           unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
@@ -123,9 +122,9 @@ jobs:
               try {
                 execSync(
                   `yt-dlp --cookies ${tmpCookieFile} --proxy socks5h://127.0.0.1:10808 ` +
-                  `-N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist ` +
+                  `-N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist ` +
                   `--extractor-args "youtube:pot-server=http://127.0.0.1:4416" ` +
-                  `--format "best[height<=480][ext=mp4] / best[height<=480]" ` +
+                  `--format "best[height<=480][ext=mp4] / best[height<=480] / best" ` +
                   `--merge-output-format mp4 --output "${outPath}" "${TEST_VIDEO}"`,
                   { stdio: 'inherit', timeout: 120000 }
                 );
@@ -383,7 +382,7 @@ jobs:
           function getVideoInfo(url) {
             const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "${url}"`;
             return new Promise((resolve) => {
-              exec(cmd, { timeout: 15000 }, (error, stdout) => {
+              exec(cmd, { timeout: 15000, maxBuffer: 10 * 1024 * 1024 }, (error, stdout) => {
                 if (error) { log('⚠️ دریافت اطلاعات ویدیو ممکن نشد:', error.message); resolve(null); return; }
                 try {
                   const data = JSON.parse(stdout);
@@ -393,15 +392,16 @@ jobs:
             });
           }
 
-          // ======================== دانلود ویدیو (با PO Token) ========================
+          // ======================== دانلود ویدیو (با پشتیبانی از Shorts) ========================
           async function downloadYouTube(url) {
             const out = '/tmp/video_raw.mp4';
-            const fmt = `best[height<=480][ext=mp4] / best[height<=480]`;
+            // فرمت بهبودیافته: ابتدا MP4 با ارتفاع ≤480، سپس هر ویدیوی ≤480، و در نهایت بهترین موجود برای Shorts
+            const fmt = `best[height<=480][ext=mp4] / best[height<=480] / best`;
             const start = Date.now();
             try {
               execSync(
                 `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 ` +
-                `-N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist ` +
+                `-N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist ` +
                 `--extractor-args "youtube:pot-server=http://127.0.0.1:4416" ` +
                 `--format "${fmt}" --merge-output-format mp4 --output "${out}" "${url}"`,
                 {stdio:'inherit', timeout:600000}
@@ -580,20 +580,19 @@ jobs:
             resize_keyboard: true, one_time_keyboard: false
           };
 
-          // ======================== جستجوی یوتیوب (تصویری) با PO Token ========================
+          // ======================== جستجوی یوتیوب (تصویری) با بافر بزرگ و PO Token ========================
           async function performImageSearch(chatId, query) {
             await sendMessage(chatId, '🔍 در حال جستجو...');
             const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "ytsearch10:${query}"`;
             log(`🔎 اجرای دستور جستجو: ${cmd}`);
             try {
-              const stdout = execSync(cmd, { encoding: 'utf8', timeout: 30000 });
+              const stdout = execSync(cmd, { encoding: 'utf8', timeout: 30000, maxBuffer: 10 * 1024 * 1024 });
               log(`📄 خروجی جستجو (اولین ۲۰۰ کاراکتر): ${stdout.substring(0, 200)}`);
               const lines = stdout.trim().split('\n');
               const results = [];
               for (const line of lines) {
                 try {
                   const data = JSON.parse(line);
-                  // استفاده از thumbnail مستقیم یا آرایه thumbnails
                   const thumbnail = data.thumbnail || (data.thumbnails && data.thumbnails.length > 0 ? data.thumbnails[0].url : null);
                   if (data.id && data.title && thumbnail) {
                     results.push({
@@ -618,7 +617,6 @@ jobs:
                 return;
               }
 
-              // ارسال هر نتیجه به صورت تصویر با کپشن
               for (let i = 0; i < results.length; i++) {
                 const r = results[i];
                 const imgPath = `/tmp/thumb_${Date.now()}_${i}.jpg`;
@@ -647,7 +645,6 @@ jobs:
                 await sleep(1000);
               }
               await sendMessage(chatId, '✅ شماره ویدیوی مورد نظر (۱ تا ۱۰) را ارسال کنید.');
-              // ذخیره نتایج برای انتخاب بعدی
               chatStates.get(chatId).searchResults = results;
             } catch(e) {
               log(`❌ خطای کلی در جستجو: ${e.message}`);
@@ -886,7 +883,6 @@ jobs:
             if (proxies.length === 0) { err('هیچ پروکسی وجود ندارد'); process.exit(1); }
             log(`${proxies.length} پروکسی خوب`);
 
-            // تلاش برای یافتن پروکسی و کوکی اولیه (با امتحان همه پروکسی‌ها)
             let started = false;
             for (let i = 0; i < proxies.length; i++) {
               log(`🔁 تلاش اولیه برای پروکسی ${i+1}/${proxies.length}`);
@@ -942,27 +938,23 @@ jobs:
                   if (!msg?.text) continue;
                   const text = msg.text.trim();
 
-                  // ----- کلید ادمین -----
                   if (ADMIN_SECRET && text === ADMIN_SECRET) {
                     adminUsers.add(chatId);
                     await sendMessage(chatId, '🔑 دسترسی ادمین فعال شد. محدودیت‌ها برداشته شد.');
                     continue;
                   }
 
-                  // state search mode
                   if (state.searchMode) {
                     state.searchMode = false;
                     await performImageSearch(chatId, text);
                     continue;
                   }
 
-                  // اگر نتایج جستجو وجود دارد (یعنی قبلاً جستجو شده و کاربر عدد فرستاده)
                   if (state.searchResults && state.searchResults.length > 0) {
                     await handleSearchSelection(chatId, text);
                     continue;
                   }
 
-                  // regex جدید برای پشتیبانی از Shorts
                   const ytReg = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([\w-]+)/;
                   const m = text.match(ytReg);
                   if (!m) {
@@ -976,7 +968,6 @@ jobs:
                   const info = await getVideoInfo(videoUrl);
                   if (!info || !info.duration) { await sendMessage(chatId, '⚠️ نتوانستم اطلاعات ویدیو را دریافت کنم.'); continue; }
 
-                  // محدودیت‌ها فقط برای غیرادمین
                   if (!adminUsers.has(chatId)) {
                     if (info.duration > MAX_DURATION) { await sendMessage(chatId, `⚠️ مدت ویدیو (${Math.floor(info.duration/60)} دقیقه) بیش از ۶۰ دقیقه مجاز است.`); continue; }
                     const used = userDailyUsage.get(chatId) || 0;
