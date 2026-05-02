@@ -7507,3 +7507,117 @@ ERROR: [youtube] odB01qESDQw: Unable to download API page: [Errno 111] Connectio
 [2026-05-02 05:53:29] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.91.248.215:8...
 [2026-05-02 05:53:43] 🔀 تلاش با پروکسی تصادفی: vless://b60e5c32-3d4e-425c-a785-a36cd0621a72@104.18.12.149:4...
 [2026-05-02 05:53:49] 📊 آمار به‌روزرسانی شد
+[2026-05-02 05:53:50] 📤 لاگ و آمار push شد
+[2026-05-02 05:53:56] 🔀 تلاش با پروکسی تصادفی: vless://b60e5c32-3d4e-425c-a785-a36cd0621a72@104.18.12.149:4...
+[2026-05-02 05:54:10] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.91.248.215:8...
+[2026-05-02 05:54:23] 🔀 تلاش با پروکسی تصادفی: vless://b60e5c32-3d4e-425c-a785-a36cd0621a72@104.18.12.149:4...
+[2026-05-02 05:54:28] 🎬 درخواست از b0JbfjY099P04b013b6034e06635c372: https://www.youtube.com/watch?v=zmGLv_sHTk8
+[2026-05-02 05:54:37] 🔀 تلاش با پروکسی تصادفی: trojan://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:...
+[2026-05-02 05:54:45] 🎬 درخواست از b0BvNe9099P09ca03a25e3e4c85f49cc: https://www.youtube.com/watch?v=8p86zO_qNqM
+[2026-05-02 05:54:46] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=8p86zO_qNqM"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] 8p86zO_qNqM: Video unavailable
+
+[2026-05-02 05:54:47] 🔎 اجرای دستور جستجو: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "ytsearch10:Khamenei again"
+[2026-05-02 05:55:00] 📄 خروجی جستجو (اولین ۲۰۰ کاراکتر): {"id": "o7tG73PNtTs", "title": "Khamenei , Again!", "formats": [{"format_id": "sb3", "format_note": "storyboard", "ext": "mhtml", "protocol": "mhtml", "acodec": "none", "vcodec": "none", "url": "https
+[2026-05-02 05:55:00] 📊 تعداد نتایج معتبر: 10
+[2026-05-02 05:55:00] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701300457_0.jpg" "https://i.ytimg.com/vi/o7tG73PNtTs/maxresdefault.jpg"
+[2026-05-02 05:55:02] ⬆️ آپلود thumb_1777701300457_0.jpg در 2.1s
+[2026-05-02 05:55:03] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701303744_1.jpg" "https://i.ytimg.com/vi/3U1-9db_bRI/sddefault.jpg"
+[2026-05-02 05:55:04] ⬆️ آپلود thumb_1777701303744_1.jpg در 1.0s
+[2026-05-02 05:55:05] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701305867_2.jpg" "https://i.ytimg.com/vi/xZcz_R0wSQ4/maxresdefault.jpg"
+[2026-05-02 05:55:06] 🍪 کوکی جدید دریافت شد
+[2026-05-02 05:55:07] ⬆️ آپلود thumb_1777701305867_2.jpg در 1.3s
+[2026-05-02 05:55:08] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701308336_3.jpg" "https://i.ytimg.com/vi/MZ0XiapPLX8/maxresdefault.jpg"
+[2026-05-02 05:55:09] ⬆️ آپلود thumb_1777701308336_3.jpg در 1.3s
+[2026-05-02 05:55:10] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701310709_4.jpg" "https://i.ytimg.com/vi/2aRzlj5N4QI/maxresdefault.jpg"
+[2026-05-02 05:55:12] ⬆️ آپلود thumb_1777701310709_4.jpg در 1.5s
+[2026-05-02 05:55:13] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701313410_5.jpg" "https://i.ytimg.com/vi/VSnXtRYL_ag/maxresdefault.jpg"
+[2026-05-02 05:55:15] ⬆️ آپلود thumb_1777701313410_5.jpg در 1.5s
+[2026-05-02 05:55:16] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701316028_6.jpg" "https://i.ytimg.com/vi/LY6nE0WQL_I/maxresdefault.jpg"
+[2026-05-02 05:55:17] ⬆️ آپلود thumb_1777701316028_6.jpg در 1.3s
+[2026-05-02 05:55:18] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701318526_7.jpg" "https://i.ytimg.com/vi/JuUZx7VSqS4/maxresdefault.jpg"
+[2026-05-02 05:55:20] ⬆️ آپلود thumb_1777701318526_7.jpg در 1.4s
+[2026-05-02 05:55:21] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701321011_8.jpg" "https://i.ytimg.com/vi/Wyn3tDStX5U/maxresdefault.jpg"
+[2026-05-02 05:55:22] ⬆️ آپلود thumb_1777701321011_8.jpg در 1.3s
+[2026-05-02 05:55:23] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701323428_9.jpg" "https://i.ytimg.com/vi/as-AjaDeHx4/maxresdefault.jpg"
+[2026-05-02 05:55:25] ⬆️ آپلود thumb_1777701323428_9.jpg در 1.6s
+[2026-05-02 05:55:31] 🎬 درخواست از b0BvNe9099P09ca03a25e3e4c85f49cc: https://www.youtube.com/watch?v=QL1L8C_9-U8
+[2026-05-02 05:55:32] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=QL1L8C_9-U8"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] QL1L8C_9-U8: Video unavailable. This video is no longer available due to a copyright claim by CARACOL TELEVISION S.A
+
+[2026-05-02 05:55:39] 🎬 درخواست از b0BA1ZV099P06a6d852ec7a5a21f4b58: https://www.youtube.com/watch?v=NJ65dVxNS5I
+[2026-05-02 05:55:40] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=NJ65dVxNS5I"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] NJ65dVxNS5I: This video is not available
+
+[2026-05-02 05:56:03] 🔎 اجرای دستور جستجو: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "ytsearch10:Rdr visual"
+[2026-05-02 05:56:12] 📄 خروجی جستجو (اولین ۲۰۰ کاراکتر): {"id": "RisJ7FXY5LY", "title": "RDR 2 Hyper Realism 8K Graphics Stunning Visuals - RTX 5090 DLSS 4.5", "formats": [{"format_id": "sb3", "format_note": "storyboard", "ext": "mhtml", "protocol": "mhtml"
+[2026-05-02 05:56:12] 📊 تعداد نتایج معتبر: 10
+[2026-05-02 05:56:12] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701372553_0.jpg" "https://i.ytimg.com/vi/RisJ7FXY5LY/maxresdefault.jpg"
+[2026-05-02 05:56:24] ⬆️ آپلود thumb_1777701372553_0.jpg در 12.0s
+[2026-05-02 05:56:25] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701385698_1.jpg" "https://i.ytimg.com/vi/3cACJXIMl2g/maxresdefault.jpg"
+[2026-05-02 05:56:26] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 05:56:27] ⚠️ خطای HTML از سرور (تلاش 2)، صبر 2 ثانیه...
+[2026-05-02 05:56:29] ⚠️ خطای HTML از سرور (تلاش 3)، صبر 4 ثانیه...
+[2026-05-02 05:56:33] ⚠️ خطای HTML از سرور (تلاش 4)، صبر 8 ثانیه...
+[2026-05-02 05:56:43] ⬆️ آپلود thumb_1777701385698_1.jpg در 18.0s
+[2026-05-02 05:56:44] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701404858_2.jpg" "https://i.ytimg.com/vi/hq5UNd5Hz7s/maxresdefault.jpg"
+[2026-05-02 05:56:46] ⬆️ آپلود thumb_1777701404858_2.jpg در 1.4s
+[2026-05-02 05:56:47] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701407405_3.jpg" "https://i.ytimg.com/vi/vdz_AlXv4qk/maxresdefault.jpg"
+[2026-05-02 05:56:49] ⬆️ آپلود thumb_1777701407405_3.jpg در 1.5s
+[2026-05-02 05:56:50] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701410069_4.jpg" "https://i.ytimg.com/vi/d792Fxy_07U/hqdefault.jpg"
+[2026-05-02 05:56:51] ⬆️ آپلود thumb_1777701410069_4.jpg در 1.3s
+[2026-05-02 05:56:52] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701412467_5.jpg" "https://i.ytimg.com/vi/a-UhgHsDSTQ/hqdefault.jpg?sqp=-oaymwEmCOADEOgC8quKqQMa8AEB-AHUBoAC4AOKAgwIABABGGUgVihXMA8=&rs=AOn4CLBWmdit1U1IvlW660_lgMSluDAiLA"
+[2026-05-02 05:56:53] ⬆️ آپلود thumb_1777701412467_5.jpg در 0.7s
+[2026-05-02 05:56:54] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701414307_6.jpg" "https://i.ytimg.com/vi/ERq7xmOuy00/maxresdefault.jpg"
+[2026-05-02 05:56:56] ⬆️ آپلود thumb_1777701414307_6.jpg در 2.2s
+[2026-05-02 05:56:57] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701417583_7.jpg" "https://i.ytimg.com/vi/bZIrj8DkBTY/maxresdefault.jpg"
+[2026-05-02 05:56:59] ⬆️ آپلود thumb_1777701417583_7.jpg در 1.5s
+[2026-05-02 05:57:00] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701420266_8.jpg" "https://i.ytimg.com/vi/nGNBlHiYnl8/maxresdefault.jpg"
+[2026-05-02 05:57:02] ⬆️ آپلود thumb_1777701420266_8.jpg در 1.9s
+[2026-05-02 05:57:03] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701423361_9.jpg" "https://i.ytimg.com/vi/dpbMTGH1CkU/maxresdefault.jpg"
+[2026-05-02 05:57:04] ⬆️ آپلود thumb_1777701423361_9.jpg در 1.3s
+[2026-05-02 05:57:07] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 05:57:08] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 05:57:10] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 05:57:11] 🔎 اجرای دستور جستجو: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "ytsearch10:اهنگ جدید melis Fis"
+[2026-05-02 05:57:22] 📄 خروجی جستجو (اولین ۲۰۰ کاراکتر): {"id": "NIvPHeA5hTo", "title": "Sefo - Yine Seni Severdim (Official Video)", "formats": [{"format_id": "sb3", "format_note": "storyboard", "ext": "mhtml", "protocol": "mhtml", "acodec": "none", "vcode
+[2026-05-02 05:57:22] 📊 تعداد نتایج معتبر: 10
+[2026-05-02 05:57:22] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701442821_0.jpg" "https://i.ytimg.com/vi/NIvPHeA5hTo/maxresdefault.jpg"
+[2026-05-02 05:57:23] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 05:57:26] ⬆️ آپلود thumb_1777701442821_0.jpg در 3.5s
+[2026-05-02 05:57:27] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701447411_1.jpg" "https://i.ytimg.com/vi/OFWBSpsqYM8/maxresdefault.jpg"
+[2026-05-02 05:57:28] ⬆️ آپلود thumb_1777701447411_1.jpg در 1.5s
+[2026-05-02 05:57:29] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701449979_2.jpg" "https://i.ytimg.com/vi/JbNecKxiXP8/maxresdefault.jpg"
+[2026-05-02 05:57:31] ⬆️ آپلود thumb_1777701449979_2.jpg در 1.5s
+[2026-05-02 05:57:32] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701452807_3.jpg" "https://i.ytimg.com/vi/o4g-rBcsVnU/sddefault.jpg"
+[2026-05-02 05:57:36] ⬆️ آپلود thumb_1777701452807_3.jpg در 4.0s
+[2026-05-02 05:57:37] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701457918_4.jpg" "https://i.ytimg.com/vi/vJ0WPfr_Cz4/maxresdefault.jpg"
+[2026-05-02 05:57:39] ⬆️ آپلود thumb_1777701457918_4.jpg در 1.3s
+[2026-05-02 05:57:40] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701460355_5.jpg" "https://i.ytimg.com/vi/LEtO6SZsXgs/maxresdefault.jpg"
+[2026-05-02 05:57:41] ⬆️ آپلود thumb_1777701460355_5.jpg در 1.3s
+[2026-05-02 05:57:42] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701462750_6.jpg" "https://i.ytimg.com/vi/GKvHAmg7i5k/maxresdefault.jpg"
+[2026-05-02 05:57:44] ⬆️ آپلود thumb_1777701462750_6.jpg در 1.3s
+[2026-05-02 05:57:45] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701465168_7.jpg" "https://i.ytimg.com/vi/EAhrnkBtDeM/maxresdefault.jpg"
+[2026-05-02 05:57:46] ⬆️ آپلود thumb_1777701465168_7.jpg در 1.3s
+[2026-05-02 05:57:47] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701467602_8.jpg" "https://i.ytimg.com/vi/a0HH4P3NgGQ/maxresdefault.jpg"
+[2026-05-02 05:57:49] ⬆️ آپلود thumb_1777701467602_8.jpg در 1.3s
+[2026-05-02 05:57:50] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701470022_9.jpg" "https://i.ytimg.com/vi/lIyqo5iv7Ac/maxresdefault.jpg"
+[2026-05-02 05:57:51] ⬆️ آپلود thumb_1777701470022_9.jpg در 1.2s
+[2026-05-02 05:57:52] 🎬 درخواست از b0HnqQh099P08096439592fb82678d2e: https://www.youtube.com/watch?v=Du91r6SxnUY
+[2026-05-02 05:57:56] 🎬 درخواست از b0BvNe9099P09ca03a25e3e4c85f49cc: https://www.youtube.com/watch?v=8p86zO_qNqM
+[2026-05-02 05:57:56] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=8p86zO_qNqM"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] 8p86zO_qNqM: Video unavailable
+
+[2026-05-02 05:58:08] ⬇️ دانلود در 10.4s
+[2026-05-02 05:58:10] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 05:58:25] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-02 05:58:26] 🔎 اجرای دستور جستجو: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "ytsearch10:rdr 2 edits"
+[2026-05-02 05:58:37] 📄 خروجی جستجو (اولین ۲۰۰ کاراکتر): {"id": "gOaIPM_nA1A", "title": "RED DEAD REDEMPTION 2 TIKTOK EDITS COMPILATION | PART 1", "formats": [{"format_id": "sb3", "format_note": "storyboard", "ext": "mhtml", "protocol": "mhtml", "acodec": "
+[2026-05-02 05:58:37] 📊 تعداد نتایج معتبر: 10
+[2026-05-02 05:58:37] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777701517092_0.jpg" "https://i.ytimg.com/vi/gOaIPM_nA1A/maxresdefault.jpg"
+[2026-05-02 05:58:37] ⬆️ آپلود video_raw.mp4 در 28.6s
+[2026-05-02 05:58:37] 📊 آمار به‌روزرسانی شد
