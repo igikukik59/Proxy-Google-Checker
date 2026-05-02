@@ -7186,3 +7186,22 @@ ERROR: [youtube] WgnHiu63n9o: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-02 05:37:12] ⬇️ دانلود در 9.3s
 [2026-05-02 05:37:27] ⬆️ آپلود video_raw.mp4 در 14.3s
 [2026-05-02 05:37:27] 📊 آمار به‌روزرسانی شد
+[2026-05-02 05:37:28] 📤 لاگ و آمار push شد
+[2026-05-02 05:37:40] 🔎 اجرای دستور جستجو: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "ytsearch10:منبع: YouTube https://share.google/MRy6bYXHePLvKtNgZ"
+[2026-05-02 05:37:41] 📄 خروجی جستجو (اولین ۲۰۰ کاراکتر): 
+[2026-05-02 05:37:41] ⚠️ خطای parse خط: Unexpected end of JSON input
+[2026-05-02 05:37:41] 📊 تعداد نتایج معتبر: 0
+[2026-05-02 05:38:39] 🔎 اجرای دستور جستجو: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "ytsearch10:https://share.google/9d8oHmLy6dVojFu07"
+[2026-05-02 05:38:40] 📄 خروجی جستجو (اولین ۲۰۰ کاراکتر): 
+[2026-05-02 05:38:40] ⚠️ خطای parse خط: Unexpected end of JSON input
+[2026-05-02 05:38:40] 📊 تعداد نتایج معتبر: 0
+[2026-05-02 05:38:40] 🎬 درخواست از b0DnxL3099P070daa2db975f7f8b95bb: https://www.youtube.com/watch?v=uoJzMnwktiI
+[2026-05-02 05:38:45] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --format "best[height<=480][ext=mp4] / best[height<=480] / best" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=uoJzMnwktiI"
+[2026-05-02 05:38:45] ❌ دانلود با این پروکسی ناموفق
+[2026-05-02 05:38:45] 🔄 تلاش مجدد (2/3)...
+[2026-05-02 05:38:46] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.91.248.215:8...
+[2026-05-02 05:39:04] 🍪 کوکی جدید دریافت شد
+[2026-05-02 05:39:14] ⬇️ دانلود در 9.7s
+[2026-05-02 05:39:16] 🎬 درخواست از b0JgnOj099P09d5f7971de570676c8db: https://www.youtube.com/watch?v=lQKU3BhQxZc
+[2026-05-02 05:39:27] ⬆️ آپلود video_raw.mp4 در 12.9s
+[2026-05-02 05:39:29] 📊 آمار به‌روزرسانی شد
