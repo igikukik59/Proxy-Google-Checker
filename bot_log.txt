@@ -9253,3 +9253,29 @@ ERROR: [youtube] TDcP6HB9TxQ: Sign in to confirm your age. This video may be ina
 [2026-05-02 10:26:54] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 66.4s
 [2026-05-02 10:26:55] مجموع زمان آپلود قطعات: 131.7s
 [2026-05-02 10:26:55] 📊 آمار به‌روزرسانی شد
+[2026-05-02 10:26:56] 📤 لاگ و آمار push شد
+[2026-05-02 10:26:57] 🔀 تلاش با پروکسی تصادفی: vless://7e346122-2ee0-406e-b964-a8ee665f1814@digitalocean.co...
+[2026-05-02 10:27:07] 🎬 درخواست از b0CAJG6099P0ef072622fda39f16bf67: https://www.youtube.com/watch?v=iU7xOTUq3Qs
+[2026-05-02 10:27:08] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@8.6.112.6:443?a...
+[2026-05-02 10:27:08] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=iU7xOTUq3Qs"
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+WARNING: [youtube] Unable to download webpage: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused')). Giving up after 3 retries
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+ERROR: [youtube] iU7xOTUq3Qs: Unable to download API page: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused'))
+
+[2026-05-02 10:27:16] 🎬 درخواست از b0CAJG6099P0ef072622fda39f16bf67: https://www.youtube.com/watch?v=uJAIEym5FvM
+[2026-05-02 10:27:24] 🍪 کوکی جدید دریافت شد
+[2026-05-02 10:27:33] ⬇️ دانلود در 4.5s
+[2026-05-02 10:27:33] ✂️ شروع تقسیم video_raw (64.8MB)
+[2026-05-02 10:27:34] 🎯 بیت‌ریت: 399kbps | مدت: 1363.6s | زمان قطعه: 925s
+[2026-05-02 10:28:09] 🎬 درخواست از b0CxpPG099P07aacde81ce00d6fddb5d: https://youtube.com/watch?v=eqxDXOIK8PE
+[2026-05-02 10:28:26] ❌ file_id یافت نشد
+[2026-05-02 10:28:26] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 49.9s
+[2026-05-02 10:29:15] ⬆️ آپلود video_raw.part02.mp4 در 48.5s
+[2026-05-02 10:29:15] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 48.5s
+[2026-05-02 10:29:16] مجموع زمان آپلود قطعات: 98.4s
+[2026-05-02 10:29:16] 📊 آمار به‌روزرسانی شد
