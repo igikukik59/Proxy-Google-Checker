@@ -7257,3 +7257,11 @@ ERROR: [youtube] WgnHiu63n9o: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-02 05:42:07] ⬆️ آپلود video_raw.mp4 در 16.3s
 [2026-05-02 05:42:07] 🎬 درخواست از b0DnxL3099P070daa2db975f7f8b95bb: https://www.youtube.com/watch?v=4agXAltNCV0
 [2026-05-02 05:42:08] 📊 آمار به‌روزرسانی شد
+[2026-05-02 05:42:09] 📤 لاگ و آمار push شد
+[2026-05-02 05:42:09] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.91.248.215:8...
+[2026-05-02 05:42:27] 🍪 کوکی جدید دریافت شد
+[2026-05-02 05:43:28] 🔎 اجرای دستور جستجو: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "ytsearch10:بهترین منابع برای یادگیری زبان المانی"
+[2026-05-02 05:43:48] 📄 خروجی جستجو (اولین ۲۰۰ کاراکتر): {"id": "3butLcGgWBE", "title": "\u0628\u0647\u062a\u0631\u06cc\u0646 \u06a9\u062a\u0627\u0628 \u0628\u0631\u0627\u06cc \u06cc\u0627\u062f\u06af\u06cc\u0631\u06cc \u0632\u0628\u0627\u0646 \u0627\u0653\
+[2026-05-02 05:43:48] 📊 تعداد نتایج معتبر: 10
+[2026-05-02 05:43:48] ⬇️ دانلود تامنیل: curl --socks5-hostname 127.0.0.1:10808 -L -A "Mozilla/5.0" -o "/tmp/thumb_1777700628602_0.jpg" "https://i.ytimg.com/vi/3butLcGgWBE/sddefault.jpg"
+[2026-05-02 05:43:49] 📊 آمار به‌روزرسانی شد
