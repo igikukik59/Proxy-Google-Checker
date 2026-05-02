@@ -13746,3 +13746,23 @@ You might want to use a VPN or a proxy server (with --proxy) to workaround.
 [2026-05-02 20:51:06] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 27.6s
 [2026-05-02 20:51:08] مجموع زمان آپلود قطعات: 93.2s
 [2026-05-02 20:51:08] 📊 آمار به‌روزرسانی شد
+[2026-05-02 20:51:09] 📤 لاگ و آمار push شد
+[2026-05-02 20:51:10] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.137.62:8...
+[2026-05-02 20:51:28] 🍪 کوکی جدید دریافت شد
+[2026-05-02 20:52:11] ⬇️ دانلود در 36.7s
+[2026-05-02 20:52:11] ✂️ شروع تقسیم video_raw (182.5MB)
+[2026-05-02 20:52:13] 🎯 بیت‌ریت: 592kbps | مدت: 2585.2s | زمان قطعه: 623s
+[2026-05-02 20:53:17] 🎬 درخواست از b0Bf2Zu099P0345257e813d5d789efe5: https://www.youtube.com/watch?v=J7JfFzTjw5Y
+[2026-05-02 20:53:19] ⬆️ آپلود video_raw.part01.mp4 در 62.0s
+[2026-05-02 20:53:19] 📤 قطعه 1/5: video_raw.part01.mp4 آپلود در 62.0s
+[2026-05-02 20:53:19] 🎬 درخواست از b0EAMir099P0c2bf24a568deff9666ad: https://www.youtube.com/watch?v=ecJgecgWrHg
+[2026-05-02 20:53:21] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "https://www.youtube.com/watch?v=ecJgecgWrHg"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] ecJgecgWrHg: Join this channel to get access to members-only content like this video, and other exclusive perks.
+
+[2026-05-02 20:54:11] 🎬 درخواست از b0IOO3j099P0b561f560e6f1e9f24a14: https://www.youtube.com/watch?v=dtLyaKQtdA0
+[2026-05-02 20:54:22] ⬆️ آپلود video_raw.part02.mp4 در 61.3s
+[2026-05-02 20:54:22] 📤 قطعه 2/5: video_raw.part02.mp4 آپلود در 61.3s
+[2026-05-02 20:55:18] ⬆️ آپلود video_raw.part03.mp4 در 55.4s
+[2026-05-02 20:55:18] 📤 قطعه 3/5: video_raw.part03.mp4 آپلود در 55.4s
+[2026-05-02 20:55:45] 📊 آمار به‌روزرسانی شد
