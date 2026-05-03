@@ -23043,3 +23043,12 @@ ERROR: [youtube] mihd8ly5Ih0: Unable to download API page: [Errno 111] Connectio
 [2026-05-03 22:41:08] 📤 لاگ و آمار push شد
 [2026-05-03 22:42:32] 🎬 درخواست از b0BTgwm099P0b27177c6fd259b9959b3: https://www.youtube.com/watch?v=At3t8Wpx2D4
 [2026-05-03 22:42:36] 📊 آمار به‌روزرسانی شد
+[2026-05-03 22:42:37] 📤 لاگ و آمار push شد
+[2026-05-03 22:42:55] ⬇️ دانلود در 18.5s
+[2026-05-03 22:42:56] 🎬 درخواست از b0EAMir099P0c2bf24a568deff9666ad: https://www.youtube.com/watch?v=ecJgecgWrHg
+[2026-05-03 22:42:57] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=ecJgecgWrHg"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] ecJgecgWrHg: Join this channel to get access to members-only content like this video, and other exclusive perks.
+
+[2026-05-03 22:43:00] ⬆️ آپلود video_raw.mp4 در 4.7s
+[2026-05-03 22:43:01] 📊 آمار به‌روزرسانی شد
