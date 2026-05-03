@@ -17530,3 +17530,22 @@ ERROR: [youtube] nXtkMEv2-f4: This video is not available
 [2026-05-03 09:11:46] ⬇️ دانلود در 3.7s
 [2026-05-03 09:12:08] ⬆️ آپلود video_raw.mp4 در 21.8s
 [2026-05-03 09:12:10] 📊 آمار به‌روزرسانی شد
+[2026-05-03 09:12:11] 📤 لاگ و آمار push شد
+[2026-05-03 09:12:32] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=SKB5R0sIQ6o"
+[2026-05-03 09:12:32] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 09:12:32] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 09:12:33] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.63.60:20...
+[2026-05-03 09:12:33] 🎬 درخواست از b0Jgqdx099P05747681aff7bfbe10ead: https://www.youtube.com/watch?v=U79fwdMjG6g
+[2026-05-03 09:12:52] 🍪 کوکی جدید دریافت شد
+[2026-05-03 09:13:16] ⬇️ دانلود در 23.9s
+[2026-05-03 09:13:16] ✂️ شروع تقسیم video_raw (173.8MB)
+[2026-05-03 09:13:17] 🎯 بیت‌ریت: 499kbps | مدت: 2920.1s | زمان قطعه: 739s
+[2026-05-03 09:14:06] ⬆️ آپلود video_raw.part01.mp4 در 45.0s
+[2026-05-03 09:14:06] 📤 قطعه 1/4: video_raw.part01.mp4 آپلود در 45.0s
+[2026-05-03 09:14:32] 🎬 درخواست از b0JZNUN099P033ceb00b8c00cb63d0fa: https://www.youtube.com/watch?v=QaX8pgo9ADE
+[2026-05-03 09:14:53] ⬆️ آپلود video_raw.part02.mp4 در 45.8s
+[2026-05-03 09:14:53] 📤 قطعه 2/4: video_raw.part02.mp4 آپلود در 45.8s
+[2026-05-03 09:15:10] 🎬 درخواست از b0JZNUN099P033ceb00b8c00cb63d0fa: https://www.youtube.com/watch?v=xX5FiD-dIiQ
+[2026-05-03 09:15:36] ⬆️ آپلود video_raw.part03.mp4 در 42.6s
+[2026-05-03 09:15:36] 📤 قطعه 3/4: video_raw.part03.mp4 آپلود در 42.6s
+[2026-05-03 09:16:01] 📊 آمار به‌روزرسانی شد
