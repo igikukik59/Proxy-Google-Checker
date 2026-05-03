@@ -19695,3 +19695,15 @@ ERROR: [youtube] uyamsWvWgQs: Unable to download API page: [Errno 111] Connectio
 [2026-05-03 14:13:51] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 6.4s
 [2026-05-03 14:13:53] مجموع زمان آپلود قطعات: 76.9s
 [2026-05-03 14:13:53] 📊 آمار به‌روزرسانی شد
+[2026-05-03 14:13:54] 📤 لاگ و آمار push شد
+[2026-05-03 14:13:55] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.74.118:4...
+[2026-05-03 14:14:12] 🍪 کوکی جدید دریافت شد
+[2026-05-03 14:14:16] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=8F_DJ9LLAkI"
+[2026-05-03 14:14:16] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 14:14:16] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 14:14:16] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@62.84.183.222:8...
+[2026-05-03 14:14:35] 🍪 کوکی جدید دریافت شد
+[2026-05-03 14:14:45] ⬇️ دانلود در 10.4s
+[2026-05-03 14:14:47] 🎬 درخواست از b0BTgwm099P0b27177c6fd259b9959b3: https://www.youtube.com/watch?v=6fTSt3V4Kjo
+[2026-05-03 14:15:10] ❌ file_id یافت نشد
+[2026-05-03 14:15:10] 📊 آمار به‌روزرسانی شد
