@@ -21268,3 +21268,37 @@ ERROR: [youtube] BlW2AqVzMfG: Video unavailable
 [2026-05-03 17:30:13] 🎬 درخواست از b0JQnDy099P0ac8ce64018dd023e825b: https://www.youtube.com/watch?v=KAS9c6zKXM4
 [2026-05-03 17:30:14] ❌ file_id یافت نشد
 [2026-05-03 17:30:14] 📊 آمار به‌روزرسانی شد
+[2026-05-03 17:30:16] 📤 لاگ و آمار push شد
+[2026-05-03 17:30:23] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=k4_yfAaLNhA"
+[2026-05-03 17:30:23] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 17:30:23] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 17:30:25] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.77.214.109:2...
+[2026-05-03 17:30:43] 🍪 کوکی جدید دریافت شد
+[2026-05-03 17:30:45] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=k4_yfAaLNhA"
+[2026-05-03 17:30:45] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 17:30:45] 🔄 تلاش مجدد (3/3)...
+[2026-05-03 17:30:46] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.74.118:4...
+[2026-05-03 17:30:51] 🎬 درخواست از b0INQ73099P0b9e77a7419369790d1fd: https://www.youtube.com/watch?v=sNijnFuknLc
+[2026-05-03 17:31:03] 🍪 کوکی جدید دریافت شد
+[2026-05-03 17:31:04] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=k4_yfAaLNhA"
+[2026-05-03 17:31:04] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 17:31:05] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@64.188.93.158:4...
+[2026-05-03 17:31:25] 🍪 کوکی جدید دریافت شد
+[2026-05-03 17:32:02] ⬇️ دانلود در 33.1s
+[2026-05-03 17:32:02] ✂️ شروع تقسیم video_raw (94.7MB)
+[2026-05-03 17:32:03] 🎯 بیت‌ریت: 410kbps | مدت: 1935.2s | زمان قطعه: 899s
+[2026-05-03 17:33:09] ⬆️ آپلود video_raw.part01.mp4 در 63.1s
+[2026-05-03 17:33:09] 📤 قطعه 1/3: video_raw.part01.mp4 آپلود در 63.1s
+[2026-05-03 17:33:17] 🎬 درخواست از b0BDfRy099P0e9f252f0c0a195f6eae7: https://www.youtube.com/watch?v=GqIl_S0yBC4
+[2026-05-03 17:34:14] ❌ file_id یافت نشد
+[2026-05-03 17:34:14] 📤 قطعه 2/3: video_raw.part02.mp4 آپلود در 64.1s
+[2026-05-03 17:34:27] 🎬 درخواست از b0JXxxr099P0a9c9b228ffc15e2ed5b6: https://youtu.be/3yA7pd74138
+[2026-05-03 17:34:29] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://youtu.be/3yA7pd74138"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] 3yA7pd74138: Private video. Sign in if you've been granted access to this video. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-03 17:34:36] 🎬 درخواست از b0CxpPG099P07aacde81ce00d6fddb5d: youtube.com/watch?v=L3lJZrAqqUQ
+[2026-05-03 17:34:39] ⬆️ آپلود video_raw.part03.mp4 در 24.3s
+[2026-05-03 17:34:39] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 24.3s
+[2026-05-03 17:34:41] مجموع زمان آپلود قطعات: 151.5s
+[2026-05-03 17:34:42] 📊 آمار به‌روزرسانی شد
