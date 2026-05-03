@@ -19903,3 +19903,14 @@ ERROR: [youtube:truncated_id] A3K5HJziQ: Incomplete YouTube ID A3K5HJziQ. URL ht
 [2026-05-03 14:40:35] ⬇️ دانلود در 10.4s
 [2026-05-03 14:41:01] ⬆️ آپلود video_raw.mp4 در 25.4s
 [2026-05-03 14:41:02] 📊 آمار به‌روزرسانی شد
+[2026-05-03 14:41:03] 📤 لاگ و آمار push شد
+[2026-05-03 14:41:04] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@156.225.72.238:...
+[2026-05-03 14:41:21] 🍪 کوکی جدید دریافت شد
+[2026-05-03 14:41:27] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/ZYzzRj9IOfU"
+[2026-05-03 14:41:27] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 14:41:27] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 14:41:27] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@www.multiplydose.com:443?security=tls&type...
+[2026-05-03 14:41:46] 🍪 کوکی جدید دریافت شد
+[2026-05-03 14:41:58] ⬇️ دانلود در 11.9s
+[2026-05-03 14:42:41] ⬆️ آپلود video_raw.mp4 در 42.4s
+[2026-05-03 14:42:42] 📊 آمار به‌روزرسانی شد
