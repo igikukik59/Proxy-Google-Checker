@@ -19942,3 +19942,12 @@ ERROR: Unsupported URL: https://www.youtube.com/watch?v=short&feature=youtu.be
 [2026-05-03 14:45:31] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 4.1s
 [2026-05-03 14:45:32] مجموع زمان آپلود قطعات: 71.2s
 [2026-05-03 14:45:32] 📊 آمار به‌روزرسانی شد
+[2026-05-03 14:45:34] 📤 لاگ و آمار push شد
+[2026-05-03 14:45:50] ⬇️ دانلود در 12.7s
+[2026-05-03 14:45:54] 🎬 درخواست از b0BPKfw099P0ec59aab467c9b7f46d37: https://youtu.be/short
+[2026-05-03 14:45:58] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://youtu.be/short"
+WARNING: [generic] Falling back on generic information extractor
+ERROR: Unsupported URL: https://www.youtube.com/watch?v=short&feature=youtu.be
+
+[2026-05-03 14:46:17] ⬆️ آپلود video_raw.mp4 در 27.3s
+[2026-05-03 14:46:18] 📊 آمار به‌روزرسانی شد
