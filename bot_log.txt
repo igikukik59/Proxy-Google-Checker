@@ -22064,3 +22064,43 @@ ERROR: [youtube] BlW2AqVzMfG: Video unavailable
 [2026-05-03 20:17:23] مجموع زمان آپلود قطعات: 87.8s
 [2026-05-03 20:17:23] 🎬 درخواست از b0CctB8099P0ac5de42d12df50214c8d: https://www.youtube.com/watch?v=jbl0cjIx1dE
 [2026-05-03 20:17:23] 📊 آمار به‌روزرسانی شد
+[2026-05-03 20:17:24] 📤 لاگ و آمار push شد
+[2026-05-03 20:17:24] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=jbl0cjIx1dE"
+WARNING: [youtube] 248554 bytes read. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+WARNING: [youtube] Unable to download webpage: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused')). Giving up after 3 retries
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+ERROR: [youtube] jbl0cjIx1dE: Unable to download API page: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused'))
+
+[2026-05-03 20:17:25] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@104.18.12.149:443?security=tls&sni=www.gos...
+[2026-05-03 20:17:47] 🍪 کوکی جدید دریافت شد
+[2026-05-03 20:17:52] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=PbO_TFNbxos"
+[2026-05-03 20:17:52] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 20:17:52] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 20:17:53] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@8.6.112.6:443?security=tls&sni=www.creatio...
+[2026-05-03 20:18:11] 🍪 کوکی جدید دریافت شد
+[2026-05-03 20:18:14] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=PbO_TFNbxos"
+[2026-05-03 20:18:14] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 20:18:14] 🔄 تلاش مجدد (3/3)...
+[2026-05-03 20:18:14] 🎬 درخواست از b0B3TpD099P06b8cc2caf907b7785e93: https://www.youtube.com/watch?v=KZOVKJLnanQ
+[2026-05-03 20:18:15] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@8.6.112.0:443?security=tls&sni=www.gossipg...
+[2026-05-03 20:18:28] 🎬 درخواست از b0JrLRV099P0d5eebeec8f4bcc942c34: https://www.youtube.com/watch?v=ztdugRwl0mw
+[2026-05-03 20:18:35] 🍪 کوکی جدید دریافت شد
+[2026-05-03 20:18:39] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=PbO_TFNbxos"
+[2026-05-03 20:18:39] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 20:18:39] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.64.157:4...
+[2026-05-03 20:18:56] 🍪 کوکی جدید دریافت شد
+[2026-05-03 20:19:12] ⬇️ دانلود در 13.8s
+[2026-05-03 20:19:13] ✂️ شروع تقسیم video_raw (73.8MB)
+[2026-05-03 20:19:14] 🎬 درخواست از b0CctB8099P0ac5de42d12df50214c8d: https://www.youtube.com/watch?v=jbl0cjIx1dE
+[2026-05-03 20:19:14] 🎯 بیت‌ریت: 499kbps | مدت: 1240.4s | زمان قطعه: 739s
+[2026-05-03 20:19:44] ❌ file_id یافت نشد
+[2026-05-03 20:19:44] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 28.0s
+[2026-05-03 20:20:22] 🎬 درخواست از b0Gyusw099P0977a1afa332fa977078a: https://www.youtube.com/watch?v=6HrwF7b-3bk
+[2026-05-03 20:20:26] ⬆️ آپلود video_raw.part02.mp4 در 41.1s
+[2026-05-03 20:20:26] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 41.1s
+[2026-05-03 20:20:27] مجموع زمان آپلود قطعات: 69.1s
+[2026-05-03 20:20:27] 📊 آمار به‌روزرسانی شد
