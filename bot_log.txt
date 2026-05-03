@@ -17595,3 +17595,14 @@ ERROR: [youtube] nXtkMEv2-f4: This video is not available
 [2026-05-03 09:23:22] ⬆️ آپلود video_raw.mp4 در 51.6s
 [2026-05-03 09:23:22] 🎬 درخواست از b0I5KhL099P037488f0e03b3be29a550: https://www.youtube.com/watch?v=hH1mLYI9p4k
 [2026-05-03 09:23:24] 📊 آمار به‌روزرسانی شد
+[2026-05-03 09:23:25] 📤 لاگ و آمار push شد
+[2026-05-03 09:23:29] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=TFBX3bUwHPQ"
+[2026-05-03 09:23:29] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 09:23:29] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 09:23:30] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.155.106:4...
+[2026-05-03 09:23:46] 🍪 کوکی جدید دریافت شد
+[2026-05-03 09:23:56] ⬇️ دانلود در 9.5s
+[2026-05-03 09:24:22] 🎬 درخواست از b0CmKDW099P031c349ae1a90e74ff9f7: https://www.youtube.com/watch?v=7CJLeaIjLuY
+[2026-05-03 09:24:28] 🎬 درخواست از b0J845J099P0bfcb898d4a8b061bd0dd: https://www.youtube.com/watch?v=TFBX3bUwHPQ
+[2026-05-03 09:24:41] ⬆️ آپلود video_raw.mp4 در 44.3s
+[2026-05-03 09:24:42] 📊 آمار به‌روزرسانی شد
