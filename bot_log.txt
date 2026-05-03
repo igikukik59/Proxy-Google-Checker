@@ -19272,3 +19272,14 @@ ERROR: [youtube] LK22MqsL-zQ: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-03 13:15:37] 📤 قطعه 4/4: video_raw.part04.mp4 آپلود در 20.2s
 [2026-05-03 13:15:38] مجموع زمان آپلود قطعات: 213.7s
 [2026-05-03 13:15:38] 📊 آمار به‌روزرسانی شد
+[2026-05-03 13:15:39] 📤 لاگ و آمار push شد
+[2026-05-03 13:15:42] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/DatNreXAlRw"
+[2026-05-03 13:15:42] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 13:15:42] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 13:15:43] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@104.17.72.206:4...
+[2026-05-03 13:16:00] 🍪 کوکی جدید دریافت شد
+[2026-05-03 13:16:01] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/DatNreXAlRw"
+[2026-05-03 13:16:01] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 13:16:01] 🔄 تلاش مجدد (3/3)...
+[2026-05-03 13:16:02] 🔀 تلاش با پروکسی تصادفی: vless://ce069292-c8bf-40dd-a6b1-87818a1e64e9@love.zshabai.to...
+[2026-05-03 13:16:13] 📊 آمار به‌روزرسانی شد
