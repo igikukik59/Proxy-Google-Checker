@@ -15514,3 +15514,12 @@ ERROR: [youtube] pfLzFjXHM4M: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-03 05:28:19] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 10.7s
 [2026-05-03 05:28:21] مجموع زمان آپلود قطعات: 48.8s
 [2026-05-03 05:28:21] 📊 آمار به‌روزرسانی شد
+[2026-05-03 05:28:23] 📤 لاگ و آمار push شد
+[2026-05-03 05:28:27] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=A61opI5wAmM"
+[2026-05-03 05:28:27] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 05:28:27] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 05:28:28] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@104.21.40.34:443?security=tls&type=ws&sni=...
+[2026-05-03 05:28:47] 🍪 کوکی جدید دریافت شد
+[2026-05-03 05:28:52] ⬇️ دانلود در 5.6s
+[2026-05-03 05:29:03] ⬆️ آپلود video_raw.mp4 در 9.8s
+[2026-05-03 05:29:04] 📊 آمار به‌روزرسانی شد
