@@ -18509,3 +18509,21 @@ ERROR: [youtube] 4kA3iWDeyjY: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-03 11:32:35] ⬇️ دانلود در 6.5s
 [2026-05-03 11:33:41] ❌ file_id یافت نشد
 [2026-05-03 11:33:41] 📊 آمار به‌روزرسانی شد
+[2026-05-03 11:33:42] 📤 لاگ و آمار push شد
+[2026-05-03 11:33:49] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=v3-Py9CHstw"
+[2026-05-03 11:33:49] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 11:33:49] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 11:33:50] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@172.64.152.23:443?path=/assignment&securit...
+[2026-05-03 11:33:59] 🎬 درخواست از b0Cjg96099P0e43f585a5469b5c56ab8: https://www.youtube.com/watch?v=sPypmo0FISQ
+[2026-05-03 11:34:08] 🍪 کوکی جدید دریافت شد
+[2026-05-03 11:34:28] ⬇️ دانلود در 19.8s
+[2026-05-03 11:34:28] ✂️ شروع تقسیم video_raw (76.0MB)
+[2026-05-03 11:34:29] 🎯 بیت‌ریت: 688kbps | مدت: 927.1s | زمان قطعه: 536s
+[2026-05-03 11:34:42] 🎬 درخواست از b0JSvWw099P05cb673821ccc8bf6e620: https://www.youtube.com/watch?v=KuIi0HssLd0
+[2026-05-03 11:35:00] 🎬 درخواست از b0Ixasv099P0501b0231cbb9cd3d7ad0: https://www.youtube.com/watch?v=4kA3iWDeyjY
+[2026-05-03 11:35:24] ❌ file_id یافت نشد
+[2026-05-03 11:35:24] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 53.2s
+[2026-05-03 11:35:39] ❌ file_id یافت نشد
+[2026-05-03 11:35:39] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 14.5s
+[2026-05-03 11:35:40] مجموع زمان آپلود قطعات: 67.7s
+[2026-05-03 11:35:40] 📊 آمار به‌روزرسانی شد
