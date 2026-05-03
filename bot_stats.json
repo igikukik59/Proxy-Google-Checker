@@ -1,4 +1,5 @@
 {
+<<<<<<< Updated upstream
   "totalDataMB": "12129.09",
   "totalVideos": 233,
   "totalDurationMinutes": "4245.5",
@@ -200,15 +201,23 @@
       "lastUsed": "2026-05-03T06:23:56.089Z"
     },
     {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@54.37.51.238:44",
-      "avgSpeedMBps": "3.13",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-03T05:51:00.542Z"
-    },
+=======
+  "totalDataMB": "33.00",
+  "totalVideos": 1,
+  "totalDurationMinutes": "13.2",
+  "uniqueUsers": 1,
+  "failedAttempts": 0,
+  "avgProcessingTimeSec": "47.4",
+  "avgVideoSizeMB": "33.00",
+  "avgVideoDurationMin": "13.2",
+  "queueLength": 1,
+  "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
+  "proxies": [
     {
-      "proxy": "trojan://humanity@104.18.12.149:443?security=tls&sni=www.gos",
+>>>>>>> Stashed changes
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@54.37.51.238:44",
       "avgSpeedMBps": "3.40",
+<<<<<<< Updated upstream
       "samples": 3,
       "failures": 0,
       "lastUsed": "2026-05-03T05:53:00.507Z"
@@ -380,6 +389,11 @@
       "samples": 3,
       "failures": 0,
       "lastUsed": "2026-05-03T08:22:01.367Z"
+=======
+      "samples": 1,
+      "failures": 0,
+      "lastUsed": "2026-05-03T08:26:14.967Z"
+>>>>>>> Stashed changes
     }
   ]
 }
