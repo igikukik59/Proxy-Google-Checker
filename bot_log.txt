@@ -18661,3 +18661,26 @@ ERROR: [youtube] DM8T7zqNsNE: This video is not available
 
 [2026-05-03 11:51:33] ❌ file_id یافت نشد
 [2026-05-03 11:51:33] 📊 آمار به‌روزرسانی شد
+[2026-05-03 11:51:34] 📤 لاگ و آمار push شد
+[2026-05-03 11:51:34] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@198.12.145.138:...
+[2026-05-03 11:51:43] 🎬 درخواست از b0CGhnz099P02655baeb10e4c3be63c2: https://youtu.be/rrZEfchyASg
+[2026-05-03 11:51:44] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://youtu.be/rrZEfchyASg"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] rrZEfchyASg: Video unavailable
+
+[2026-05-03 11:51:51] 🍪 کوکی جدید دریافت شد
+[2026-05-03 11:52:03] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=tvbWhHfvPRk"
+[2026-05-03 11:52:03] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 11:52:03] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 11:52:03] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.63.60:20...
+[2026-05-03 11:52:23] 🍪 کوکی جدید دریافت شد
+[2026-05-03 11:52:33] ⬇️ دانلود در 10.5s
+[2026-05-03 11:52:33] ✂️ شروع تقسیم video_raw (68.4MB)
+[2026-05-03 11:52:34] 🎯 بیت‌ریت: 504kbps | مدت: 1137.8s | زمان قطعه: 731s
+[2026-05-03 11:53:40] ❌ file_id یافت نشد
+[2026-05-03 11:53:40] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 64.7s
+[2026-05-03 11:54:01] 🎬 درخواست از b0IzNOz099P04d3664d12cac45e2cfcc: https://www.youtube.com/watch?v=EahRXSTP2hk
+[2026-05-03 11:54:09] ❌ file_id یافت نشد
+[2026-05-03 11:54:09] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 28.2s
+[2026-05-03 11:54:10] مجموع زمان آپلود قطعات: 92.9s
+[2026-05-03 11:54:10] 📊 آمار به‌روزرسانی شد
