@@ -16897,3 +16897,13 @@ ERROR: [youtube] zLodsIOXS7A: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-03 07:41:56] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 25.9s
 [2026-05-03 07:41:58] مجموع زمان آپلود قطعات: 56.9s
 [2026-05-03 07:41:58] 📊 آمار به‌روزرسانی شد
+[2026-05-03 07:41:59] 📤 لاگ و آمار push شد
+[2026-05-03 07:42:05] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "youtube.com/watch?v=e-Td8hjwTKk"
+[2026-05-03 07:42:05] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 07:42:05] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 07:42:06] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.128.176.37:8...
+[2026-05-03 07:42:10] 🎬 درخواست از b0G2fWT099P0e14d20a1a84aebc3ab88: https://www.youtube.com/watch?v=van1tzYl7sk
+[2026-05-03 07:42:25] 🍪 کوکی جدید دریافت شد
+[2026-05-03 07:42:31] ⬇️ دانلود در 6.4s
+[2026-05-03 07:42:44] ⬆️ آپلود video_raw.mp4 در 12.6s
+[2026-05-03 07:42:46] 📊 آمار به‌روزرسانی شد
