@@ -17610,3 +17610,16 @@ ERROR: [youtube] nXtkMEv2-f4: This video is not available
 [2026-05-03 09:24:48] ⬇️ دانلود در 3.5s
 [2026-05-03 09:25:09] ⬆️ آپلود video_raw.mp4 در 20.5s
 [2026-05-03 09:25:11] 📊 آمار به‌روزرسانی شد
+[2026-05-03 09:25:12] 📤 لاگ و آمار push شد
+[2026-05-03 09:25:12] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.152.191:2...
+[2026-05-03 09:25:22] 🎬 درخواست از b0JXVEH099P0a78a80ef06f0da7776e6: https://www.youtube.com/watch?v=h-TDXNWh4xg
+[2026-05-03 09:25:29] 🍪 کوکی جدید دریافت شد
+[2026-05-03 09:25:36] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "youtube.com/watch?v=u3GHzzEvwsI"
+[2026-05-03 09:25:36] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 09:25:36] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 09:25:39] 🔀 تلاش با پروکسی تصادفی: vless://ce069292-c8bf-40dd-a6b1-87818a1e64e9@love.zshabai.to...
+[2026-05-03 09:25:56] 🍪 کوکی جدید دریافت شد
+[2026-05-03 09:25:59] ⬇️ دانلود در 3.0s
+[2026-05-03 09:25:59] ✂️ شروع تقسیم video_raw (72.8MB)
+[2026-05-03 09:26:00] 🎯 بیت‌ریت: 341kbps | مدت: 1790.3s | زمان قطعه: 1082s
+[2026-05-03 09:26:03] 📊 آمار به‌روزرسانی شد
