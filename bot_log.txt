@@ -17755,3 +17755,19 @@ ERROR: [youtube] 0pPnHsZvNYo: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-03 09:41:20] 📤 قطعه 4/4: video_raw.part04.mp4 آپلود در 23.3s
 [2026-05-03 09:41:21] مجموع زمان آپلود قطعات: 127.3s
 [2026-05-03 09:41:21] 📊 آمار به‌روزرسانی شد
+[2026-05-03 09:41:22] 📤 لاگ و آمار push شد
+[2026-05-03 09:41:42] ⬇️ دانلود در 16.4s
+[2026-05-03 09:41:43] ✂️ شروع تقسیم video_raw (65.9MB)
+[2026-05-03 09:41:44] 🎯 بیت‌ریت: 400kbps | مدت: 1381.9s | زمان قطعه: 923s
+[2026-05-03 09:41:51] 🎬 درخواست از b0Ba4U8099P0878bbe8b5e180e368862: https://www.youtube.com/watch?v=ibi4rW
+[2026-05-03 09:41:52] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=ibi4rW"
+ERROR: [youtube:truncated_id] ibi4rW: Incomplete YouTube ID ibi4rW. URL https://www.youtube.com/watch?v=ibi4rW looks truncated.
+
+[2026-05-03 09:41:52] 🎬 درخواست از b0Bf2Zu099P0345257e813d5d789efe5: https://www.youtube.com/watch?v=X0qFhvxlK8U
+[2026-05-03 09:41:59] 🎬 درخواست از b0Ba4U8099P0878bbe8b5e180e368862: https://www.youtube.com/watch?v=ibi4rW_e2rU
+[2026-05-03 09:42:23] ❌ file_id یافت نشد
+[2026-05-03 09:42:23] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 37.5s
+[2026-05-03 09:43:02] ❌ file_id یافت نشد
+[2026-05-03 09:43:02] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 38.4s
+[2026-05-03 09:43:03] مجموع زمان آپلود قطعات: 75.9s
+[2026-05-03 09:43:03] 📊 آمار به‌روزرسانی شد
