@@ -18333,3 +18333,17 @@ ERROR: [youtube] 9bEyvUZ-Wns: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-03 11:05:05] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 41.8s
 [2026-05-03 11:05:05] مجموع زمان آپلود قطعات: 106.5s
 [2026-05-03 11:05:06] 📊 آمار به‌روزرسانی شد
+[2026-05-03 11:05:07] 📤 لاگ و آمار push شد
+[2026-05-03 11:05:11] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=KUCMmXq-l1Q"
+[2026-05-03 11:05:11] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 11:05:11] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 11:05:12] 🔀 تلاش با پروکسی تصادفی: vless://a01daac7-1e65-4645-854d-b47d226f6b08@104.20.6.134:44...
+[2026-05-03 11:05:14] 🎬 درخواست از b0BS5J8099P0e2d56c4ce3f3201a98d7: https://youtube.com/watch?v=vc9qUPgro-0
+[2026-05-03 11:05:16] 🎬 درخواست از b0I5KhL099P037488f0e03b3be29a550: https://www.youtube.com/watch?v=EyzT5nZ7_zQ
+[2026-05-03 11:05:28] 🎬 درخواست از b0I5KhL099P037488f0e03b3be29a550: https://www.youtube.com/watch?v=EyzT5nZ7_zQ
+[2026-05-03 11:05:29] 🍪 کوکی جدید دریافت شد
+[2026-05-03 11:05:33] ⬇️ دانلود در 4.4s
+[2026-05-03 11:05:43] 🎬 درخواست از b0BS5J8099P0e2d56c4ce3f3201a98d7: https://youtube.com/watch?v=nJYPoKIAeyQ
+[2026-05-03 11:05:45] 🎬 درخواست از b0JqsfF099P076dca6f84bd48df8c9ca: https://youtu.be/OInQ06UZfIk
+[2026-05-03 11:05:55] 🎬 درخواست از b0DnxL3099P070daa2db975f7f8b95bb: https://www.youtube.com/watch?v=s5f4hajKv2s
+[2026-05-03 11:06:03] 📊 آمار به‌روزرسانی شد
