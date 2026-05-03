@@ -18491,3 +18491,21 @@ ERROR: [youtube] 4kA3iWDeyjY: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-03 11:30:53] ⬇️ دانلود در 8.4s
 [2026-05-03 11:31:16] ❌ file_id یافت نشد
 [2026-05-03 11:31:16] 📊 آمار به‌روزرسانی شد
+[2026-05-03 11:31:17] 📤 لاگ و آمار push شد
+[2026-05-03 11:31:24] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=k4_yfAaLNhA"
+[2026-05-03 11:31:24] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 11:31:24] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 11:31:25] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@8.6.112.0:443?security=tls&sni=www.gossipg...
+[2026-05-03 11:31:45] 🍪 کوکی جدید دریافت شد
+[2026-05-03 11:31:47] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=k4_yfAaLNhA"
+[2026-05-03 11:31:47] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 11:31:47] 🔄 تلاش مجدد (3/3)...
+[2026-05-03 11:31:48] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@8.6.112.0:443?security=tls&sni=www.multipl...
+[2026-05-03 11:32:06] 🍪 کوکی جدید دریافت شد
+[2026-05-03 11:32:08] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=k4_yfAaLNhA"
+[2026-05-03 11:32:08] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 11:32:09] 🔀 تلاش با پروکسی تصادفی: vless://06ef598c-1555-4887-b3f9-08214a2f6792@104.17.72.206:4...
+[2026-05-03 11:32:25] 🍪 کوکی جدید دریافت شد
+[2026-05-03 11:32:35] ⬇️ دانلود در 6.5s
+[2026-05-03 11:33:41] ❌ file_id یافت نشد
+[2026-05-03 11:33:41] 📊 آمار به‌روزرسانی شد
