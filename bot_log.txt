@@ -18829,3 +18829,13 @@ ERROR: [youtube] rrZEfchyASg: Video unavailable
 [2026-05-03 12:15:25] ⬇️ دانلود در 4.5s
 [2026-05-03 12:15:39] ❌ file_id یافت نشد
 [2026-05-03 12:15:40] 📊 آمار به‌روزرسانی شد
+[2026-05-03 12:15:41] 📤 لاگ و آمار push شد
+[2026-05-03 12:15:45] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=A3y4YT9YQI8"
+[2026-05-03 12:15:45] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 12:15:45] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 12:15:46] 🔀 تلاش با پروکسی تصادفی: vless://cff6f361-828a-43c8-a8b5-8d10b32e57fb@188.114.98.0:44...
+[2026-05-03 12:16:02] 🍪 کوکی جدید دریافت شد
+[2026-05-03 12:16:04] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=A3y4YT9YQI8"
+[2026-05-03 12:16:04] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 12:16:04] 🔄 تلاش مجدد (3/3)...
+[2026-05-03 12:16:04] 📊 آمار به‌روزرسانی شد
