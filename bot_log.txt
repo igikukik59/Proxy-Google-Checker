@@ -21302,3 +21302,21 @@ ERROR: [youtube] 3yA7pd74138: Private video. Sign in if you've been granted acce
 [2026-05-03 17:34:39] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 24.3s
 [2026-05-03 17:34:41] مجموع زمان آپلود قطعات: 151.5s
 [2026-05-03 17:34:42] 📊 آمار به‌روزرسانی شد
+[2026-05-03 17:34:43] 📤 لاگ و آمار push شد
+[2026-05-03 17:34:45] 🎬 درخواست از b0J8Po2099P0d2f9ea2f60e4dd0f0435: https://www.youtube.com/watch?v=iaSHPkw741A
+[2026-05-03 17:35:36] ⬇️ دانلود در 49.5s
+[2026-05-03 17:35:36] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=iaSHPkw741A"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+
+[2026-05-03 17:35:37] ✂️ شروع تقسیم video_raw (136.6MB)
+[2026-05-03 17:35:38] 🎯 بیت‌ریت: 450kbps | مدت: 2548.6s | زمان قطعه: 820s
+[2026-05-03 17:35:48] ❌ file_id یافت نشد
+[2026-05-03 17:35:48] 📤 قطعه 1/4: video_raw.part01.mp4 آپلود در 5.6s
+[2026-05-03 17:35:52] 🎬 درخواست از b0JK5Go099P0b0152b660198c6897964: https://www.youtube.com/watch?v=eXotWZ7u7d8
+[2026-05-03 17:35:57] 🎬 درخواست از b0hdMz099P0560b73a7bbe398bb25e50: https://youtu.be/xkwirbPj3D0
+[2026-05-03 17:36:05] 🎬 درخواست از b0GijTe099P044fd95f23f743b09dcfe: https://www.youtube.com/watch?v=90b6V6acnV4
+[2026-05-03 17:36:34] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-03 17:36:36] ⚠️ خطای HTML از سرور (تلاش 2)، صبر 2 ثانیه...
+[2026-05-03 17:36:38] ⚠️ خطای HTML از سرور (تلاش 3)، صبر 4 ثانیه...
+[2026-05-03 17:36:42] ⚠️ خطای HTML از سرور (تلاش 4)، صبر 8 ثانیه...
+[2026-05-03 17:36:46] 📊 آمار به‌روزرسانی شد
