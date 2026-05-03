@@ -22243,3 +22243,21 @@ ERROR: [youtube] jbl0cjIx1dE: Unable to download API page: [Errno 111] Connectio
 [2026-05-03 20:46:12] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 78.1s
 [2026-05-03 20:46:13] مجموع زمان آپلود قطعات: 209.2s
 [2026-05-03 20:46:13] 📊 آمار به‌روزرسانی شد
+[2026-05-03 20:46:14] 📤 لاگ و آمار push شد
+[2026-05-03 20:46:21] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=QaX8pgo9ADE"
+[2026-05-03 20:46:21] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 20:46:21] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 20:46:22] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@172.64.152.23:443?path=/assignment&securit...
+[2026-05-03 20:46:40] 🍪 کوکی جدید دریافت شد
+[2026-05-03 20:46:42] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=QaX8pgo9ADE"
+[2026-05-03 20:46:42] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 20:46:42] 🔄 تلاش مجدد (3/3)...
+[2026-05-03 20:46:43] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.91.255.152:4...
+[2026-05-03 20:47:02] 🍪 کوکی جدید دریافت شد
+[2026-05-03 20:47:04] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=QaX8pgo9ADE"
+[2026-05-03 20:47:04] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 20:47:05] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@31.172.78.208:8...
+[2026-05-03 20:47:25] 🍪 کوکی جدید دریافت شد
+[2026-05-03 20:47:50] ⬇️ دانلود در 21.8s
+[2026-05-03 20:48:39] ⬆️ آپلود video_raw.mp4 در 48.5s
+[2026-05-03 20:48:41] 📊 آمار به‌روزرسانی شد
