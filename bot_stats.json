@@ -1,14 +1,14 @@
 {
-  "totalDataMB": "2604.20",
-  "totalVideos": 52,
-  "totalDurationMinutes": "963.7",
-  "uniqueUsers": 41,
+  "totalDataMB": "2612.22",
+  "totalVideos": 53,
+  "totalDurationMinutes": "971.2",
+  "uniqueUsers": 42,
   "failedAttempts": 0,
-  "avgProcessingTimeSec": "71.1",
-  "avgVideoSizeMB": "50.08",
-  "avgVideoDurationMin": "18.5",
-  "queueLength": 13,
-  "currentProxy": "trojan://humanity@www.multiplydose.com:4",
+  "avgProcessingTimeSec": "45.5",
+  "avgVideoSizeMB": "49.29",
+  "avgVideoDurationMin": "18.3",
+  "queueLength": 12,
+  "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
   "proxies": [
     {
       "proxy": "trojan://humanity@172.64.152.23:443?path=/assignment&securit",
@@ -54,10 +54,10 @@
     },
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@62.84.183.222:8",
-      "avgSpeedMBps": "2.94",
+      "avgSpeedMBps": "2.88",
       "samples": 5,
       "failures": 0,
-      "lastUsed": "2026-05-03T14:17:30.497Z"
+      "lastUsed": "2026-05-03T14:43:35.611Z"
     },
     {
       "proxy": "trojan://humanity@104.18.12.149:443?security=tls&sni=www.gos",
