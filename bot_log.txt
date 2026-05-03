@@ -15234,3 +15234,29 @@ ERROR: [youtube] ib_oUvPK3pM: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-03 04:57:54] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 9.3s
 [2026-05-03 04:57:56] مجموع زمان آپلود قطعات: 30.4s
 [2026-05-03 04:57:56] 📊 آمار به‌روزرسانی شد
+[2026-05-03 04:57:57] 📤 لاگ و آمار push شد
+[2026-05-03 04:57:58] 🔀 تلاش با پروکسی تصادفی: vless://ce069292-c8bf-40dd-a6b1-87818a1e64e9@121.149.124.119...
+[2026-05-03 04:58:11] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@185.148.106.30:...
+[2026-05-03 04:58:15] 🎬 درخواست از b0CAJG6099P0ef072622fda39f16bf67: https://www.youtube.com/watch?v=B5taeBJvt60
+[2026-05-03 04:58:22] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=B5taeBJvt60"
+WARNING: [youtube] [Errno 104] Connection reset by peer. Retrying (1/3)...
+WARNING: [youtube] [Errno 104] Connection reset by peer. Retrying (2/3)...
+WARNING: [youtube] [Errno 104] Connection reset by peer. Retrying (3/3)...
+WARNING: [youtube] Unable to download webpage: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused')). Giving up after 3 retries
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+ERROR: [youtube] B5taeBJvt60: Unable to download API page: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused'))
+
+[2026-05-03 04:58:22] 🔀 تلاش با پروکسی تصادفی: vless://a01daac7-1e65-4645-854d-b47d226f6b08@104.20.6.134:44...
+[2026-05-03 04:58:39] 🍪 کوکی جدید دریافت شد
+[2026-05-03 04:58:49] ⬇️ دانلود در 8.4s
+[2026-05-03 04:58:50] ✂️ شروع تقسیم video_raw (53.7MB)
+[2026-05-03 04:58:50] 🎯 بیت‌ریت: 485kbps | مدت: 928.0s | زمان قطعه: 760s
+[2026-05-03 04:58:53] 🎬 درخواست از b0CAJG6099P0ef072622fda39f16bf67: https://www.youtube.com/watch?v=B5taeBJvt60
+[2026-05-03 04:59:11] ⬆️ آپلود video_raw.part01.mp4 در 19.0s
+[2026-05-03 04:59:11] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 19.0s
+[2026-05-03 04:59:17] ⬆️ آپلود video_raw.part02.mp4 در 5.0s
+[2026-05-03 04:59:17] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 5.0s
+[2026-05-03 04:59:20] مجموع زمان آپلود قطعات: 24.0s
+[2026-05-03 04:59:20] 📊 آمار به‌روزرسانی شد
