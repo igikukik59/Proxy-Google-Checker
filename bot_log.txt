@@ -21853,3 +21853,12 @@ ERROR: [youtube] FBi1x57yKK4: Video unavailable
 [2026-05-03 19:48:15] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 40.2s
 [2026-05-03 19:48:18] مجموع زمان آپلود قطعات: 85.7s
 [2026-05-03 19:48:19] 📊 آمار به‌روزرسانی شد
+[2026-05-03 19:48:20] 📤 لاگ و آمار push شد
+[2026-05-03 19:48:47] ⬇️ دانلود در 21.8s
+[2026-05-03 19:49:01] 🎬 درخواست از b0Cehdt099P0bf72ccb3ae700824ce83: https://youtu.be/FBi1x57yKK4
+[2026-05-03 19:49:02] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://youtu.be/FBi1x57yKK4"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] FBi1x57yKK4: Video unavailable
+
+[2026-05-03 19:49:10] ⬆️ آپلود video_raw.mp4 در 22.4s
+[2026-05-03 19:49:11] 📊 آمار به‌روزرسانی شد
