@@ -17734,3 +17734,24 @@ ERROR: [youtube] 0pPnHsZvNYo: Sign in to confirm you’re not a bot. Use --cooki
 
 [2026-05-03 09:38:32] ⬆️ آپلود video_raw.mp4 در 36.6s
 [2026-05-03 09:38:33] 📊 آمار به‌روزرسانی شد
+[2026-05-03 09:38:34] 📤 لاگ و آمار push شد
+[2026-05-03 09:38:37] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=s5f4hajKv2s"
+[2026-05-03 09:38:37] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 09:38:37] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 09:38:38] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.72.25:44...
+[2026-05-03 09:38:38] 🎬 درخواست از b0DKrsT099P0f0df387bc86628ffc3eb: https://www.youtube.com/watch?v=v3-Py9CHstw
+[2026-05-03 09:38:49] 🎬 درخواست از b0ISkgc099P04726b621f4cf7dcbc007: https://www.youtube.com/watch?v=0pPnHsZvNYo
+[2026-05-03 09:38:54] 🍪 کوکی جدید دریافت شد
+[2026-05-03 09:39:06] ⬇️ دانلود در 12.4s
+[2026-05-03 09:39:07] ✂️ شروع تقسیم video_raw (143.5MB)
+[2026-05-03 09:39:07] 🎯 بیت‌ریت: 462kbps | مدت: 2606.4s | زمان قطعه: 799s
+[2026-05-03 09:40:00] ❌ file_id یافت نشد
+[2026-05-03 09:40:00] 📤 قطعه 1/4: video_raw.part01.mp4 آپلود در 49.3s
+[2026-05-03 09:40:26] ❌ file_id یافت نشد
+[2026-05-03 09:40:26] 📤 قطعه 2/4: video_raw.part02.mp4 آپلود در 25.2s
+[2026-05-03 09:40:56] ❌ file_id یافت نشد
+[2026-05-03 09:40:56] 📤 قطعه 3/4: video_raw.part03.mp4 آپلود در 29.5s
+[2026-05-03 09:41:20] ❌ file_id یافت نشد
+[2026-05-03 09:41:20] 📤 قطعه 4/4: video_raw.part04.mp4 آپلود در 23.3s
+[2026-05-03 09:41:21] مجموع زمان آپلود قطعات: 127.3s
+[2026-05-03 09:41:21] 📊 آمار به‌روزرسانی شد
