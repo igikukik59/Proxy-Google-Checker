@@ -22177,3 +22177,22 @@ ERROR: [youtube] jbl0cjIx1dE: Unable to download API page: [Errno 111] Connectio
 [2026-05-03 20:33:49] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 17.8s
 [2026-05-03 20:33:50] مجموع زمان آپلود قطعات: 147.7s
 [2026-05-03 20:33:51] 📊 آمار به‌روزرسانی شد
+[2026-05-03 20:33:52] 📤 لاگ و آمار push شد
+[2026-05-03 20:33:58] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=6HrwF7b-3bk"
+[2026-05-03 20:33:58] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 20:33:58] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 20:33:59] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.137.199:...
+[2026-05-03 20:34:17] 🍪 کوکی جدید دریافت شد
+[2026-05-03 20:34:20] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=6HrwF7b-3bk"
+[2026-05-03 20:34:20] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 20:34:20] 🔄 تلاش مجدد (3/3)...
+[2026-05-03 20:34:20] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.63.133:8...
+[2026-05-03 20:34:26] 🎬 درخواست از b0JZNUN099P033ceb00b8c00cb63d0fa: https://www.youtube.com/watch?v=QaX8pgo9ADE
+[2026-05-03 20:34:39] 🍪 کوکی جدید دریافت شد
+[2026-05-03 20:34:42] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=6HrwF7b-3bk"
+[2026-05-03 20:34:42] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 20:34:43] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@162.19.243.106:...
+[2026-05-03 20:35:02] 🍪 کوکی جدید دریافت شد
+[2026-05-03 20:35:13] ⬇️ دانلود در 6.0s
+[2026-05-03 20:35:50] ⬆️ آپلود video_raw.mp4 در 35.7s
+[2026-05-03 20:35:50] 📊 آمار به‌روزرسانی شد
