@@ -21880,3 +21880,22 @@ ERROR: [youtube] FBi1x57yKK4: Video unavailable
 [2026-05-03 19:50:45] 🎬 درخواست از b0CDmGj099P0c96938de5a8eded5e930: https://www.youtube.com/watch?v=svk8vIgAtNQ
 [2026-05-03 19:51:39] ⬇️ دانلود در 52.4s
 [2026-05-03 19:51:40] 📊 آمار به‌روزرسانی شد
+[2026-05-03 19:51:41] 📤 لاگ و آمار push شد
+[2026-05-03 19:51:41] ✂️ شروع تقسیم video_raw (152.0MB)
+[2026-05-03 19:51:41] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=svk8vIgAtNQ"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+
+[2026-05-03 19:51:42] 🎯 بیت‌ریت: 631kbps | مدت: 2020.0s | زمان قطعه: 584s
+[2026-05-03 19:51:46] 🎬 درخواست از b0JlBfp099P082a0058403628134abe3: https://youtu.be/b5DTZkrRPy4
+[2026-05-03 19:52:14] 🎬 درخواست از b0Jw4vu099P065e1156904a51365340b: https://www.youtube.com/watch?v=IioY1ISeOOo
+[2026-05-03 19:52:24] ⬆️ آپلود video_raw.part01.mp4 در 38.6s
+[2026-05-03 19:52:24] 📤 قطعه 1/4: video_raw.part01.mp4 آپلود در 38.6s
+[2026-05-03 19:52:39] 🎬 درخواست از b0Cehdt099P0bf72ccb3ae700824ce83: https://youtu.be/6CN1-rEDfm4
+[2026-05-03 19:53:07] ⬆️ آپلود video_raw.part02.mp4 در 40.8s
+[2026-05-03 19:53:07] 📤 قطعه 2/4: video_raw.part02.mp4 آپلود در 40.8s
+[2026-05-03 19:53:39] ⬆️ آپلود video_raw.part03.mp4 در 30.8s
+[2026-05-03 19:53:39] 📤 قطعه 3/4: video_raw.part03.mp4 آپلود در 30.8s
+[2026-05-03 19:53:55] ⬆️ آپلود video_raw.part04.mp4 در 13.8s
+[2026-05-03 19:53:55] 📤 قطعه 4/4: video_raw.part04.mp4 آپلود در 13.8s
+[2026-05-03 19:53:57] مجموع زمان آپلود قطعات: 124.0s
+[2026-05-03 19:53:57] 📊 آمار به‌روزرسانی شد
