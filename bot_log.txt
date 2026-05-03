@@ -23136,3 +23136,15 @@ ERROR: [youtube] giTnMOERdfc: Video unavailable. This video contains content fro
 [2026-05-03 22:52:37] 📤 لاگ و آمار push شد
 [2026-05-03 22:52:37] ⬆️ آپلود video_raw.mp4 در 8.4s
 [2026-05-03 22:52:38] 📊 آمار به‌روزرسانی شد
+[2026-05-03 22:52:39] 📤 لاگ و آمار push شد
+[2026-05-03 22:52:40] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@64.188.93.158:4...
+[2026-05-03 22:52:59] 🍪 کوکی جدید دریافت شد
+[2026-05-03 22:56:02] 🎬 درخواست از b0JeCgJ099P00bdd4050890002c1adc7: https://www.youtube.com/watch?v=a2grcJdfXmY
+[2026-05-03 22:56:12] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=a2grcJdfXmY"
+[2026-05-03 22:56:12] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 22:56:12] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 22:56:13] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.151.191:2...
+[2026-05-03 22:56:29] 🍪 کوکی جدید دریافت شد
+[2026-05-03 22:56:32] ⬇️ دانلود در 2.3s
+[2026-05-03 22:56:40] ⬆️ آپلود video_raw.mp4 در 7.5s
+[2026-05-03 22:56:40] 📊 آمار به‌روزرسانی شد
