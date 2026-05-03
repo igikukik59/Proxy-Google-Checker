@@ -16675,3 +16675,26 @@ ERROR: [youtube] 98BkEsAUr9k: Requested format is not available. Use --list-form
 [2026-05-03 07:17:31] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 15.2s
 [2026-05-03 07:17:33] مجموع زمان آپلود قطعات: 41.1s
 [2026-05-03 07:17:33] 📊 آمار به‌روزرسانی شد
+[2026-05-03 07:17:34] 📤 لاگ و آمار push شد
+[2026-05-03 07:17:35] 🔀 تلاش با پروکسی تصادفی: vless://ce069292-c8bf-40dd-a6b1-87818a1e64e9@121.149.124.119...
+[2026-05-03 07:17:48] 🔀 تلاش با پروکسی تصادفی: vless://a01daac7-1e65-4645-854d-b47d226f6b08@104.20.6.134:44...
+[2026-05-03 07:18:05] 🍪 کوکی جدید دریافت شد
+[2026-05-03 07:18:09] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/r_LYAVHc3-g"
+[2026-05-03 07:18:09] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 07:18:09] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 07:18:09] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.131.211.238:...
+[2026-05-03 07:18:10] 🎬 درخواست از b0DdSAg099P019e5cd13b05daee8e759: https://www.youtube.com/watch?v=pzjgTbNRToc
+[2026-05-03 07:18:26] 🍪 کوکی جدید دریافت شد
+[2026-05-03 07:18:27] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/r_LYAVHc3-g"
+[2026-05-03 07:18:27] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 07:18:27] 🔄 تلاش مجدد (3/3)...
+[2026-05-03 07:18:28] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.91.102.26:84...
+[2026-05-03 07:18:48] 🍪 کوکی جدید دریافت شد
+[2026-05-03 07:18:50] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/r_LYAVHc3-g"
+[2026-05-03 07:18:50] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 07:18:51] 🔀 تلاش با پروکسی تصادفی: vless://d37a75db-76b6-4db8-b213-0d5b044d138d@172.64.152.100:...
+[2026-05-03 07:19:13] 🎬 درخواست از b0G2fWT099P0e14d20a1a84aebc3ab88: https://www.youtube.com/watch?v=KJOKzgwEx2M
+[2026-05-03 07:20:00] ❌ خطای کوکی: Navigation timeout of 60000 ms exceeded
+[2026-05-03 07:20:04] ⬇️ دانلود در 2.5s
+[2026-05-03 07:20:11] ⬆️ آپلود video_raw.mp4 در 6.6s
+[2026-05-03 07:20:13] 📊 آمار به‌روزرسانی شد
