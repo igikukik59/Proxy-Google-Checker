@@ -18855,3 +18855,24 @@ ERROR: [youtube] YHpLJ3A7P3c: Sign in to confirm you’re not a bot. Use --cooki
 
 [2026-05-03 12:17:35] ❌ file_id یافت نشد
 [2026-05-03 12:17:36] 📊 آمار به‌روزرسانی شد
+[2026-05-03 12:17:37] 📤 لاگ و آمار push شد
+[2026-05-03 12:17:39] 🎬 درخواست از b0GN4af099P0b61eaa5d2d65670b3022: https://www.youtube.com/watch?v=gXN5rkXeDdc
+[2026-05-03 12:17:44] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=d9zfHdDSR3c"
+[2026-05-03 12:17:44] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 12:17:44] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 12:17:45] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.74.118:4...
+[2026-05-03 12:17:51] 🎬 درخواست از b0Ijx6Z099P00d1fbe445c51bb9509d5: https://www.youtube.com/watch?v=lJ-zN4h_JMk
+[2026-05-03 12:17:53] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=lJ-zN4h_JMk"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] lJ-zN4h_JMk: This video is not available
+
+[2026-05-03 12:18:01] 🍪 کوکی جدید دریافت شد
+[2026-05-03 12:18:03] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=d9zfHdDSR3c"
+[2026-05-03 12:18:03] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 12:18:03] 🔄 تلاش مجدد (3/3)...
+[2026-05-03 12:18:03] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.151.191:2...
+[2026-05-03 12:18:17] 🎬 درخواست از b0JqvSp099P020508c685f14069f6b73: https://www.youtube.com/watch?v=ZE_bTlYg8hA
+[2026-05-03 12:18:20] 🍪 کوکی جدید دریافت شد
+[2026-05-03 12:18:22] ⬇️ دانلود در 2.2s
+[2026-05-03 12:19:08] ❌ file_id یافت نشد
+[2026-05-03 12:19:08] 📊 آمار به‌روزرسانی شد
