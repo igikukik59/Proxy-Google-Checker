@@ -19335,3 +19335,15 @@ ERROR: [youtube] LK22MqsL-zQ: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-03 13:24:10] ⬇️ دانلود در 2.1s
 [2026-05-03 13:24:33] ⬆️ آپلود video_raw.mp4 در 22.5s
 [2026-05-03 13:24:33] 📊 آمار به‌روزرسانی شد
+[2026-05-03 13:24:34] 📤 لاگ و آمار push شد
+[2026-05-03 13:24:44] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=YZtSXQiB-NM"
+[2026-05-03 13:24:44] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 13:24:44] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 13:24:45] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.178.137.248:...
+[2026-05-03 13:25:04] 🍪 کوکی جدید دریافت شد
+[2026-05-03 13:25:16] ⬇️ دانلود در 12.1s
+[2026-05-03 13:25:16] ✂️ شروع تقسیم video_raw (75.2MB)
+[2026-05-03 13:25:17] ⚠️ خطای HTML از سرور (تلاش 1)، صبر 1 ثانیه...
+[2026-05-03 13:25:18] 🎯 بیت‌ریت: 590kbps | مدت: 1069.0s | زمان قطعه: 625s
+[2026-05-03 13:25:30] 🎬 درخواست از b0COWzN099P0f81ec7ab00c003b9a16b: https://www.youtube.com/watch?v=3xlBNKf7hvg
+[2026-05-03 13:26:13] 📊 آمار به‌روزرسانی شد
