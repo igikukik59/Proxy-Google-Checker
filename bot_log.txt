@@ -21681,3 +21681,13 @@ ERROR: [youtube] N_PR9iMuifQ: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-03 19:21:37] 🎬 درخواست از b0JbW1a099P0cde4af9738f30002a9ff: https://youtu.be/qmsvAzxj7ac
 [2026-05-03 19:22:02] ⬆️ آپلود video_raw.mp4 در 24.9s
 [2026-05-03 19:22:03] 📊 آمار به‌روزرسانی شد
+[2026-05-03 19:22:05] 📤 لاگ و آمار push شد
+[2026-05-03 19:22:11] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/qmsvAzxj7ac"
+[2026-05-03 19:22:11] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 19:22:11] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 19:22:11] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.64.157:4...
+[2026-05-03 19:22:29] 🍪 کوکی جدید دریافت شد
+[2026-05-03 19:22:36] ⬇️ دانلود در 7.2s
+[2026-05-03 19:23:07] 🎬 درخواست از b0GN4af099P0b61eaa5d2d65670b3022: https://www.youtube.com/watch?v=gXN5rkXeDdc
+[2026-05-03 19:23:43] ❌ file_id یافت نشد
+[2026-05-03 19:23:43] 📊 آمار به‌روزرسانی شد
