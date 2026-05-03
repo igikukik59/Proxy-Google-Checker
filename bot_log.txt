@@ -22027,3 +22027,40 @@ WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is 
 [2026-05-03 20:11:54] 📤 لاگ و آمار push شد
 [2026-05-03 20:12:38] ⬆️ آپلود video_raw.mp4 در 43.9s
 [2026-05-03 20:12:39] 📊 آمار به‌روزرسانی شد
+[2026-05-03 20:12:40] 📤 لاگ و آمار push شد
+[2026-05-03 20:12:45] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=6HrwF7b-3bk"
+[2026-05-03 20:12:45] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 20:12:45] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 20:12:46] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.151.191:2...
+[2026-05-03 20:12:59] 🎬 درخواست از b0DKBXC099P05598b86a2b338d2af5cb: https://youtu.be/SYxor82He8Q
+[2026-05-03 20:13:03] 🍪 کوکی جدید دریافت شد
+[2026-05-03 20:13:04] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=6HrwF7b-3bk"
+[2026-05-03 20:13:04] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 20:13:04] 🔄 تلاش مجدد (3/3)...
+[2026-05-03 20:13:05] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@www.multiplydose.com:443?security=tls&type...
+[2026-05-03 20:13:10] 🎬 درخواست از b0H8a6S099P035e9ed7eb2ebb1a56581: https://youtube.com/watch?v=wbeiKmTa4Hc
+[2026-05-03 20:13:24] 🍪 کوکی جدید دریافت شد
+[2026-05-03 20:13:26] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=6HrwF7b-3bk"
+[2026-05-03 20:13:26] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 20:13:28] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@134.209.28.89:2...
+[2026-05-03 20:13:44] 🎬 درخواست از b0Gyusw099P0977a1afa332fa977078a: https://www.youtube.com/watch?v=PbO_TFNbxos
+[2026-05-03 20:13:50] 🍪 کوکی جدید دریافت شد
+[2026-05-03 20:15:44] ⬇️ دانلود در 109.6s
+[2026-05-03 20:15:48] ✂️ شروع تقسیم video_raw (74.2MB)
+[2026-05-03 20:15:48] 🎬 درخواست از b0BBSsG099P0b326c91d9afa1cb8333e: https://www.youtube.com/watch?v=RRIUkFz4snU
+[2026-05-03 20:15:49] 🎯 بیت‌ریت: 269kbps | مدت: 2311.1s | زمان قطعه: 1370s
+[2026-05-03 20:15:52] 🎬 درخواست از b0CYhj4099P011c7b0764e28b242961c: https://www.youtube.com/watch?v=9hEfW8lt2sw
+[2026-05-03 20:15:54] 🎬 درخواست از b0e7Tl099P0fd22281aab858526a4149: https://www.youtube.com/watch?v=ZfxHVmNSlQ4
+[2026-05-03 20:15:58] 🎬 درخواست از b0LAxN099P04d609de41a605f3414c04: https://youtu.be/2fapPrQ3mks
+[2026-05-03 20:16:02] 🎬 درخواست از b0B3TpD099P06b8cc2caf907b7785e93: https://www.youtube.com/watch?v=BlW2AqVzMfG2aXx2d
+[2026-05-03 20:16:04] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=BlW2AqVzMfG2aXx2d"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] BlW2AqVzMfG: Video unavailable
+
+[2026-05-03 20:16:38] ⬆️ آپلود video_raw.part01.mp4 در 46.1s
+[2026-05-03 20:16:38] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 46.1s
+[2026-05-03 20:17:21] ⬆️ آپلود video_raw.part02.mp4 در 41.7s
+[2026-05-03 20:17:21] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 41.7s
+[2026-05-03 20:17:23] مجموع زمان آپلود قطعات: 87.8s
+[2026-05-03 20:17:23] 🎬 درخواست از b0CctB8099P0ac5de42d12df50214c8d: https://www.youtube.com/watch?v=jbl0cjIx1dE
+[2026-05-03 20:17:23] 📊 آمار به‌روزرسانی شد
