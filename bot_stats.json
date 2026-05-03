@@ -1,4 +1,5 @@
 {
+<<<<<<< Updated upstream
   "totalDataMB": "9275.63",
   "totalVideos": 178,
   "totalDurationMinutes": "3354.5",
@@ -331,6 +332,25 @@
       "samples": 1,
       "failures": 0,
       "lastUsed": "2026-05-03T13:25:16.417Z"
+=======
+  "totalDataMB": "99.90",
+  "totalVideos": 1,
+  "totalDurationMinutes": "50.9",
+  "uniqueUsers": 1,
+  "failedAttempts": 0,
+  "avgProcessingTimeSec": "127.0",
+  "avgVideoSizeMB": "99.90",
+  "avgVideoDurationMin": "50.9",
+  "queueLength": 4,
+  "currentProxy": "trojan://humanity@172.64.152.23:443?path",
+  "proxies": [
+    {
+      "proxy": "trojan://humanity@172.64.152.23:443?path=/assignment&securit",
+      "avgSpeedMBps": "3.57",
+      "samples": 1,
+      "failures": 0,
+      "lastUsed": "2026-05-03T13:27:53.010Z"
+>>>>>>> Stashed changes
     }
   ]
 }
