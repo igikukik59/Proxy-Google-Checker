@@ -20794,3 +20794,18 @@ ERROR: [youtube] bwElHcmPBcM: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-03 16:35:30] ⬇️ دانلود در 3.4s
 [2026-05-03 16:35:47] ⬆️ آپلود video_raw.mp4 در 17.0s
 [2026-05-03 16:35:48] 📊 آمار به‌روزرسانی شد
+[2026-05-03 16:35:49] 📤 لاگ و آمار push شد
+[2026-05-03 16:35:58] ⬇️ دانلود در 7.5s
+[2026-05-03 16:35:59] 🎬 درخواست از b0BlYXz099P001a1b53f3d71f1337027: https://www.youtube.com/watch?v=5mWkn0Xb6KM
+[2026-05-03 16:36:13] 🎬 درخواست از b0GDhFt099P061df9fc633f970f2e3da: https://youtu.be/bwElHcmPBcM
+[2026-05-03 16:36:14] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://youtu.be/bwElHcmPBcM"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] bwElHcmPBcM: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-03 16:36:21] 🎬 درخواست از b0GDhFt099P061df9fc633f970f2e3da: https://youtu.be/lYuS_oao6H4
+[2026-05-03 16:36:23] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://youtu.be/lYuS_oao6H4"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] lYuS_oao6H4: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-03 16:36:23] 🎬 درخواست از b0B9lfW099P0a6d75d5fc3a3eefd4334: https://www.youtube.com/watch?v=WG2YV3JzcQs
+[2026-05-03 16:36:38] 📊 آمار به‌روزرسانی شد
