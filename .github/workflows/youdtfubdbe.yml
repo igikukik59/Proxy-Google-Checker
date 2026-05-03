@@ -1,4 +1,4 @@
-name: 🎬 ربات یوتیوب (Shorts، لغو درخواست) + PO Token
+name: 🎬 ربات یوتیوب (نسخهٔ طلایی نهایی با ادمین)
 
 on:
   workflow_dispatch:
@@ -19,16 +19,10 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y curl unzip python3-pip ffmpeg
           pip install yt-dlp
-          pip install bgutil-ytdlp-pot-provider
           wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
           unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
-
-      - name: 🚀 راه‌اندازی PO Token Server
-        run: |
-          bgutil-ytdlp-pot-provider --port 4416 &
-          sleep 5
 
       - name: 🧪 پیش‌آزمون هم‌زمان پروکسی‌ها
         run: |
@@ -43,7 +37,7 @@ jobs:
           const PROXY_FILE = 'کانفیگ های خوب.txt';
           const TEST_VIDEO = 'https://www.youtube.com/watch?v=t6uzncMZpk0';
           const MAX_DOWNLOAD_TIME = 90;
-          const CONCURRENCY = 5;
+          const CONCURRENCY = 5; // هم‌زمانی
 
           execSync('git config --global user.name "github-actions[bot]"', {stdio:'pipe'});
           execSync('git config --global user.email "github-actions[bot]@users.noreply.github.com"', {stdio:'pipe'});
@@ -122,9 +116,8 @@ jobs:
               try {
                 execSync(
                   `yt-dlp --cookies ${tmpCookieFile} --proxy socks5h://127.0.0.1:10808 ` +
-                  `-N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist ` +
-                  `--extractor-args "youtube:pot-server=http://127.0.0.1:4416" ` +
-                  `--format "best[height<=480][ext=mp4] / best[height<=480] / best" ` +
+                  `-N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist ` +
+                  `--format "best[height<=480][ext=mp4] / best[height<=480]" ` +
                   `--merge-output-format mp4 --output "${outPath}" "${TEST_VIDEO}"`,
                   { stdio: 'inherit', timeout: 120000 }
                 );
@@ -179,7 +172,7 @@ jobs:
 
           timeout 1800 node test_proxies.cjs
 
-      - name: 🤖 اجرای ربات طلایی با Shorts، لغو و PO Token (بدون جستجو)
+      - name: 🤖 اجرای ربات طلایی
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_BOT_TOKEN }}
           ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
@@ -200,7 +193,7 @@ jobs:
           const LOG_FILE = 'bot_log.txt';
           const STATS_FILE = 'bot_stats.json';
           const TOKEN = process.env.RUBIKA_BOT_TOKEN;
-          const ADMIN_SECRET = process.env.ADMIN_SECRET || '';
+          const ADMIN_SECRET = process.env.ADMIN_SECRET || '';  // رمز ادمین (از Secrets)
           if (!TOKEN) { console.error('❌ TOKEN تنظیم نشده'); process.exit(1); }
 
           const MAX_DURATION = 3600;
@@ -220,7 +213,7 @@ jobs:
 
           const proxyStats = new Map();
           const rateLimitQueue = new Map();
-          const adminUsers = new Set();
+          const adminUsers = new Set();  // کاربران ادمین
 
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
           function log(...args) {
@@ -306,14 +299,14 @@ jobs:
             if (keypad) { body.chat_keypad = keypad; body.chat_keypad_type = 'New'; }
             return await api('sendMessage', body);
           }
-          async function uploadAndSendFile(chatId, filePath, fileType, caption='') {
+          async function uploadAndSendVideo(chatId, videoPath, caption='') {
             const start = Date.now();
-            const req = await api('requestSendFile', {type: fileType});
+            const req = await api('requestSendFile', {type:'Video'});
             const upUrl = req?.data?.upload_url;
             if (!upUrl) { err('upload_url نگرفت'); return false; }
-            const buf = fs.readFileSync(filePath);
+            const buf = fs.readFileSync(videoPath);
             const form = new FormData();
-            form.append('file', new Blob([buf], {type:'application/octet-stream'}), path.basename(filePath));
+            form.append('file', new Blob([buf], {type:'application/octet-stream'}), path.basename(videoPath));
             const upRes = await fetch(upUrl, {method:'POST', body:form});
             const upText = await upRes.text();
             let j = {}; try { j = JSON.parse(upText); } catch(_){}
@@ -321,11 +314,8 @@ jobs:
             if (!fileId) { err('file_id یافت نشد'); return false; }
             const s = await api('sendFile', {chat_id:chatId, file_id:fileId, text:caption});
             const elapsed = ((Date.now()-start)/1000).toFixed(1);
-            log(`⬆️ آپلود ${path.basename(filePath)} در ${elapsed}s`);
+            log(`⬆️ آپلود ${path.basename(videoPath)} در ${elapsed}s`);
             return !!s?.data?.message_id;
-          }
-          async function uploadAndSendVideo(chatId, videoPath, caption='') {
-            return await uploadAndSendFile(chatId, videoPath, 'Video', caption);
           }
 
           // ======================== کوکی یوتیوب ========================
@@ -380,9 +370,9 @@ jobs:
 
           // ======================== دریافت غیرهمگام اطلاعات ویدیو ========================
           function getVideoInfo(url) {
-            const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --no-playlist --extractor-args "youtube:pot-server=http://127.0.0.1:4416" --dump-json "${url}"`;
+            const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "${url}"`;
             return new Promise((resolve) => {
-              exec(cmd, { timeout: 15000, maxBuffer: 10 * 1024 * 1024 }, (error, stdout) => {
+              exec(cmd, { timeout: 15000 }, (error, stdout) => {
                 if (error) { log('⚠️ دریافت اطلاعات ویدیو ممکن نشد:', error.message); resolve(null); return; }
                 try {
                   const data = JSON.parse(stdout);
@@ -392,16 +382,15 @@ jobs:
             });
           }
 
-          // ======================== دانلود ویدیو (با پشتیبانی از Shorts) ========================
+          // ======================== دانلود ویدیو ========================
           async function downloadYouTube(url) {
             const out = '/tmp/video_raw.mp4';
-            const fmt = `best[height<=480][ext=mp4] / best[height<=480] / best`;
+            const fmt = `best[height<=480][ext=mp4] / best[height<=480]`;
             const start = Date.now();
             try {
               execSync(
                 `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 ` +
-                `-N 8 --concurrent-fragments 8 --buffer-size 2048K --no-playlist ` +
-                `--extractor-args "youtube:pot-server=http://127.0.0.1:4416" ` +
+                `-N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist ` +
                 `--format "${fmt}" --merge-output-format mp4 --output "${out}" "${url}"`,
                 {stdio:'inherit', timeout:600000}
               );
@@ -566,15 +555,10 @@ jobs:
           }
 
           const mainKeypad = {
-            rows: [
-              { buttons: [
-                  { id: 'QUEUE_STATUS', type: 'Simple', button_text: '⏳ چقدر مونده؟' }
-              ]},
-              { buttons: [
-                  { id: 'CANCEL_REQUEST', type: 'Simple', button_text: '✖️ لغو درخواست' },
-                  { id: 'HELP', type: 'Simple', button_text: '❓ راهنما' }
-              ]}
-            ],
+            rows: [{ buttons: [
+              { id: 'QUEUE_STATUS', type: 'Simple', button_text: '⏳ چقدر مونده؟' },
+              { id: 'HELP', type: 'Simple', button_text: '❓ راهنما' }
+            ]}],
             resize_keyboard: true, one_time_keyboard: false
           };
 
@@ -702,21 +686,6 @@ jobs:
             sendMessage(chatId, `🔢 شما نفر ${position} در صف هستید.\n⏱️ زمان انتظار تقریبی: ${estMin} دقیقه`, mainKeypad);
           }
 
-          async function handleCancelRequest(chatId) {
-            const idx = queue.findIndex(item => item.chatId === chatId);
-            if (idx !== -1) {
-              queue.splice(idx, 1);
-              await sendMessage(chatId, '✅ درخواست شما از صف حذف شد.');
-              log(`🚫 درخواست ${chatId} از صف لغو شد.`);
-            } else {
-              if (isProcessing) {
-                await sendMessage(chatId, 'ℹ️ درخواست شما در حال پردازش است و امکان لغو آن وجود ندارد.');
-              } else {
-                await sendMessage(chatId, 'ℹ️ درخواست فعالی برای لغو یافت نشد.');
-              }
-            }
-          }
-
           async function handleQueueStatus(chatId) {
             const now = Date.now();
             const last = rateLimitQueue.get(chatId) || 0;
@@ -734,14 +703,14 @@ jobs:
           }
 
           async function handleHelp(chatId) {
-            const helpText =
+            const helpText = 
               'راهنمای ربات دانلود یوتیوب\n\n' +
-              '(1) لینک ویدیو یا Shorts را کپی کرده و در همین چت بفرستید.\n' +
-              '(2) ربات ابتدا مدت ویدیو را بررسی می‌کند (حداکثر ۱.۵ ساعت) و در صورت تأیید، دانلود را شروع می‌کند.\n' +
-              '(3) در صورت شلوغ بودن ربات، درخواست شما در صف قرار می‌گیرد و می‌توانید با دکمه «⏳ چقدر مونده؟» وضعیت خود را بپرسید.\n' +
-              '(4) با دکمه «✖️ لغو درخواست» می‌توانید درخواست در صف را پاک کنید.\n' +
+              '(1) یک ویدیو در یوتیوب پیدا کنید (در گوگل سرچ کنید یا از لینک مستقیم استفاده کنید).\n' +
+              '(2) لینک کامل ویدیو (مثلاً https://youtube.com/watch?v=... یا https://youtu.be/...) را کپی کنید و در همین چت بفرستید.\n' +
+              '(3) ربات ابتدا مدت ویدیو را بررسی می‌کند (حداکثر ۶۰ دقیقه) و در صورت تأیید، دانلود را شروع می‌کند.\n' +
+              '(4) در صورت شلوغ بودن ربات، درخواست شما در صف قرار می‌گیرد و می‌توانید با دکمه «چقدر مونده؟» وضعیت خود را بپرسید.\n' +
               '(5) پس از دانلود، ویدیو به صورت قطعات زیر ۵۰ مگابایت برای شما ارسال می‌شود.\n\n' +
-              'محدودیت‌ها:\n- هر ویدیو حداکثر ۱.۵ ساعت\n- هر کاربر مجموعاً ۱.۵ ساعت در این بازه (۶ ساعت) می‌تواند دانلود کند.\n\n' +
+              'محدودیت‌ها:\n- هر ویدیو حداکثر ۱ ساعت\n- هر کاربر مجموعاً ۱ ساعت در این بازه (۶ ساعت) می‌تواند دانلود کند.\n\n' +
               'نحوه اتصال و شفاف‌سازی:\n' +
               'این ربات برای دانلود محتوای درخواستی شما، از منابع و مسیرهای ارتباطی استفاده می‌کند که توسط نهادهای رسمی و مسئول در کشور برای دسترسی به اینترنت بین‌الملل مجاز شمرده شده است. ' +
               'این سرویس صرفاً یک واسط برای دریافت محتوای آموزشی و عمومی بوده و هیچ‌گونه ترافیک حساس، ارتباط رمزنگاری‌شده غیرمتعارف، یا داده‌ای که به امنیت ملی یا منافع کشور آسیب برساند، از طریق آن رد و بدل نمی‌شود. ' +
@@ -761,17 +730,8 @@ jobs:
             if (proxies.length === 0) { err('هیچ پروکسی وجود ندارد'); process.exit(1); }
             log(`${proxies.length} پروکسی خوب`);
 
-            let started = false;
-            for (let i = 0; i < proxies.length; i++) {
-              log(`🔁 تلاش اولیه برای پروکسی ${i+1}/${proxies.length}`);
-              if (await switchToRandomProxy()) {
-                if (await grabCookies()) {
-                  started = true;
-                  break;
-                }
-              }
-            }
-            if (!started) { err('❌ هیچ پروکسی و کوکی اولیه سالمی یافت نشد'); process.exit(1); }
+            if (!(await switchToRandomProxy())) { err('❌ هیچ پروکسی سالمی یافت نشد'); process.exit(1); }
+            if (!(await grabCookies())) { err('❌ کوکی اولیه شکست'); process.exit(1); }
 
             log('🧹 پاکسازی پیام‌های قدیمی...');
             let offset = null;
@@ -805,30 +765,31 @@ jobs:
 
                   if (buttonId === 'QUEUE_STATUS') { await handleQueueStatus(chatId); continue; }
                   if (buttonId === 'HELP') { await handleHelp(chatId); continue; }
-                  if (buttonId === 'CANCEL_REQUEST') { await handleCancelRequest(chatId); continue; }
 
                   if (!msg?.text) continue;
                   const text = msg.text.trim();
 
+                  // ----- کلید ادمین -----
                   if (ADMIN_SECRET && text === ADMIN_SECRET) {
                     adminUsers.add(chatId);
                     await sendMessage(chatId, '🔑 دسترسی ادمین فعال شد. محدودیت‌ها برداشته شد.');
                     continue;
                   }
 
-                  const ytReg = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([\w-]+)/;
+                  const ytReg = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/;
                   const m = text.match(ytReg);
                   if (!m) {
-                    if (!sentHelp.has(chatId)) { await sendMessage(chatId, '👋 سلام! لینک یوتیوب یا Shorts رو بفرست، یا از دکمه‌ها استفاده کن.', mainKeypad); sentHelp.add(chatId); }
+                    if (!sentHelp.has(chatId)) { await sendMessage(chatId, '👋 سلام! لینک یوتیوب رو بفرست.', mainKeypad); sentHelp.add(chatId); }
                     continue;
                   }
 
-                  const videoUrl = m[0].startsWith('http') ? m[0] : `https://${m[0]}`;
+                  const videoUrl = m[0];
                   log(`🎬 درخواست از ${chatId}: ${videoUrl}`);
 
                   const info = await getVideoInfo(videoUrl);
                   if (!info || !info.duration) { await sendMessage(chatId, '⚠️ نتوانستم اطلاعات ویدیو را دریافت کنم.'); continue; }
 
+                  // محدودیت‌ها فقط برای غیرادمین
                   if (!adminUsers.has(chatId)) {
                     if (info.duration > MAX_DURATION) { await sendMessage(chatId, `⚠️ مدت ویدیو (${Math.floor(info.duration/60)} دقیقه) بیش از ۶۰ دقیقه مجاز است.`); continue; }
                     const used = userDailyUsage.get(chatId) || 0;
