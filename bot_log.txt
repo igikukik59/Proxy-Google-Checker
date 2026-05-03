@@ -22779,3 +22779,14 @@ ERROR: [youtube] asY42-AfiLk: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-03 21:59:06] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 13.5s
 [2026-05-03 21:59:07] مجموع زمان آپلود قطعات: 73.3s
 [2026-05-03 21:59:08] 📊 آمار به‌روزرسانی شد
+[2026-05-03 21:59:09] 📤 لاگ و آمار push شد
+[2026-05-03 21:59:13] 🎬 درخواست از b0IxAXl099P061a725265ab47146679b: https://www.youtube.com/watch?v=hw7ecQ-IAVI
+[2026-05-03 21:59:16] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=ZddRn8i8oME"
+[2026-05-03 21:59:16] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 21:59:16] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 21:59:17] 🔀 تلاش با پروکسی تصادفی: vless://a01daac7-1e65-4645-854d-b47d226f6b08@104.20.6.134:44...
+[2026-05-03 21:59:34] 🍪 کوکی جدید دریافت شد
+[2026-05-03 21:59:40] ⬇️ دانلود در 6.4s
+[2026-05-03 21:59:41] 🎬 درخواست از b0DJzya099P019b43e77c793921ae18a: https://www.youtube.com/watch?v=FRVsGJF7FUE
+[2026-05-03 21:59:55] ⬆️ آپلود video_raw.mp4 در 13.7s
+[2026-05-03 21:59:56] 📊 آمار به‌روزرسانی شد
