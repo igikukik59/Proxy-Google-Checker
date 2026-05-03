@@ -18074,3 +18074,22 @@ ERROR: [youtube] SkGcDzwbIO4: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-03 10:28:56] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 48.8s
 [2026-05-03 10:28:57] مجموع زمان آپلود قطعات: 114.8s
 [2026-05-03 10:28:57] 📊 آمار به‌روزرسانی شد
+[2026-05-03 10:28:58] 📤 لاگ و آمار push شد
+[2026-05-03 10:29:06] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=k4_yfAaLNhA"
+[2026-05-03 10:29:06] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 10:29:06] 🔄 تلاش مجدد (2/3)...
+[2026-05-03 10:29:07] 🔀 تلاش با پروکسی تصادفی: trojan://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:...
+[2026-05-03 10:29:24] 🍪 کوکی جدید دریافت شد
+[2026-05-03 10:29:25] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=k4_yfAaLNhA"
+[2026-05-03 10:29:25] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 10:29:25] 🔄 تلاش مجدد (3/3)...
+[2026-05-03 10:29:26] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@193.169.105.239...
+[2026-05-03 10:29:44] 🍪 کوکی جدید دریافت شد
+[2026-05-03 10:29:47] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=k4_yfAaLNhA"
+[2026-05-03 10:29:47] ❌ دانلود با این پروکسی ناموفق
+[2026-05-03 10:29:47] 🎬 درخواست از b0Ixasv099P0501b0231cbb9cd3d7ad0: https://www.youtube.com/watch?v=4kA3iWDeyjY
+[2026-05-03 10:29:47] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.74.118:4...
+[2026-05-03 10:30:04] 🍪 کوکی جدید دریافت شد
+[2026-05-03 10:30:21] ⬇️ دانلود در 11.5s
+[2026-05-03 10:31:29] ❌ file_id یافت نشد
+[2026-05-03 10:31:29] 📊 آمار به‌روزرسانی شد
