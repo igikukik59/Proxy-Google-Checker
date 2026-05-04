@@ -27788,3 +27788,35 @@ ERROR: [youtube] ixC6T2dWSiA: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-04 13:41:24] 📤 لاگ و آمار push شد
 [2026-05-04 13:41:52] ⬆️ آپلود video_raw.mp4 در 39.7s
 [2026-05-04 13:41:54] 📊 آمار به‌روزرسانی شد
+[2026-05-04 13:41:55] 📤 لاگ و آمار push شد
+[2026-05-04 13:42:02] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=ilBZB17jJds"
+[2026-05-04 13:42:02] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 13:42:02] 🔄 تلاش مجدد (2/3)...
+[2026-05-04 13:42:03] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@62.84.183.222:8...
+[2026-05-04 13:42:16] 🎬 درخواست از b0DZbT6099P0e2dd4df37dcaca151ef6: https://www.youtube.com/watch?v=QMuyLHT-cKI
+[2026-05-04 13:42:22] 🍪 کوکی جدید دریافت شد
+[2026-05-04 13:42:24] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=ilBZB17jJds"
+[2026-05-04 13:42:24] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 13:42:24] 🔄 تلاش مجدد (3/3)...
+[2026-05-04 13:42:25] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.8.211.191:20...
+[2026-05-04 13:42:42] 🍪 کوکی جدید دریافت شد
+[2026-05-04 13:42:43] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=ilBZB17jJds"
+[2026-05-04 13:42:43] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 13:42:44] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@8.6.112.0:443?security=tls&sni=www.multipl...
+[2026-05-04 13:43:02] 🍪 کوکی جدید دریافت شد
+[2026-05-04 13:44:50] ⬇️ دانلود در 104.6s
+[2026-05-04 13:44:52] ✂️ شروع تقسیم video_raw (97.7MB)
+[2026-05-04 13:44:53] 🎬 درخواست از b0gsSQ099P0f34d1c0dedb2008ef4096: https://www.youtube.com/watch?v=rGtkcIu9Vuc
+[2026-05-04 13:44:54] 🎯 بیت‌ریت: 524kbps | مدت: 1565.2s | زمان قطعه: 704s
+[2026-05-04 13:44:57] 🎬 درخواست از b0CuKup099P0c9ce3cc8413155dbb6a7: https://youtu.be/-XJjRej-zp0
+[2026-05-04 13:45:00] 🎬 درخواست از b0I1az2099P005fb2c10575bf2d91f40: https://www.youtube.com/watch?v=55howDWZtRg
+[2026-05-04 13:45:02] ❌ file_id یافت نشد
+[2026-05-04 13:45:02] 📤 قطعه 1/3: video_raw.part01.mp4 آپلود در 5.3s
+[2026-05-04 13:45:31] 🎬 درخواست از b0B9lfW099P0a6d75d5fc3a3eefd4334: https://www.youtube.com/watch?v=6p0fyMYAv4A
+[2026-05-04 13:45:35] 🎬 درخواست از b0I1az2099P005fb2c10575bf2d91f40: https://www.youtube.com/watch?v=z7rEuMPPmOU
+[2026-05-04 13:45:59] ⬆️ آپلود video_raw.part02.mp4 در 56.8s
+[2026-05-04 13:45:59] 📤 قطعه 2/3: video_raw.part02.mp4 آپلود در 56.8s
+[2026-05-04 13:46:03] ❌ file_id یافت نشد
+[2026-05-04 13:46:03] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 1.9s
+[2026-05-04 13:46:03] مجموع زمان آپلود قطعات: 64.0s
+[2026-05-04 13:46:04] 📊 آمار به‌روزرسانی شد
