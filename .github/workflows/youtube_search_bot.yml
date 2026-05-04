@@ -1,9 +1,9 @@
-name: 🔍 ربات جستجوی همه‌کارهٔ یوتیوب (نسخهٔ نهایی)
+name: 🔍 ربات جستجوی همه‌کارهٔ یوتیوب (نسخهٔ نهایی با کانال)
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 */6 * * *'    # هر ۶ ساعت (نیم ساعت استراحت پس از ۵٫۵ ساعت کار)
+    - cron: '30 */6 * * *'    # هر ۶ ساعت
 
 jobs:
   search-bot:
@@ -26,15 +26,15 @@ jobs:
           wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
           unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
 
-      - name: 🔍 اجرای ربات جستجوگر (نسخهٔ نهایی)
+      - name: 🔍 اجرای ربات جستجوگر
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_SEARCH_BOT_TOKEN }}
           ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
         run: |
           cat > search_bot.cjs << 'ENDSCRIPT'
-          // ═══════════════════════════════════════════════════════════
-          //  ربات جستجوی همه‌کارهٔ یوتیوب - نسخهٔ ۲ (نهایی)
-          // ═══════════════════════════════════════════════════════════
+          // ═══════════════════════════════════════════════════════════════
+          //  ربات جستجوی همه‌کارهٔ یوتیوب - نسخهٔ نهایی با نمایش کانال
+          // ═══════════════════════════════════════════════════════════════
           const { spawn, execSync } = require('child_process');
           const fs = require('fs');
           const path = require('path');
@@ -69,7 +69,7 @@ jobs:
           }
           const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-          // ══════════════ مدیریت پروکسی Xray (مشابه قبل) ══════════════
+          // ══════════════ مدیریت پروکسی Xray ══════════════
           function parseURI(uri) {
             try {
               const u = new URL(uri);
@@ -242,7 +242,8 @@ jobs:
                         duration: data.duration,
                         view_count: data.view_count,
                         upload_date: data.upload_date,
-                        description: data.description?.substring(0,200)
+                        uploader: data.uploader || data.channel || 'نامشخص',
+                        channel_url: data.channel_url || (data.uploader_id ? `https://www.youtube.com/@${data.uploader_id}` : '')
                       });
                     }
                   } catch(e) { logError('تجزیه JSON شکست:', e.message); }
@@ -271,6 +272,24 @@ jobs:
             } catch(e) { logError(`دانلود عکس ${idx} شکست:`, e.message); return null; }
           }
 
+          // ══════════════ ابزارهای فرمت ══════════════
+          function formatDuration(seconds) {
+            const min = Math.floor(seconds / 60);
+            const sec = Math.floor(seconds % 60).toString().padStart(2,'0');
+            return `${min}:${sec}`;
+          }
+          function formatViews(count) {
+            if (!count || count < 0) return '0';
+            if (count >= 1e9) return (count/1e9).toFixed(1) + 'B';
+            if (count >= 1e6) return (count/1e6).toFixed(1) + 'M';
+            if (count >= 1000) return (count/1e3).toFixed(1) + 'K';
+            return count.toString();
+          }
+          function formatDate(dateStr) {
+            if (!dateStr || dateStr.length !== 8) return 'نامشخص';
+            return `${dateStr.substring(6,8)}/${dateStr.substring(4,6)}/${dateStr.substring(0,4)}`;
+          }
+
           // ══════════════ صف و پردازش ══════════════
           const queue = [];
           let isProcessing = false;
@@ -295,12 +314,12 @@ jobs:
           }
 
           async function sendVideoResult(chatId, video, idx) {
-            const durMin = Math.floor(video.duration / 60);
-            const durSec = Math.floor(video.duration % 60).toString().padStart(2,'0');
-            const durationStr = `${durMin}:${durSec}`;
-            const viewStr = video.view_count ? `${(video.view_count/1e6).toFixed(1)}M` : 'نامشخص';
-            const uploadStr = video.upload_date ? video.upload_date.replace(/^(\d{4})(\d{2})(\d{2})$/, '$3/$2/$1') : 'نامشخص';
-            const caption = `🎬 ${video.title}\n⏱ ${durationStr}  |  👁 ${viewStr}  |  📅 ${uploadStr}\n🔗 ${video.url}`;
+            const durationStr = formatDuration(video.duration);
+            const viewStr = formatViews(video.view_count);
+            const dateStr = formatDate(video.upload_date);
+            const uploader = video.uploader || 'نامشخص';
+            // ترکیب کپشن
+            const caption = `🎬 ${video.title}\n⏱ ${durationStr}  |  👁 ${viewStr}  |  📅 ${dateStr}\n📺 ${uploader}\n🔗 ${video.url}`;
 
             const thumbPath = await downloadThumbnail(video.thumbnail, idx);
             if (thumbPath) {
@@ -309,54 +328,46 @@ jobs:
             } else {
               await sendMessage(chatId, caption);
             }
-            await sleep(800); // تنفس بین ارسال‌ها
+            await sleep(800);
           }
 
           async function processRequest(chatId, input) {
             log(`📥 پردازش ورودی ${chatId}: "${input}"`);
             let args = [];
-            let mode = 'search'; // search | channel | playlist | single
+            let mode = 'search';
             let query = input;
 
             // تشخیص نوع ورودی
             if (/^@[\w.-]+$/.test(input)) {
-              // هندل کانال مثل @AICodeKing
               query = `https://www.youtube.com/${input}`;
               mode = 'channel';
             } else if (/https?:\/\/(www\.)?youtube\.com\/(@|channel\/|c\/)/i.test(input)) {
-              // آدرس کانال
               mode = 'channel';
             } else if (/https?:\/\/(www\.)?youtube\.com\/playlist\?list=/i.test(input)) {
-              // لینک پلی‌لیست
               mode = 'playlist';
             } else if (/youtube\.com\/watch\?v=|youtu\.be\//i.test(input)) {
-              // ویدیوی تکی
               mode = 'single';
             } else {
-              // جستجوی متنی معمولی
               query = `ytsearch${MAX_RESULTS}:${input}`;
-              mode = 'search';
             }
 
             try {
               if (mode === 'single') {
-                // دریافت اطلاعات ویدیوی تکی
                 args = ['--dump-json', '--socket-timeout','30','-R','2','--proxy','socks5h://127.0.0.1:10808', query];
                 const results = await executeYtDlp(args);
                 if (results.length === 0) {
-                  await sendMessage(chatId, '⚠️ نتوانستم اطلاعات این ویدیو را دریافت کنم.');
+                  await sendMessage(chatId, '⚠️ اطلاعات ویدیو دریافت نشد.');
                   return;
                 }
                 await sendMessage(chatId, '🎬 اطلاعات ویدیو:');
                 await sendVideoResult(chatId, results[0], 0);
-                await sendMessage(chatId, '✅ اطلاعات ویدیو دریافت شد.');
+                await sendMessage(chatId, '✅ دریافت شد.');
               } else {
-                // جستجو، کانال یا پلی‌لیست (همگی با --no-flat-playlist و --playlist-end)
                 const commonArgs = ['--no-flat-playlist','--dump-json','--socket-timeout','30','-R','2','--proxy','socks5h://127.0.0.1:10808'];
                 if (mode === 'channel' || mode === 'playlist') {
                   args = [...commonArgs, '--playlist-end', String(MAX_RESULTS), query];
                 } else {
-                  args = [...commonArgs, query]; // ytsearch20:... خودش تعداد را مشخص می‌کند
+                  args = [...commonArgs, query]; // ytsearch20:...
                 }
                 const results = await executeYtDlp(args);
                 if (results.length === 0) {
@@ -365,7 +376,7 @@ jobs:
                 }
                 await sendMessage(chatId, `📊 ${results.length} نتیجه یافت شد. در حال ارسال...`);
                 for (let i=0; i<results.length; i++) {
-                  log(`🖼️ ارسال نتیجه ${i+1}/${results.length} - ${results[i]?.title?.substring(0,60)}`);
+                  log(`🖼️ ارسال ${i+1}/${results.length} - ${results[i]?.title?.substring(0,60)}`);
                   await sendVideoResult(chatId, results[i], i);
                 }
                 await sendMessage(chatId, '✅ عملیات با موفقیت انجام شد.');
@@ -383,13 +394,13 @@ jobs:
             if (!isAdmin) {
               const used = userDailyMap.get(chatId) || 0;
               if (used >= DAILY_SEARCH_LIMIT) {
-                sendMessage(chatId, `⛔ سقف ${DAILY_SEARCH_LIMIT} جستجو پر شده.`);
+                sendMessage(chatId, `⛔ سقف ${DAILY_SEARCH_LIMIT} جستجو پر شد.`);
                 return;
               }
               userDailyMap.set(chatId, used+1);
             }
             if (queue.length >= MAX_QUEUE && !isAdmin) {
-              sendMessage(chatId, '⚠️ صف پر است، بعداً امتحان کنید.');
+              sendMessage(chatId, '⚠️ صف پر است، بعداً تلاش کنید.');
               return;
             }
             if (!isProcessing) {
@@ -410,19 +421,19 @@ jobs:
           // ══════════════ دکمه‌ها و پیام‌ها ══════════════
           async function handleQueueStatus(chatId) {
             const idx = queue.findIndex(i => i.chatId === chatId);
-            if (idx === -1) return sendMessage(chatId, 'ℹ️ شما درخواست فعالی ندارید.');
+            if (idx === -1) return sendMessage(chatId, 'ℹ️ درخواست فعالی ندارید.');
             const estSec = Math.ceil((idx+1)*35);
             const estMin = Math.floor(estSec/60);
             sendMessage(chatId, `📍 موقعیت: ${idx+1} | ⏳ حدود ${estMin} دقیقه`);
           }
           async function handleHelp(chatId) {
             const help = '🔍 ربات جستجوی همه‌کارهٔ یوتیوب\n\n'
-              + '🔹 ارسال یک عبارت متنی → ۲۰ ویدیوی برتر\n'
+              + '🔹 ارسال یک عبارت → ۲۰ ویدیوی برتر\n'
               + '🔹 ارسال @Handle → آخرین ۲۰ ویدیوی کانال\n'
               + '🔹 لینک پلی‌لیست → ۲۰ ویدیوی اول\n'
               + '🔹 لینک ویدیو → اطلاعات کامل ویدیو\n\n'
-              + '⚠️ محدودیت: هر کاربر ۳۰ جستجو در هر ۶ ساعت';
-            await sendMessage(chatId, help);
+              + `⚠️ محدودیت: هر کاربر ${DAILY_SEARCH_LIMIT} جستجو در هر ۶ ساعت`;
+            await sendMessage(chatId, help, mainKeypad);
           }
           async function handleStart(chatId) {
             await sendMessage(chatId, '👋 سلام! من دستیار جستجوی یوتیوب هستم.\nهر چیزی جستجو کنی (عبارت، کانال، پلی‌لیست یا لینک ویدیو) برات می‌فرستم.', mainKeypad);
@@ -451,7 +462,7 @@ jobs:
               if (!offset) break;
             }
 
-            const DEADLINE = Date.now() + 19740*1000; // ۵٫۵ ساعت
+            const DEADLINE = Date.now() + 19740*1000;
             log(`⏳ زمان پایان: ${new Date(DEADLINE).toISOString()}`);
 
             while (Date.now() < DEADLINE) {
@@ -482,7 +493,6 @@ jobs:
                   if (text === '/start' || text.toLowerCase() === 'start') { await handleStart(chatId); continue; }
                   if (text === '/help' || text.toLowerCase() === 'help') { await handleHelp(chatId); continue; }
 
-                  // هر چیز دیگر: جستجو، کانال، پلی‌لیست یا ویدیو
                   addToQueue(chatId, text);
                 }
 
