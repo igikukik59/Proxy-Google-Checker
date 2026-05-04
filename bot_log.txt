@@ -27104,3 +27104,16 @@ ERROR: [youtube] TFh0N0J7b3A: Unable to download API page: [Errno 111] Connectio
 [2026-05-04 12:37:19] ⬇️ دانلود در 4.2s
 [2026-05-04 12:37:22] ❌ file_id یافت نشد
 [2026-05-04 12:37:23] 📊 آمار به‌روزرسانی شد
+[2026-05-04 12:37:24] 📤 لاگ و آمار push شد
+[2026-05-04 12:37:24] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.13.149:4...
+[2026-05-04 12:37:41] 🍪 کوکی جدید دریافت شد
+[2026-05-04 12:37:46] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=F-CFdCp0xaw"
+[2026-05-04 12:37:46] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 12:37:46] 🔄 تلاش مجدد (2/3)...
+[2026-05-04 12:37:47] 🎬 درخواست از b0SVHm099P059eb522414d5d8a6bf6d2: https://www.youtube.com/watch?v=m6KZRTNnRRQ
+[2026-05-04 12:37:47] 🔀 تلاش با پروکسی تصادفی: vless://d8d05386-e381-40a4-bb63-715c208b3ed3@109.120.132.142...
+[2026-05-04 12:37:59] 🎬 درخواست از b0Ir3Ws099P0faaa51b39770a9461219: https://www.youtube.com/watch?v=_D8A2tPWqwA
+[2026-05-04 12:38:06] 🍪 کوکی جدید دریافت شد
+[2026-05-04 12:38:19] ⬇️ دانلود در 13.1s
+[2026-05-04 12:38:24] ❌ file_id یافت نشد
+[2026-05-04 12:38:25] 📊 آمار به‌روزرسانی شد
