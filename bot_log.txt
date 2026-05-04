@@ -27162,3 +27162,20 @@ ERROR: [youtube] 0gWXKPxi0UU: Sign in to confirm you’re not a bot. Use --cooki
 
 [2026-05-04 12:41:11] ⬆️ آپلود video_raw.mp4 در 24.9s
 [2026-05-04 12:41:12] 📊 آمار به‌روزرسانی شد
+[2026-05-04 12:41:13] 📤 لاگ و آمار push شد
+[2026-05-04 12:41:40] ⬇️ دانلود در 24.0s
+[2026-05-04 12:41:41] ✂️ شروع تقسیم video_raw (61.6MB)
+[2026-05-04 12:41:42] 🎯 بیت‌ریت: 203kbps | مدت: 2541.3s | زمان قطعه: 1800s
+[2026-05-04 12:41:46] 🎬 درخواست از b0J2ZFE099P0a32689cfead0fedfe20c: https://www.youtube.com/watch?v=F-CFdCp0xaw
+[2026-05-04 12:41:48] 🎬 درخواست از b0CJUTg099P02b165f3a01ed47ddc09a: https://www.youtube.com/watch?v=0gWXKPxi0UU
+[2026-05-04 12:41:49] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=0gWXKPxi0UU"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 0gWXKPxi0UU: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-04 12:41:50] ❌ file_id یافت نشد
+[2026-05-04 12:41:50] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 4.4s
+[2026-05-04 12:41:53] ❌ file_id یافت نشد
+[2026-05-04 12:41:53] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 1.5s
+[2026-05-04 12:41:53] مجموع زمان آپلود قطعات: 5.9s
+[2026-05-04 12:41:54] 📊 آمار به‌روزرسانی شد
