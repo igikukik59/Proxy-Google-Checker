@@ -27183,3 +27183,30 @@ ERROR: [youtube] 0gWXKPxi0UU: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-04 12:42:03] ⬇️ دانلود در 2.5s
 [2026-05-04 12:42:07] ❌ file_id یافت نشد
 [2026-05-04 12:42:07] 📊 آمار به‌روزرسانی شد
+[2026-05-04 12:42:08] 📤 لاگ و آمار push شد
+[2026-05-04 12:42:09] 🎬 درخواست از b0CJUTg099P02b165f3a01ed47ddc09a: https://www.youtube.com/watch?v=jU0dymnCweo
+[2026-05-04 12:42:09] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@185.18.250.252:443?path=/assignment&securi...
+[2026-05-04 12:42:09] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=jU0dymnCweo"
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+WARNING: [youtube] Unable to download webpage: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused')). Giving up after 3 retries
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+ERROR: [youtube] jU0dymnCweo: Unable to download API page: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused'))
+
+[2026-05-04 12:42:25] 🎬 درخواست از b0CJUTg099P02b165f3a01ed47ddc09a: https://www.youtube.com/watch?v=EnKTrO6pZdM
+[2026-05-04 12:42:33] 🍪 کوکی جدید دریافت شد
+[2026-05-04 12:42:55] ⬇️ دانلود در 16.3s
+[2026-05-04 12:42:55] ✂️ شروع تقسیم video_raw (59.9MB)
+[2026-05-04 12:42:56] 🎬 درخواست از b0FMElu099P0c9d28b6cb7f73512ec98: https://www.youtube.com/watch?v=DvyWY_qTIDM
+[2026-05-04 12:42:56] 🎯 بیت‌ریت: 379kbps | مدت: 1326.7s | زمان قطعه: 975s
+[2026-05-04 12:43:01] 🎬 درخواست از b0CD2p099P05d1067ce6b130b541ea2b: https://www.youtube.com/watch?v=MdQK_Hx2q8U
+[2026-05-04 12:43:03] ❌ file_id یافت نشد
+[2026-05-04 12:43:03] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 4.4s
+[2026-05-04 12:43:07] ❌ file_id یافت نشد
+[2026-05-04 12:43:07] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 1.9s
+[2026-05-04 12:43:07] 🎬 درخواست از b0CvqQf099P01529e9734dd8450f4c03: https://www.youtube.com/watch?v=60b2rJJIa-E
+[2026-05-04 12:43:08] مجموع زمان آپلود قطعات: 6.3s
+[2026-05-04 12:43:08] 📊 آمار به‌روزرسانی شد
