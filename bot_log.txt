@@ -27884,3 +27884,26 @@ ERROR: [youtube] nkPAjJW7CkA: Unable to download API page: [Errno 111] Connectio
 [2026-05-04 13:51:55] 🎬 درخواست از b0JDoSk099P0cd4005099ee41d97fed4: https://www.youtube.com/watch?v=0NWscSuwYzc
 [2026-05-04 13:52:20] ⬆️ آپلود video_raw.mp4 در 31.2s
 [2026-05-04 13:52:20] 📊 آمار به‌روزرسانی شد
+[2026-05-04 13:52:22] 📤 لاگ و آمار push شد
+[2026-05-04 13:53:23] ⬇️ دانلود در 56.2s
+[2026-05-04 13:53:23] ✂️ شروع تقسیم video_raw (198.1MB)
+[2026-05-04 13:53:24] 🎬 درخواست از b0DXjgz099P047cb71add13daeacfda9: https://www.youtube.com/watch?v=1f8yoFFdkcY
+[2026-05-04 13:53:25] 🎯 بیت‌ریت: 577kbps | مدت: 2880.6s | زمان قطعه: 639s
+[2026-05-04 13:53:29] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=1f8yoFFdkcY"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] 1f8yoFFdkcY: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-04 13:53:31] 🎬 درخواست از b0HiZC3099P0a80f9f39a62bcc7a0d5f: https://www.youtube.com/watch?v=664VATcQOTY
+[2026-05-04 13:53:33] 🎬 درخواست از b0GKUgd099P0f2dbd8007491c45bf6d6: https://youtu.be/qjJgR5ev8a4
+[2026-05-04 13:53:37] ❌ file_id یافت نشد
+[2026-05-04 13:53:37] 📤 قطعه 1/5: video_raw.part01.mp4 آپلود در 7.4s
+[2026-05-04 13:53:46] ❌ file_id یافت نشد
+[2026-05-04 13:53:46] 📤 قطعه 2/5: video_raw.part02.mp4 آپلود در 7.1s
+[2026-05-04 13:53:51] ❌ file_id یافت نشد
+[2026-05-04 13:53:51] 📤 قطعه 3/5: video_raw.part03.mp4 آپلود در 3.6s
+[2026-05-04 13:53:54] ❌ file_id یافت نشد
+[2026-05-04 13:53:54] 📤 قطعه 4/5: video_raw.part04.mp4 آپلود در 2.3s
+[2026-05-04 13:54:11] ⬆️ آپلود video_raw.part05.mp4 در 16.5s
+[2026-05-04 13:54:11] 📤 قطعه 5/5: video_raw.part05.mp4 آپلود در 16.5s
+[2026-05-04 13:54:12] مجموع زمان آپلود قطعات: 36.9s
+[2026-05-04 13:54:13] 📊 آمار به‌روزرسانی شد
