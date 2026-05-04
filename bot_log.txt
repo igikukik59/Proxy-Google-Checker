@@ -24389,3 +24389,25 @@ ERROR: [youtube] mdm5f9PYG70: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-04 05:12:37] 🎬 درخواست از b0DVDZW099P059be8170e4ad3639fc96: https://www.youtube.com/watch?v=KX4RFuEZNWI
 [2026-05-04 05:12:50] ⬆️ آپلود video_raw.mp4 در 12.6s
 [2026-05-04 05:12:50] 📊 آمار به‌روزرسانی شد
+[2026-05-04 05:12:51] 📤 لاگ و آمار push شد
+[2026-05-04 05:12:58] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=kgWw4AFRtJA"
+[2026-05-04 05:12:58] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 05:12:58] 🔄 تلاش مجدد (2/3)...
+[2026-05-04 05:12:59] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@31.172.78.208:8...
+[2026-05-04 05:12:59] 🎬 درخواست از b0BTgwm099P0b27177c6fd259b9959b3: https://www.youtube.com/watch?v=JrJdq16Y6IQ
+[2026-05-04 05:13:02] 🎬 درخواست از b0Jbol1099P0e646e137e8ccf1088360: https://www.youtube.com/watch?v=WZfghlGYJvU
+[2026-05-04 05:13:15] 🎬 درخواست از b0FzW45099P0f6598f4f9112471bab0d: https://www.youtube.com/watch?v=vu7KyZ5rN-A
+[2026-05-04 05:13:18] 🍪 کوکی جدید دریافت شد
+[2026-05-04 05:13:20] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=kgWw4AFRtJA"
+[2026-05-04 05:13:20] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 05:13:20] 🔄 تلاش مجدد (3/3)...
+[2026-05-04 05:13:21] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@54.37.51.238:44...
+[2026-05-04 05:13:34] 🎬 درخواست از b0E3IuH099P0e673ae7495fe4d629f92: https://www.youtube.com/watch?v=kgWw4AFRtJA
+[2026-05-04 05:13:39] 🍪 کوکی جدید دریافت شد
+[2026-05-04 05:13:41] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=kgWw4AFRtJA"
+[2026-05-04 05:13:41] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 05:13:42] 🔀 تلاش با پروکسی تصادفی: vless://981fca81-5be1-41f8-ac9b-d138e8109943@43.133.23.88:83...
+[2026-05-04 05:14:07] 🍪 کوکی جدید دریافت شد
+[2026-05-04 05:14:21] ⬇️ دانلود در 12.2s
+[2026-05-04 05:14:30] ⬆️ آپلود video_raw.mp4 در 9.2s
+[2026-05-04 05:14:32] 📊 آمار به‌روزرسانی شد
