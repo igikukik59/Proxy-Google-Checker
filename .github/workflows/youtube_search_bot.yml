@@ -1,9 +1,9 @@
-name: 🔍 ربات جستجوی همه‌کارهٔ یوتیوب (نسخهٔ نهایی با کانال)
+name: 🔍 ربات جستجوی همه‌کارهٔ یوتیوب (نسخهٔ نهایی با Fallback و لینک کانال)
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 */6 * * *'    # هر ۶ ساعت
+    - cron: '30 */6 * * *'    # هر ۶ ساعت (نیم ساعت استراحت پس از ۵.۵ ساعت کار)
 
 jobs:
   search-bot:
@@ -19,22 +19,23 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y curl unzip python3-pip ffmpeg
           pip install yt-dlp
-          # نصب deno برای رفع هشدار yt-dlp
+          # نصب deno برای حل چالش‌های جاوااسکریپت یوتیوب
           curl -fsSL https://deno.land/install.sh | sh
           echo "${HOME}/.deno/bin" >> $GITHUB_PATH
           # نصب Xray-core
           wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
           unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
 
-      - name: 🔍 اجرای ربات جستجوگر
+      - name: 🔍 اجرای ربات جستجوگر (نسخهٔ نهایی)
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_SEARCH_BOT_TOKEN }}
           ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
         run: |
           cat > search_bot.cjs << 'ENDSCRIPT'
-          // ═══════════════════════════════════════════════════════════════
-          //  ربات جستجوی همه‌کارهٔ یوتیوب - نسخهٔ نهایی با نمایش کانال
-          // ═══════════════════════════════════════════════════════════════
+          // ═══════════════════════════════════════════════════════════
+          //  ربات جستجوی همه‌کارهٔ یوتیوب - نسخهٔ نهایی ۳
+          //  با Fallback ارسال متن، لینک کانال و رفع اخطارهای JS
+          // ═══════════════════════════════════════════════════════════
           const { spawn, execSync } = require('child_process');
           const fs = require('fs');
           const path = require('path');
@@ -175,34 +176,49 @@ jobs:
             else log(`✅ پیام به ${chatId} ارسال شد`);
             return res;
           }
+          // تلاش برای آپلود عکس با retry؛ در صورت شکست، false برمی‌گرداند
           async function uploadAndSendImage(chatId, imagePath, caption='') {
             log(`🖼️ آپلود عکس ${path.basename(imagePath)} برای ${chatId}`);
-            const start = Date.now();
-            const req = await api('requestSendFile', {type:'Image'});
-            const upUrl = req?.data?.upload_url;
-            if (!upUrl) { logError('upload_url نگرفت'); return false; }
-            const buf = fs.readFileSync(imagePath);
-            const form = new FormData();
-            form.append('file', new Blob([buf],{type:'application/octet-stream'}), path.basename(imagePath));
-            const upRes = await fetch(upUrl, {method:'POST', body:form});
-            const upText = await upRes.text();
-            let j = {}; try { j = JSON.parse(upText); } catch(_) {}
-            const fileId = j?.file_id || j?.data?.file_id;
-            if (!fileId) {
-              logError('file_id عکس پیدا نشد. پاسخ:', upText.substring(0,200));
-              return false;
+            for (let attempt=1; attempt<=3; attempt++) {
+              const start = Date.now();
+              const req = await api('requestSendFile', {type:'Image'});
+              const upUrl = req?.data?.upload_url;
+              if (!upUrl) {
+                logError(`upload_url نگرفت (تلاش ${attempt})`);
+                await sleep(2000 * attempt);
+                continue;
+              }
+              const buf = fs.readFileSync(imagePath);
+              const form = new FormData();
+              form.append('file', new Blob([buf],{type:'application/octet-stream'}), path.basename(imagePath));
+              const upRes = await fetch(upUrl, {method:'POST', body:form});
+              const upText = await upRes.text();
+              let j = {}; try { j = JSON.parse(upText); } catch(_) {}
+              const fileId = j?.file_id || j?.data?.file_id;
+              if (!fileId) {
+                logError(`file_id عکس پیدا نشد (تلاش ${attempt}). پاسخ: ${upText.substring(0,200)}`);
+                await sleep(2000 * attempt);
+                continue;
+              }
+              const s = await api('sendFile', {chat_id:chatId, file_id:fileId, text:caption});
+              const elapsed = ((Date.now()-start)/1000).toFixed(1);
+              if (s.error) {
+                logError(`ارسال عکس در تلاش ${attempt} شکست خورد`);
+                await sleep(2000 * attempt);
+                continue;
+              }
+              log(`✅ عکس ارسال شد (تلاش ${attempt}, ${elapsed}s)`);
+              return true;
             }
-            const s = await api('sendFile', {chat_id:chatId, file_id:fileId, text:caption});
-            const elapsed = ((Date.now()-start)/1000).toFixed(1);
-            if (s.error) logError(`ارسال عکس به ${chatId} شکست خورد`);
-            else log(`✅ عکس ارسال شد (${elapsed}s)`);
-            return !!s?.data?.message_id;
+            return false; // پس از ۳ تلاش ناموفق
           }
 
-          // ══════════════ اجرای yt-dlp با spawn ══════════════
+          // ══════════════ اجرای yt-dlp با spawn (دارای --js-runtimes deno) ══════════════
           async function executeYtDlp(args) {
             if (!currentProxy) throw new Error('پروکسی فعال نیست');
-            log(`🛠️ اجرای yt-dlp: ${args.join(' ')}`);
+            // اضافه کردن --js-runtimes deno برای رفع اخطارهای challenge
+            args.unshift('--js-runtimes', 'deno');
+            log(`🛠️ اجرای yt-dlp: yt-dlp ${args.join(' ')}`);
             const startTime = Date.now();
             return new Promise((resolve, reject) => {
               const proc = spawn('yt-dlp', args, {
@@ -219,7 +235,11 @@ jobs:
               });
               proc.stderr.on('data', (data) => {
                 stderr += data.toString();
-                log(`⚠️ stderr: ${data.toString().substring(0,200)}`);
+                // فقط خطاهای واقعی (نه warningهای عادی) را نمایش بده
+                const line = data.toString().trim();
+                if (!line.startsWith('WARNING:') && line.length>0) {
+                  log(`⚠️ stderr: ${line.substring(0,200)}`);
+                }
               });
               proc.on('close', (code) => {
                 const elapsed = ((Date.now()-startTime)/1000).toFixed(1);
@@ -235,6 +255,13 @@ jobs:
                   try {
                     const data = JSON.parse(line);
                     if (data.webpage_url || data.url) {
+                      // استخراج لینک کانال
+                      let channelLink = data.channel_url || '';
+                      if (!channelLink && data.uploader_id) {
+                        channelLink = `https://www.youtube.com/@${data.uploader_id}`;
+                      } else if (!channelLink && data.channel_id) {
+                        channelLink = `https://www.youtube.com/channel/${data.channel_id}`;
+                      }
                       results.push({
                         title: data.title,
                         url: data.webpage_url || data.url,
@@ -243,7 +270,7 @@ jobs:
                         view_count: data.view_count,
                         upload_date: data.upload_date,
                         uploader: data.uploader || data.channel || 'نامشخص',
-                        channel_url: data.channel_url || (data.uploader_id ? `https://www.youtube.com/@${data.uploader_id}` : '')
+                        channel_url: channelLink
                       });
                     }
                   } catch(e) { logError('تجزیه JSON شکست:', e.message); }
@@ -274,6 +301,7 @@ jobs:
 
           // ══════════════ ابزارهای فرمت ══════════════
           function formatDuration(seconds) {
+            if (!seconds) return '?';
             const min = Math.floor(seconds / 60);
             const sec = Math.floor(seconds % 60).toString().padStart(2,'0');
             return `${min}:${sec}`;
@@ -318,14 +346,23 @@ jobs:
             const viewStr = formatViews(video.view_count);
             const dateStr = formatDate(video.upload_date);
             const uploader = video.uploader || 'نامشخص';
-            // ترکیب کپشن
-            const caption = `🎬 ${video.title}\n⏱ ${durationStr}  |  👁 ${viewStr}  |  📅 ${dateStr}\n📺 ${uploader}\n🔗 ${video.url}`;
+            // ساخت لینک کانال
+            let channelLine = `📺 ${uploader}`;
+            if (video.channel_url) {
+              channelLine += `\n🔹 ${video.channel_url}`;
+            }
+            const caption = `🎬 ${video.title}\n⏱ ${durationStr}  |  👁 ${viewStr}  |  📅 ${dateStr}\n${channelLine}\n🔗 ${video.url}`;
 
+            // اول سعی کن عکس را بفرستی
             const thumbPath = await downloadThumbnail(video.thumbnail, idx);
+            let imageSent = false;
             if (thumbPath) {
-              await uploadAndSendImage(chatId, thumbPath, caption);
+              imageSent = await uploadAndSendImage(chatId, thumbPath, caption);
               try { fs.unlinkSync(thumbPath); } catch(_) {}
-            } else {
+            }
+            // اگر عکس فرستاده نشد (یا thumbPath نداشتیم)، متن را بفرست
+            if (!imageSent) {
+              log(`⚠️ ارسال متن به‌جای عکس برای نتیجه ${idx+1}`);
               await sendMessage(chatId, caption);
             }
             await sleep(800);
@@ -462,7 +499,7 @@ jobs:
               if (!offset) break;
             }
 
-            const DEADLINE = Date.now() + 19740*1000;
+            const DEADLINE = Date.now() + 19740*1000; // ۵.۵ ساعت
             log(`⏳ زمان پایان: ${new Date(DEADLINE).toISOString()}`);
 
             while (Date.now() < DEADLINE) {
