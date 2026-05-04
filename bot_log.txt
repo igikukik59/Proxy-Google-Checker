@@ -24554,3 +24554,28 @@ ERROR: [youtube] 0yCbOwYi-sA: Unable to download API page: [Errno 111] Connectio
 [2026-05-04 05:29:09] ⬇️ دانلود در 2.2s
 [2026-05-04 05:29:13] ⬆️ آپلود video_raw.mp4 در 3.9s
 [2026-05-04 05:29:15] 📊 آمار به‌روزرسانی شد
+[2026-05-04 05:29:16] 📤 لاگ و آمار push شد
+[2026-05-04 05:31:15] 🎬 درخواست از b0FzW45099P0f6598f4f9112471bab0d: https://www.youtube.com/watch?v=OdoRm5alR6E
+[2026-05-04 05:32:12] 🎬 درخواست از b0DVDZW099P059be8170e4ad3639fc96: https://www.youtube.com/watch?v=MivSNhVK2JU
+[2026-05-04 05:32:15] 🎬 درخواست از b0FzW45099P0f6598f4f9112471bab0d: https://www.youtube.com/watch?v=OfzckZDmcZU
+[2026-05-04 05:32:16] 🎬 درخواست از b0C5sIG099P06f098d3e3787c1d074f9: https://www.youtube.com/watch?v=sqBKNvhBNBs
+[2026-05-04 05:32:24] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=sqBKNvhBNBs"
+[2026-05-04 05:32:24] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 05:32:24] 🔄 تلاش مجدد (2/3)...
+[2026-05-04 05:32:24] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@104.18.12.149:443?security=tls&sni=www.gos...
+[2026-05-04 05:32:42] 🍪 کوکی جدید دریافت شد
+[2026-05-04 05:33:02] ⬇️ دانلود در 19.7s
+[2026-05-04 05:33:03] ✂️ شروع تقسیم video_raw (150.3MB)
+[2026-05-04 05:33:04] 🎯 بیت‌ریت: 688kbps | مدت: 1831.4s | زمان قطعه: 536s
+[2026-05-04 05:33:12] 🎬 درخواست از b0CctB8099P0ac5de42d12df50214c8d: https://www.youtube.com/watch?v=jbl0cjIx1dE
+[2026-05-04 05:33:25] ⬆️ آپلود video_raw.part01.mp4 در 18.7s
+[2026-05-04 05:33:25] 📤 قطعه 1/4: video_raw.part01.mp4 آپلود در 18.7s
+[2026-05-04 05:33:25] 🎬 درخواست از b0HJNFo099P0478e7c0857cde531a992: https://www.youtube.com/watch?v=tzjVg4O6dVs
+[2026-05-04 05:33:44] ⬆️ آپلود video_raw.part02.mp4 در 17.7s
+[2026-05-04 05:33:44] 📤 قطعه 2/4: video_raw.part02.mp4 آپلود در 17.7s
+[2026-05-04 05:34:03] ⬆️ آپلود video_raw.part03.mp4 در 17.2s
+[2026-05-04 05:34:03] 📤 قطعه 3/4: video_raw.part03.mp4 آپلود در 17.2s
+[2026-05-04 05:34:13] ⬆️ آپلود video_raw.part04.mp4 در 8.0s
+[2026-05-04 05:34:13] 📤 قطعه 4/4: video_raw.part04.mp4 آپلود در 8.0s
+[2026-05-04 05:34:14] مجموع زمان آپلود قطعات: 61.6s
+[2026-05-04 05:34:14] 📊 آمار به‌روزرسانی شد
