@@ -28903,3 +28903,44 @@ ERROR: [youtube] e1u9UNZCnrM: Unable to download API page: [Errno 111] Connectio
 [2026-05-04 15:35:19] 🎬 درخواست از b0Jx8rf099P0bbc6dfe2a5de260d15c2: youtube.com/watch?v=po5NMA042r4
 [2026-05-04 15:35:21] ❌ file_id یافت نشد
 [2026-05-04 15:35:22] 📊 آمار به‌روزرسانی شد
+[2026-05-04 15:35:25] 📤 لاگ و آمار push شد
+[2026-05-04 15:35:25] 🎬 درخواست از b0KQsS099P065373ce39f7c88eae6362: https://www.youtube.com/watch?v=Agggu0gHIc0
+[2026-05-04 15:35:25] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=Agggu0gHIc0"
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+WARNING: [youtube] Unable to download webpage: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused')). Giving up after 3 retries
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+ERROR: [youtube] Agggu0gHIc0: Unable to download API page: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused'))
+
+[2026-05-04 15:35:25] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@64.188.93.158:4...
+[2026-05-04 15:35:26] 🎬 درخواست از b0DWyuG099P0454df097b8aadb40195a: https://www.youtube.com/watch?v=f8UVc6jPK84
+[2026-05-04 15:35:41] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=f8UVc6jPK84"
+
+[2026-05-04 15:35:43] 🎬 درخواست از b0BS6FI099P07a7dc25d13a7d97d060a: https://youtu.be/jYuvT4F50xc
+[2026-05-04 15:35:58] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://youtu.be/jYuvT4F50xc"
+
+[2026-05-04 15:36:01] 🎬 درخواست از b0Fy9oO099P09c28eac94a90dff5d7fa: https://www.youtube.com/watch?v=9JqHO0EK-GM
+[2026-05-04 15:36:16] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=9JqHO0EK-GM"
+
+[2026-05-04 15:36:18] 🎬 درخواست از b0FDN2t099P0c57764b281ef694b12fd: https://www.youtube.com/watch?v=YPHn4xSvjNM
+[2026-05-04 15:36:33] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=YPHn4xSvjNM"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+
+[2026-05-04 15:36:36] 🎬 درخواست از b0GQNgv099P0bafa64b9a3dbf5bebafe: https://www.youtube.com/watch?v=emes9hPWSvw
+[2026-05-04 15:36:36] ❌ خطای کوکی: Navigation timeout of 60000 ms exceeded
+[2026-05-04 15:37:30] ⬇️ دانلود در 49.2s
+[2026-05-04 15:37:30] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=emes9hPWSvw"
+
+[2026-05-04 15:37:42] 🎬 درخواست از b0GQNgv099P0bafa64b9a3dbf5bebafe: https://www.youtube.com/watch?v=XVKjX0FJxxU
+[2026-05-04 15:37:47] 🎬 درخواست از b0Fy9oO099P09c28eac94a90dff5d7fa: https://www.youtube.com/watch?v=yXGepG-viDg
+[2026-05-04 15:38:02] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=yXGepG-viDg"
+
+[2026-05-04 15:38:04] 🎬 درخواست از b0KQsS099P065373ce39f7c88eae6362: https://www.youtube.com/watch?v=Agggu0gHIc0
+[2026-05-04 15:38:19] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=Agggu0gHIc0"
+
+[2026-05-04 15:38:20] 🎬 درخواست از b0EazUa099P0ef33be7360d8344ef384: https://www.youtube.com/watch?v=7Fi6qJMAZR0
+[2026-05-04 15:38:21] ⬆️ آپلود video_raw.mp4 در 49.7s
+[2026-05-04 15:38:22] 📊 آمار به‌روزرسانی شد
