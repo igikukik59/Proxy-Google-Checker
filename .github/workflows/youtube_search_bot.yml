@@ -1,9 +1,9 @@
-name: 🔍 ربات جستجوی همه‌کارهٔ یوتیوب (نسخهٔ نهایی با Fallback و لینک کانال)
+name: 🔍 ربات جستجوی همه‌کارهٔ یوتیوب (نسخهٔ نهایی سریع)
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 */6 * * *'    # هر ۶ ساعت (نیم ساعت استراحت پس از ۵.۵ ساعت کار)
+    - cron: '30 */6 * * *'    # هر ۶ ساعت (نیم ساعت استراحت)
 
 jobs:
   search-bot:
@@ -19,22 +19,22 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y curl unzip python3-pip ffmpeg
           pip install yt-dlp
-          # نصب deno برای حل چالش‌های جاوااسکریپت یوتیوب
+          # نصب deno برای رفع هشدار JavaScript challenge
           curl -fsSL https://deno.land/install.sh | sh
           echo "${HOME}/.deno/bin" >> $GITHUB_PATH
           # نصب Xray-core
           wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
           unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
 
-      - name: 🔍 اجرای ربات جستجوگر (نسخهٔ نهایی)
+      - name: 🔍 اجرای ربات جستجوگر
         env:
           RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_SEARCH_BOT_TOKEN }}
           ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
         run: |
           cat > search_bot.cjs << 'ENDSCRIPT'
           // ═══════════════════════════════════════════════════════════
-          //  ربات جستجوی همه‌کارهٔ یوتیوب - نسخهٔ نهایی ۳
-          //  با Fallback ارسال متن، لینک کانال و رفع اخطارهای JS
+          //  ربات جستجوی همه‌کارهٔ یوتیوب - نسخهٔ نهایی ۴
+          //  ارسال سریع‌تر با Fallback متنی و تصاویر سبک‌تر
           // ═══════════════════════════════════════════════════════════
           const { spawn, execSync } = require('child_process');
           const fs = require('fs');
@@ -176,47 +176,37 @@ jobs:
             else log(`✅ پیام به ${chatId} ارسال شد`);
             return res;
           }
-          // تلاش برای آپلود عکس با retry؛ در صورت شکست، false برمی‌گرداند
+          // آپلود عکس با فقط یک بار تلاش؛ در صورت شکست، false برمی‌گرداند
           async function uploadAndSendImage(chatId, imagePath, caption='') {
             log(`🖼️ آپلود عکس ${path.basename(imagePath)} برای ${chatId}`);
-            for (let attempt=1; attempt<=3; attempt++) {
-              const start = Date.now();
-              const req = await api('requestSendFile', {type:'Image'});
-              const upUrl = req?.data?.upload_url;
-              if (!upUrl) {
-                logError(`upload_url نگرفت (تلاش ${attempt})`);
-                await sleep(2000 * attempt);
-                continue;
-              }
-              const buf = fs.readFileSync(imagePath);
-              const form = new FormData();
-              form.append('file', new Blob([buf],{type:'application/octet-stream'}), path.basename(imagePath));
-              const upRes = await fetch(upUrl, {method:'POST', body:form});
-              const upText = await upRes.text();
-              let j = {}; try { j = JSON.parse(upText); } catch(_) {}
-              const fileId = j?.file_id || j?.data?.file_id;
-              if (!fileId) {
-                logError(`file_id عکس پیدا نشد (تلاش ${attempt}). پاسخ: ${upText.substring(0,200)}`);
-                await sleep(2000 * attempt);
-                continue;
-              }
-              const s = await api('sendFile', {chat_id:chatId, file_id:fileId, text:caption});
-              const elapsed = ((Date.now()-start)/1000).toFixed(1);
-              if (s.error) {
-                logError(`ارسال عکس در تلاش ${attempt} شکست خورد`);
-                await sleep(2000 * attempt);
-                continue;
-              }
-              log(`✅ عکس ارسال شد (تلاش ${attempt}, ${elapsed}s)`);
-              return true;
+            const start = Date.now();
+            const req = await api('requestSendFile', {type:'Image'});
+            const upUrl = req?.data?.upload_url;
+            if (!upUrl) { logError('upload_url نگرفت'); return false; }
+            const buf = fs.readFileSync(imagePath);
+            const form = new FormData();
+            form.append('file', new Blob([buf],{type:'application/octet-stream'}), path.basename(imagePath));
+            const upRes = await fetch(upUrl, {method:'POST', body:form});
+            const upText = await upRes.text();
+            let j = {}; try { j = JSON.parse(upText); } catch(_) {}
+            const fileId = j?.file_id || j?.data?.file_id;
+            if (!fileId) {
+              logError(`file_id عکس پیدا نشد. پاسخ: ${upText.substring(0,200)}`);
+              return false;
             }
-            return false; // پس از ۳ تلاش ناموفق
+            const s = await api('sendFile', {chat_id:chatId, file_id:fileId, text:caption});
+            const elapsed = ((Date.now()-start)/1000).toFixed(1);
+            if (s.error) {
+              logError(`ارسال عکس در api('sendFile') شکست خورد`);
+              return false;
+            }
+            log(`✅ عکس ارسال شد (${elapsed}s)`);
+            return true;
           }
 
-          // ══════════════ اجرای yt-dlp با spawn (دارای --js-runtimes deno) ══════════════
+          // ══════════════ اجرای yt-dlp با spawn ══════════════
           async function executeYtDlp(args) {
             if (!currentProxy) throw new Error('پروکسی فعال نیست');
-            // اضافه کردن --js-runtimes deno برای رفع اخطارهای challenge
             args.unshift('--js-runtimes', 'deno');
             log(`🛠️ اجرای yt-dlp: yt-dlp ${args.join(' ')}`);
             const startTime = Date.now();
@@ -235,7 +225,6 @@ jobs:
               });
               proc.stderr.on('data', (data) => {
                 stderr += data.toString();
-                // فقط خطاهای واقعی (نه warningهای عادی) را نمایش بده
                 const line = data.toString().trim();
                 if (!line.startsWith('WARNING:') && line.length>0) {
                   log(`⚠️ stderr: ${line.substring(0,200)}`);
@@ -255,17 +244,18 @@ jobs:
                   try {
                     const data = JSON.parse(line);
                     if (data.webpage_url || data.url) {
-                      // استخراج لینک کانال
                       let channelLink = data.channel_url || '';
                       if (!channelLink && data.uploader_id) {
                         channelLink = `https://www.youtube.com/@${data.uploader_id}`;
                       } else if (!channelLink && data.channel_id) {
                         channelLink = `https://www.youtube.com/channel/${data.channel_id}`;
                       }
+                      // جایگزینی thumbnail با نسخهٔ hqdefault برای حجم کمتر
+                      const thumb = (data.thumbnail || '').replace(/maxresdefault\.jpg$/i, 'hqdefault.jpg');
                       results.push({
                         title: data.title,
                         url: data.webpage_url || data.url,
-                        thumbnail: data.thumbnail,
+                        thumbnail: thumb,
                         duration: data.duration,
                         view_count: data.view_count,
                         upload_date: data.upload_date,
@@ -346,26 +336,25 @@ jobs:
             const viewStr = formatViews(video.view_count);
             const dateStr = formatDate(video.upload_date);
             const uploader = video.uploader || 'نامشخص';
-            // ساخت لینک کانال
             let channelLine = `📺 ${uploader}`;
             if (video.channel_url) {
               channelLine += `\n🔹 ${video.channel_url}`;
             }
             const caption = `🎬 ${video.title}\n⏱ ${durationStr}  |  👁 ${viewStr}  |  📅 ${dateStr}\n${channelLine}\n🔗 ${video.url}`;
 
-            // اول سعی کن عکس را بفرستی
+            // تلاش برای ارسال عکس فقط یک بار
             const thumbPath = await downloadThumbnail(video.thumbnail, idx);
             let imageSent = false;
             if (thumbPath) {
               imageSent = await uploadAndSendImage(chatId, thumbPath, caption);
               try { fs.unlinkSync(thumbPath); } catch(_) {}
             }
-            // اگر عکس فرستاده نشد (یا thumbPath نداشتیم)، متن را بفرست
+            // اگر عکس فرستاده نشد، متن را بفرست
             if (!imageSent) {
               log(`⚠️ ارسال متن به‌جای عکس برای نتیجه ${idx+1}`);
               await sendMessage(chatId, caption);
             }
-            await sleep(800);
+            await sleep(600); // تنفس ۶۰۰ میلی‌ثانیه
           }
 
           async function processRequest(chatId, input) {
@@ -451,7 +440,7 @@ jobs:
             }
             queue.push({ chatId, input });
             const pos = queue.length;
-            const estMin = Math.ceil((pos * 35) / 60);
+            const estMin = Math.ceil((pos * 10) / 60); // تخمین سریع‌تر
             sendMessage(chatId, `📍 نفر ${pos}ام در صف؛ حدود ${estMin} دقیقه دیگر.`, mainKeypad);
           }
 
@@ -459,7 +448,7 @@ jobs:
           async function handleQueueStatus(chatId) {
             const idx = queue.findIndex(i => i.chatId === chatId);
             if (idx === -1) return sendMessage(chatId, 'ℹ️ درخواست فعالی ندارید.');
-            const estSec = Math.ceil((idx+1)*35);
+            const estSec = (idx+1)*10;
             const estMin = Math.floor(estSec/60);
             sendMessage(chatId, `📍 موقعیت: ${idx+1} | ⏳ حدود ${estMin} دقیقه`);
           }
