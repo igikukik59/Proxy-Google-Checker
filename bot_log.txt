@@ -28057,3 +28057,24 @@ ERROR: [youtube] hxF4-nOJrJ4: Unable to download API page: [Errno 111] Connectio
 [2026-05-04 14:06:34] 🎬 درخواست از b0JrLRV099P0d5eebeec8f4bcc942c34: https://youtu.be/CzjmEHzXxQU
 [2026-05-04 14:06:38] ❌ file_id یافت نشد
 [2026-05-04 14:06:38] 📊 آمار به‌روزرسانی شد
+[2026-05-04 14:06:40] 📤 لاگ و آمار push شد
+[2026-05-04 14:06:45] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/-XJjRej-zp0"
+[2026-05-04 14:06:45] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 14:06:45] 🔄 تلاش مجدد (2/3)...
+[2026-05-04 14:06:45] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@8.6.112.0:443?security=tls&sni=www.gossipg...
+[2026-05-04 14:06:49] 🎬 درخواست از b0BQ428099P0bd8e5ba7a1a0126f4352: https://www.youtube.com/watch?v=ws3zWFtwREY
+[2026-05-04 14:06:51] 🎬 درخواست از b0JbZS099P036bd4969ebdcfc3aff0b4: https://youtu.be/IzBc6HjSmZM
+[2026-05-04 14:07:04] 🍪 کوکی جدید دریافت شد
+[2026-05-04 14:07:29] ⬇️ دانلود در 25.4s
+[2026-05-04 14:07:30] ✂️ شروع تقسیم video_raw (82.7MB)
+[2026-05-04 14:07:30] 🎬 درخواست از b0DQTZ1099P0fe0c380ec0df2f7601fe: https://www.youtube.com/watch?v=6ZCA4XIQvn0
+[2026-05-04 14:07:31] 🎯 بیت‌ریت: 378kbps | مدت: 1837.4s | زمان قطعه: 977s
+[2026-05-04 14:07:34] 🎬 درخواست از b0gsSQ099P0f34d1c0dedb2008ef4096: https://www.youtube.com/watch?v=RZGILqdRWls
+[2026-05-04 14:08:05] ⬆️ آپلود video_raw.part01.mp4 در 30.8s
+[2026-05-04 14:08:05] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 30.8s
+[2026-05-04 14:08:16] 🎬 درخواست از b0BAXjR099P0952c0f70c178c9303b87: https://www.youtube.com/watch?v=zm8Z-63UoTo
+[2026-05-04 14:08:20] 🎬 درخواست از b0BlYXz099P001a1b53f3d71f1337027: https://www.youtube.com/watch?v=SmM0653YvXU
+[2026-05-04 14:08:38] ⬆️ آپلود video_raw.part02.mp4 در 32.3s
+[2026-05-04 14:08:38] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 32.3s
+[2026-05-04 14:08:40] مجموع زمان آپلود قطعات: 63.1s
+[2026-05-04 14:08:41] 📊 آمار به‌روزرسانی شد
