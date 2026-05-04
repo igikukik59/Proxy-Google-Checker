@@ -26058,3 +26058,14 @@ ERROR: [youtube] 425R3sP7USM: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-04 07:51:55] 🎬 درخواست از b0J1aoL099P0bf18db4e04fa7ece2bfa: https://youtu.be/62p4sP95Cqk
 [2026-05-04 07:51:58] ❌ file_id یافت نشد
 [2026-05-04 07:51:59] 📊 آمار به‌روزرسانی شد
+[2026-05-04 07:52:00] 📤 لاگ و آمار push شد
+[2026-05-04 07:52:00] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@91.193.58.247:4...
+[2026-05-04 07:52:17] 🍪 کوکی جدید دریافت شد
+[2026-05-04 07:52:23] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=7hhsA2JVwfw"
+[2026-05-04 07:52:23] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 07:52:23] 🔄 تلاش مجدد (2/3)...
+[2026-05-04 07:52:23] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.131.211.238:...
+[2026-05-04 07:52:40] 🍪 کوکی جدید دریافت شد
+[2026-05-04 07:52:43] ⬇️ دانلود در 3.3s
+[2026-05-04 07:52:48] ❌ file_id یافت نشد
+[2026-05-04 07:52:49] 📊 آمار به‌روزرسانی شد
