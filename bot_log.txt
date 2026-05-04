@@ -27227,3 +27227,29 @@ ERROR: [youtube] jU0dymnCweo: Unable to download API page: [Errno 111] Connectio
 [2026-05-04 12:45:06] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 3.4s
 [2026-05-04 12:45:07] مجموع زمان آپلود قطعات: 49.4s
 [2026-05-04 12:45:07] 📊 آمار به‌روزرسانی شد
+[2026-05-04 12:45:09] 📤 لاگ و آمار push شد
+[2026-05-04 12:45:09] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.152.191:2...
+[2026-05-04 12:45:19] 🎬 درخواست از b0ETl4l099P00cd9cc7b7c0a442b4371: https://youtu.be/z-ifver1cfE
+[2026-05-04 12:45:21] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://youtu.be/z-ifver1cfE"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] z-ifver1cfE: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-04 12:45:26] 🍪 کوکی جدید دریافت شد
+[2026-05-04 12:45:42] ⬇️ دانلود در 13.1s
+[2026-05-04 12:45:43] ✂️ شروع تقسیم video_raw (158.6MB)
+[2026-05-04 12:45:44] 🎬 درخواست از b0H9P2v099P0c2f59e1b224cb9233b96: https://www.youtube.com/watch?v=GuJZbgZ42JQ
+[2026-05-04 12:45:44] 🎯 بیت‌ریت: 491kbps | مدت: 2708.6s | زمان قطعه: 751s
+[2026-05-04 12:45:53] ❌ file_id یافت نشد
+[2026-05-04 12:45:53] 📤 قطعه 1/4: video_raw.part01.mp4 آپلود در 4.7s
+[2026-05-04 12:45:54] 🎬 درخواست از b0CuylD099P0ab731771709ca40c7c73: https://youtu.be/voCwxgvWR5U
+[2026-05-04 12:45:55] 🎬 درخواست از b0Jx8rf099P0bbc6dfe2a5de260d15c2: https://www.youtube.com/watch?v=ivxcJU5TsIg
+[2026-05-04 12:45:57] ❌ file_id یافت نشد
+[2026-05-04 12:45:57] 📤 قطعه 2/4: video_raw.part02.mp4 آپلود در 3.1s
+[2026-05-04 12:46:01] ❌ file_id یافت نشد
+[2026-05-04 12:46:01] 📤 قطعه 3/4: video_raw.part03.mp4 آپلود در 2.9s
+[2026-05-04 12:46:20] 🎬 درخواست از b0CFxjb099P01f1ff1ac9f26bab2b6c3: https://youtu.be/HBDWka4pW78
+[2026-05-04 12:46:29] ❌ file_id یافت نشد
+[2026-05-04 12:46:29] 📤 قطعه 4/4: video_raw.part04.mp4 آپلود در 27.8s
+[2026-05-04 12:46:30] مجموع زمان آپلود قطعات: 38.5s
+[2026-05-04 12:46:31] 📊 آمار به‌روزرسانی شد
