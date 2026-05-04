@@ -28566,3 +28566,11 @@ ERROR: [youtube] shcgzjTWuAU: Requested format is not available. Use --list-form
 [2026-05-04 14:50:49] ⬇️ دانلود در 3.7s
 [2026-05-04 14:50:56] ⬆️ آپلود video_raw.mp4 در 6.2s
 [2026-05-04 14:50:56] 📊 آمار به‌روزرسانی شد
+[2026-05-04 14:50:57] 📤 لاگ و آمار push شد
+[2026-05-04 14:50:58] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@91.193.58.247:4...
+[2026-05-04 14:51:15] 🍪 کوکی جدید دریافت شد
+[2026-05-04 14:51:18] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://youtu.be/BkpfoZpGETs"
+[2026-05-04 14:51:18] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 14:51:18] 🔄 تلاش مجدد (2/3)...
+[2026-05-04 14:51:19] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@5.101.101.166:4...
+[2026-05-04 14:51:23] 📊 آمار به‌روزرسانی شد
