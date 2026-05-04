@@ -27731,3 +27731,33 @@ ERROR: [youtube] lLPAUHdyjRI: Unable to download API page: [Errno 111] Connectio
 [2026-05-04 13:36:15] ⬇️ دانلود در 8.0s
 [2026-05-04 13:36:19] ❌ file_id یافت نشد
 [2026-05-04 13:36:20] 📊 آمار به‌روزرسانی شد
+[2026-05-04 13:36:22] 📤 لاگ و آمار push شد
+[2026-05-04 13:36:22] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.155.106:4...
+[2026-05-04 13:36:26] 🎬 درخواست از b0Crokr099P02dfa49a6c92d048dbfa1: https://www.youtube.com/watch?v=ixC6T2dWSiA
+[2026-05-04 13:36:27] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=ixC6T2dWSiA"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] ixC6T2dWSiA: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-04 13:36:28] 🎬 درخواست از b0JlfQG099P07fe7a9307983d3aa78f0: https://www.youtube.com/watch?v=atqQ9e7TIF0
+[2026-05-04 13:36:30] 🎬 درخواست از b0JRQgb099P0a547ca928dad75e11891: https://www.youtube.com/watch?v=Cgd9-P7ng0M
+[2026-05-04 13:36:39] 🍪 کوکی جدید دریافت شد
+[2026-05-04 13:36:44] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=uxaMbMVi4to"
+[2026-05-04 13:36:44] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 13:36:44] 🔄 تلاش مجدد (2/3)...
+[2026-05-04 13:36:45] 🔀 تلاش با پروکسی تصادفی: trojan://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:...
+[2026-05-04 13:37:02] 🍪 کوکی جدید دریافت شد
+[2026-05-04 13:37:03] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=uxaMbMVi4to"
+[2026-05-04 13:37:03] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 13:37:03] 🔄 تلاش مجدد (3/3)...
+[2026-05-04 13:37:04] 🔀 تلاش با پروکسی تصادفی: vless://b4819c49-6c7e-4b57-9b9b-c73031e1de11@pq-albania1.09v...
+[2026-05-04 13:37:16] 🔀 تلاش با پروکسی تصادفی: vless://b4819c49-6c7e-4b57-9b9b-c73031e1de11@pq-albania1.09v...
+[2026-05-04 13:37:20] 🎬 درخواست از b0CveOO099P08356de380078ed1017d8: https://youtu.be/Rk1uNiNlQmA
+[2026-05-04 13:37:38] 🍪 کوکی جدید دریافت شد
+[2026-05-04 13:37:46] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=uxaMbMVi4to"
+[2026-05-04 13:37:46] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 13:37:47] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.91.102.26:84...
+[2026-05-04 13:37:52] 🎬 درخواست از b0NbOX099P0c4e05421a0052d27b1de7: https://www.youtube.com/watch?v=HDZSv0gBSJQ
+[2026-05-04 13:38:06] 🍪 کوکی جدید دریافت شد
+[2026-05-04 13:38:34] ⬇️ دانلود در 26.3s
+[2026-05-04 13:38:40] ❌ file_id یافت نشد
+[2026-05-04 13:38:41] 📊 آمار به‌روزرسانی شد
