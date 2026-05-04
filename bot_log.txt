@@ -26892,3 +26892,28 @@ ERROR: [youtube] zROgqWE-yVE: Unable to download API page: [Errno 111] Connectio
 [2026-05-04 12:25:28] 📤 قطعه 4/4: video_raw.part04.mp4 آپلود در 0.5s
 [2026-05-04 12:25:28] مجموع زمان آپلود قطعات: 10.8s
 [2026-05-04 12:25:29] 📊 آمار به‌روزرسانی شد
+[2026-05-04 12:25:30] 📤 لاگ و آمار push شد
+[2026-05-04 12:25:31] 🎬 درخواست از b0CFxjb099P01f1ff1ac9f26bab2b6c3: https://youtu.be/HBDWka4pW78
+[2026-05-04 12:25:32] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://youtu.be/HBDWka4pW78"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] HBDWka4pW78: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-04 12:25:33] 🎬 درخواست از b0I6tvf099P0f63ba7be9aacb86d806b: https://www.youtube.com/watch?v=5t1P2oPfdOo
+[2026-05-04 12:25:34] 🎬 درخواست از b0HiZC3099P0a80f9f39a62bcc7a0d5f: https://www.youtube.com/watch?v=664VATcQOTY
+[2026-05-04 12:25:38] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "http://youtu.be/L3lJZrAqqUQ"
+[2026-05-04 12:25:38] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 12:25:38] 🔄 تلاش مجدد (2/3)...
+[2026-05-04 12:25:38] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.178.137.248:...
+[2026-05-04 12:25:57] 🍪 کوکی جدید دریافت شد
+[2026-05-04 12:25:59] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "http://youtu.be/L3lJZrAqqUQ"
+[2026-05-04 12:25:59] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 12:25:59] 🔄 تلاش مجدد (3/3)...
+[2026-05-04 12:26:00] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.64.157:4...
+[2026-05-04 12:26:00] 🎬 درخواست از b0CFxjb099P01f1ff1ac9f26bab2b6c3: https://youtu.be/HBDWka4pW78
+[2026-05-04 12:26:02] 🎬 درخواست از b0JcnKI099P0bd8df56186a548d6a6c5: https://www.youtube.com/watch?v=PEfEPyc5DZw
+[2026-05-04 12:26:03] 🎬 درخواست از b0HTulk099P00881ecb9a457e0430f95: https://www.youtube.com/watch?v=0il5rk_s7fI
+[2026-05-04 12:26:09] 🎬 درخواست از b0JQx9f099P0f8e0d01af7c3e7b73f56: https://www.youtube.com/watch?v=ME1-WVvwtgM
+[2026-05-04 12:26:17] 🍪 کوکی جدید دریافت شد
+[2026-05-04 12:26:18] ⬇️ دانلود در 1.5s
+[2026-05-04 12:26:23] ❌ file_id یافت نشد
+[2026-05-04 12:26:23] 📊 آمار به‌روزرسانی شد
