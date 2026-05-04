@@ -28687,3 +28687,15 @@ ERROR: [youtube] shcgzjTWuAU: Requested format is not available. Use --list-form
 [2026-05-04 15:10:51] 📤 قطعه 5/5: video_raw.part05.mp4 آپلود در 3.2s
 [2026-05-04 15:10:52] مجموع زمان آپلود قطعات: 96.6s
 [2026-05-04 15:10:52] 📊 آمار به‌روزرسانی شد
+[2026-05-04 15:10:53] 📤 لاگ و آمار push شد
+[2026-05-04 15:10:54] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.64.157:4...
+[2026-05-04 15:11:11] 🍪 کوکی جدید دریافت شد
+[2026-05-04 15:11:14] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=AkSMuU_1_mo"
+[2026-05-04 15:11:14] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 15:11:14] 🔄 تلاش مجدد (2/3)...
+[2026-05-04 15:11:15] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.77.214.109:2...
+[2026-05-04 15:11:34] 🍪 کوکی جدید دریافت شد
+[2026-05-04 15:11:36] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=AkSMuU_1_mo"
+[2026-05-04 15:11:36] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 15:11:36] 🔄 تلاش مجدد (3/3)...
+[2026-05-04 15:11:36] 📊 آمار به‌روزرسانی شد
