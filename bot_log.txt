@@ -27069,3 +27069,25 @@ ERROR: [youtube] TFh0N0J7b3A: Unable to download API page: [Errno 111] Connectio
 [2026-05-04 12:35:07] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 3.3s
 [2026-05-04 12:35:08] مجموع زمان آپلود قطعات: 8.0s
 [2026-05-04 12:35:08] 📊 آمار به‌روزرسانی شد
+[2026-05-04 12:35:10] 📤 لاگ و آمار push شد
+[2026-05-04 12:35:10] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:2...
+[2026-05-04 12:35:27] 🍪 کوکی جدید دریافت شد
+[2026-05-04 12:35:30] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=R_aWuWJFRYg"
+[2026-05-04 12:35:30] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 12:35:30] 🔄 تلاش مجدد (2/3)...
+[2026-05-04 12:35:31] 🔀 تلاش با پروکسی تصادفی: vless://8dc7722c-2767-4eea-a28b-2f8daacc07e3@45.82.251.115:8...
+[2026-05-04 12:35:32] 🎬 درخواست از b0HSrGR099P06deaa3058673ed72bdc8: https://www.youtube.com/watch?v=sWTZV8Yumss
+[2026-05-04 12:35:48] 🍪 کوکی جدید دریافت شد
+[2026-05-04 12:35:49] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=R_aWuWJFRYg"
+[2026-05-04 12:35:49] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 12:35:49] 🔄 تلاش مجدد (3/3)...
+[2026-05-04 12:35:50] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.8.211.191:20...
+[2026-05-04 12:35:59] 🎬 درخواست از b0CA6dl099P084ab437f632efa857618: https://www.youtube.com/watch?v=mJ0pL4uY0QY
+[2026-05-04 12:36:06] 🍪 کوکی جدید دریافت شد
+[2026-05-04 12:36:07] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=R_aWuWJFRYg"
+[2026-05-04 12:36:07] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 12:36:09] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.155.238:2...
+[2026-05-04 12:36:26] 🍪 کوکی جدید دریافت شد
+[2026-05-04 12:36:31] ⬇️ دانلود در 3.1s
+[2026-05-04 12:36:36] ❌ file_id یافت نشد
+[2026-05-04 12:36:37] 📊 آمار به‌روزرسانی شد
