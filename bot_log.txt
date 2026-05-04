@@ -28478,3 +28478,19 @@ ERROR: [youtube] _p7mwsrsEQM: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-04 14:41:33] ⬆️ آپلود video_raw.mp4 در 14.9s
 [2026-05-04 14:41:34] 🎬 درخواست از b0Cjg96099P0e43f585a5469b5c56ab8: https://www.youtube.com/watch?v=shcgzjTWuAU
 [2026-05-04 14:41:34] 📊 آمار به‌روزرسانی شد
+[2026-05-04 14:41:36] 📤 لاگ و آمار push شد
+[2026-05-04 14:41:36] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=shcgzjTWuAU"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1000). Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+WARNING: [youtube] Unable to download API page: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused'))
+WARNING: Only images are available for download. use --list-formats to see them
+ERROR: [youtube] shcgzjTWuAU: Requested format is not available. Use --list-formats for a list of available formats
+
+[2026-05-04 14:41:36] 🔀 تلاش با پروکسی تصادفی: trojan://humanity@104.18.12.149:443?security=tls&sni=www.gos...
+[2026-05-04 14:41:55] 🍪 کوکی جدید دریافت شد
+[2026-05-04 14:42:03] ⬇️ دانلود در 4.3s
+[2026-05-04 14:42:04] 🎬 درخواست از b0D3oFD099P0c3fe7704bf1b9b4384cd: https://www.youtube.com/watch?v=19RYkLDUQJM
+[2026-05-04 14:42:09] ⬆️ آپلود video_raw.mp4 در 6.2s
+[2026-05-04 14:42:09] 📊 آمار به‌روزرسانی شد
