@@ -26566,3 +26566,20 @@ ERROR: [youtube] MdQK_Hx2q8U: Unable to download API page: [Errno 111] Connectio
 [2026-05-04 12:01:52] ⬇️ دانلود در 3.5s
 [2026-05-04 12:01:56] ❌ file_id یافت نشد
 [2026-05-04 12:01:56] 📊 آمار به‌روزرسانی شد
+[2026-05-04 12:01:58] 📤 لاگ و آمار push شد
+[2026-05-04 12:01:58] 🎬 درخواست از b0JCT4w099P0d80237a8efa6676d5ec9: https://www.youtube.com/watch?v=6QhDFNlFifY
+[2026-05-04 12:01:59] 🎬 درخواست از b0HnqQh099P08096439592fb82678d2e: https://www.youtube.com/watch?v=hxF4-nOJrJ4
+[2026-05-04 12:02:00] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=hxF4-nOJrJ4"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] hxF4-nOJrJ4: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-04 12:02:01] 🎬 درخواست از b02yc4099P0248888efa60a2ceea0cff: https://www.youtube.com/watch?v=0il5rk_s7fI
+[2026-05-04 12:02:03] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=PIwSs6Hy6HI"
+[2026-05-04 12:02:03] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 12:02:03] 🔄 تلاش مجدد (2/3)...
+[2026-05-04 12:02:04] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@91.193.58.247:4...
+[2026-05-04 12:02:21] 🍪 کوکی جدید دریافت شد
+[2026-05-04 12:02:24] ⬇️ دانلود در 3.2s
+[2026-05-04 12:02:28] ❌ file_id یافت نشد
+[2026-05-04 12:02:28] 📊 آمار به‌روزرسانی شد
