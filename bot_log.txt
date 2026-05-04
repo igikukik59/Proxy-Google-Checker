@@ -27095,3 +27095,12 @@ ERROR: [youtube] TFh0N0J7b3A: Unable to download API page: [Errno 111] Connectio
 [2026-05-04 12:36:45] ⬇️ دانلود در 2.3s
 [2026-05-04 12:36:50] ❌ file_id یافت نشد
 [2026-05-04 12:36:50] 📊 آمار به‌روزرسانی شد
+[2026-05-04 12:36:51] 📤 لاگ و آمار push شد
+[2026-05-04 12:36:56] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=_D8A2tPWqwA"
+[2026-05-04 12:36:56] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 12:36:56] 🔄 تلاش مجدد (2/3)...
+[2026-05-04 12:36:57] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.128.181.24:8...
+[2026-05-04 12:37:15] 🍪 کوکی جدید دریافت شد
+[2026-05-04 12:37:19] ⬇️ دانلود در 4.2s
+[2026-05-04 12:37:22] ❌ file_id یافت نشد
+[2026-05-04 12:37:23] 📊 آمار به‌روزرسانی شد
