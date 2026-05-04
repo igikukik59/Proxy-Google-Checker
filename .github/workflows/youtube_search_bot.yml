@@ -1,420 +1,573 @@
-name: 🔍 ربات جستجوی یوتیوب (۲۰ نتیجه با عکس و صف)
+// ======================== ربات جستجوی یوتیوب (نسخهٔ کامل با لاگ جزئی) ========================
+const { spawn, execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
-on:
-  workflow_dispatch:
-  schedule:
-    - cron: '30 */6 * * *'   # ۳۰ دقیقه افست نسبت به دانلودر (۰:۳۰, ۶:۳۰, ۱۲:۳۰, ۱۸:۳۰)
+// ---------- تنظیمات ثابت ----------
+const PROXY_FILE = 'کانفیگ های خوب.txt';
+const LOG_FILE = 'search_bot_log.txt';
+const TOKEN = process.env.RUBIKA_BOT_TOKEN;
+const ADMIN_SECRET = process.env.ADMIN_SECRET || '';
+if (!TOKEN) { console.error('❌ TOKEN تنظیم نشده'); process.exit(1); }
 
-jobs:
-  search-bot:
-    runs-on: ubuntu-latest
-    timeout-minutes: 330       # ۵.۵ ساعت
-    permissions:
-      contents: write
-    steps:
-      - name: 📥 دریافت کد
-        uses: actions/checkout@v4
+const MAX_RESULTS = 20;
+const MAX_QUEUE = 200;
+const SEARCH_TIMEOUT = 180000;            // ۳ دقیقه
+const DAILY_SEARCH_LIMIT = 30;
+const MAX_BUFFER = 20 * 1024 * 1024;      // ۲۰ مگابایت (برای yt-dlp)
 
-      - name: 🧰 نصب پیش‌نیازها
-        run: |
-          sudo apt-get update -qq && sudo apt-get install -y curl unzip python3-pip
-          pip install yt-dlp
-          wget -q https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip -O /tmp/xray.zip
-          unzip -q /tmp/xray.zip -d xray && chmod +x xray/xray
+// ---------- وضعیت کلی ----------
+let proxies = [];
+let currentProxy = null;
+let xrayProc = null;
 
-      - name: 🔍 اجرای ربات جستجوگر
-        env:
-          RUBIKA_BOT_TOKEN: ${{ secrets.RUBIKA_SEARCH_BOT_TOKEN }}
-          ADMIN_SECRET: ${{ secrets.ADMIN_SECRET }}
-        run: |
-          cat > search_bot.cjs << 'ENDSCRIPT'
-          // ======================== کانفیگ‌های اصلی ========================
-          const { spawn, execSync, exec } = require('child_process');
-          const fs = require('fs');
-          const path = require('path');
+// ---------- ابزارهای زمان و لاگ ----------
+function ts() {
+  return new Date().toISOString().replace('T', ' ').substring(0, 19);
+}
+function log(...args) {
+  const msg = `[${ts()}] ${args.join(' ')}`;
+  console.log(msg);
+  try { fs.appendFileSync(LOG_FILE, msg + '\n'); } catch (_) {}
+}
+function logError(...args) {
+  const msg = `[${ts()}] ❌ ${args.join(' ')}`;
+  console.error(msg);
+  try { fs.appendFileSync(LOG_FILE, msg + '\n'); } catch (_) {}
+}
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-          const PROXY_FILE = 'کانفیگ های خوب.txt';
-          const LOG_FILE = 'search_bot_log.txt';
-          const TOKEN = process.env.RUBIKA_BOT_TOKEN;
-          const ADMIN_SECRET = process.env.ADMIN_SECRET || '';
-          if (!TOKEN) { console.error('❌ TOKEN تنظیم نشده'); process.exit(1); }
+// ======================== مدیریت پروکسی Xray ========================
+function parseURI(uri) {
+  try {
+    const u = new URL(uri);
+    return {
+      protocol: u.protocol.replace(':', ''),
+      uuid: u.username,
+      address: u.hostname,
+      port: u.port,
+      params: Object.fromEntries(u.searchParams.entries())
+    };
+  } catch (_) { return null; }
+}
+function generateXrayConfig(uri) {
+  const p = parseURI(uri);
+  if (!p) return null;
+  const inbound = { port: 10808, protocol: 'socks', settings: { auth: 'noauth', udp: true } };
+  let outbound = { protocol: p.protocol, streamSettings: { network: p.params.type || 'tcp' } };
+  if (p.protocol === 'trojan') outbound.settings = { servers: [{ address: p.address, port: parseInt(p.port), password: p.uuid }] };
+  else outbound.settings = { vnext: [{ address: p.address, port: parseInt(p.port), users: [{ id: p.uuid, encryption: p.params.encryption || 'none', flow: p.params.flow || '' }] }] };
+  const net = p.params.type || 'tcp';
+  outbound.streamSettings.network = net;
+  if (net === 'ws') outbound.streamSettings.wsSettings = { path: p.params.path || '/', headers: p.params.host ? { Host: p.params.host } : {} };
+  const sec = p.params.security || 'none';
+  if (sec === 'tls' || sec === 'reality') {
+    outbound.streamSettings.security = sec;
+    const tls = { serverName: p.params.sni || p.address };
+    if (sec === 'reality') {
+      tls.fingerprint = p.params.fp || 'chrome';
+      tls.publicKey = p.params.pbk || '';
+      tls.shortId = p.params.sid || '';
+      tls.spiderX = '';
+    }
+    if (p.params.allowInsecure === '1') tls.allowInsecure = true;
+    if (p.params.alpn) tls.alpn = p.params.alpn.split(',');
+    outbound.streamSettings.tlsSettings = tls;
+  } else outbound.streamSettings.security = 'none';
+  return { inbounds: [inbound], outbounds: [outbound] };
+}
+async function startXray(uri, idx) {
+  const config = generateXrayConfig(uri);
+  if (!config) return null;
+  const cfgPath = `/tmp/xray_search_${idx}.json`;
+  fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
+  const proc = spawn(path.join('.', 'xray', 'xray'), ['run', '-config', cfgPath], { stdio: 'pipe' });
+  await sleep(4000);
+  return proc;
+}
+function testProxyConnection() {
+  try {
+    execSync('curl --socks5 127.0.0.1:10808 --max-time 8 -s http://ip-api.com/json', { encoding: 'utf8', stdio: 'pipe' });
+    return true;
+  } catch (e) {
+    logError('تست اتصال پروکسی شکست خورد:', e.message);
+    return false;
+  }
+}
+async function switchToRandomProxy() {
+  log('🔄 تلاش برای تعویض پروکسی...');
+  if (xrayProc) { xrayProc.kill(); await sleep(500); xrayProc = null; }
+  currentProxy = null;
+  if (proxies.length === 0) {
+    logError('هیچ پروکسی در لیست موجود نیست');
+    return false;
+  }
+  for (let attempt = 0; attempt < Math.min(proxies.length, 5); attempt++) {
+    const candidate = proxies[Math.floor(Math.random() * proxies.length)];
+    log(`🔀 امتحان پروکسی ${attempt + 1}: ${candidate.substring(0, 60)}...`);
+    xrayProc = await startXray(candidate, Date.now());
+    await sleep(4000);
+    if (testProxyConnection()) {
+      currentProxy = candidate;
+      log('✅ پروکسی جدید فعال شد');
+      return true;
+    } else {
+      log('⚠️ این پروکسی کار نکرد، پروکسی بعدی...');
+      if (xrayProc) { xrayProc.kill(); await sleep(500); xrayProc = null; }
+    }
+  }
+  logError('هیچ پروکسی سالمی پیدا نشد');
+  return false;
+}
 
-          const MAX_RESULTS = 20;
-          const MAX_QUEUE = 200;
-          const SEARCH_TIMEOUT = 120000;      // ۲ دقیقه برای جستجوی ۲۰ ویدیو
-          const DAILY_SEARCH_LIMIT = 30;      // حداکثر ۳۰ جستجو برای هر کاربر در این چرخه
+// ======================== Rubika API ========================
+const BASE = `https://botapi.rubika.ir/v3/${TOKEN}`;
+async function api(method, body = {}, retries = 5) {
+  const url = `${BASE}/${method}`;
+  for (let a = 0; a < retries; a++) {
+    try {
+      const ctrl = new AbortController();
+      const id = setTimeout(() => ctrl.abort(), 30000);
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: ctrl.signal
+      });
+      clearTimeout(id);
+      const t = await res.text();
+      if (t.startsWith('<!DOCTYPE html>') || t.includes('nginx')) {
+        log(`⚠️ پاسخ HTML از سرور (تلاش ${a + 1})، صبر ${1 << a} ثانیه...`);
+        await sleep((1 << a) * 1000);
+        continue;
+      }
+      let d;
+      try { d = JSON.parse(t); } catch (_) {
+        if (a < retries - 1) { await sleep(2000 * (a + 1)); continue; }
+        logError('پاسخ JSON نامعتبر پس از چندین تلاش:', t.substring(0, 200));
+        return { error: true, raw: t };
+      }
+      if (d.error) logError(`خطای API در ${method}:`, JSON.stringify(d).substring(0, 200));
+      return d;
+    } catch (e) {
+      if (a < retries - 1) { await sleep(2000 * (a + 1)); continue; }
+      logError(`خطای fetch در ${method}:`, e.message);
+      return { error: true, message: e.message };
+    }
+  }
+  return { error: true, message: 'بعد از ۵ تلاش ناموفق' };
+}
+async function sendMessage(chatId, text, keypad = null) {
+  log(`📤 ارسال پیام به ${chatId} - متن: ${text.substring(0, 80)}${text.length > 80 ? '...' : ''}`);
+  const body = { chat_id: chatId, text };
+  if (keypad) { body.chat_keypad = keypad; body.chat_keypad_type = 'New'; }
+  const res = await api('sendMessage', body);
+  if (res.error) logError(`ارسال پیام به ${chatId} شکست خورد`);
+  else log(`✅ پیام به ${chatId} ارسال شد`);
+  return res;
+}
+async function uploadAndSendImage(chatId, imagePath, caption = '') {
+  log(`🖼️ شروع آپلود عکس ${path.basename(imagePath)} برای ${chatId}`);
+  const start = Date.now();
+  const req = await api('requestSendFile', { type: 'Image' });
+  const upUrl = req?.data?.upload_url;
+  if (!upUrl) { logError('upload_url برای عکس دریافت نشد'); return false; }
+  const buf = fs.readFileSync(imagePath);
+  const form = new FormData();
+  form.append('file', new Blob([buf], { type: 'application/octet-stream' }), path.basename(imagePath));
+  const upRes = await fetch(upUrl, { method: 'POST', body: form });
+  const upText = await upRes.text();
+  let j = {};
+  try { j = JSON.parse(upText); } catch (_) {}
+  const fileId = j?.file_id || j?.data?.file_id;
+  if (!fileId) { logError('file_id عکس پیدا نشد'); return false; }
+  const s = await api('sendFile', { chat_id: chatId, file_id: fileId, text: caption });
+  const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+  if (s.error) logError(`ارسال عکس به ${chatId} شکست خورد`);
+  else log(`✅ عکس به ${chatId} ارسال شد (${elapsed}s)`);
+  return !!s?.data?.message_id;
+}
 
-          let proxies = [];
-          let currentProxy = null;
-          let xrayProc = null;
+// ======================== جستجوی یوتیوب (با spawn) ========================
+async function searchYouTube(query) {
+  if (!currentProxy) throw new Error('پروکسی فعال نیست');
+  log(`🔍 شروع جستجوی یوتیوب: "${query}"`);
+  const startTime = Date.now();
+  return new Promise((resolve, reject) => {
+    const args = [
+      '--no-flat-playlist',
+      '--dump-json',
+      '--socket-timeout', '30',
+      '-R', '2',
+      '--proxy', 'socks5h://127.0.0.1:10808',
+      `ytsearch${MAX_RESULTS}:${query}`
+    ];
+    log(`🛠️ اجرای yt-dlp با آرگومان‌ها: yt-dlp ${args.join(' ')}`);
+    const proc = spawn('yt-dlp', args, {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: { ...process.env, PYTHONUNBUFFERED: '1' }
+    });
 
-          // =============== ابزارهای زمان و لاگ ===============
-          function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
-          function log(...args) {
-            const msg = `[${ts()}] ${args.join(' ')}`;
-            console.log(msg);
-            try { fs.appendFileSync(LOG_FILE, msg + '\n'); } catch(_) {}
-          }
-          const sleep = ms => new Promise(r => setTimeout(r, ms));
+    let stdout = '';
+    let stderr = '';
 
-          // ======================== مدیریت پروکسی Xray ========================
-          function parseURI(uri) { /* دقیقاً مثل ربات قبلی */ 
-            try {
-              const u = new URL(uri);
-              return {
-                protocol: u.protocol.replace(':',''),
-                uuid: u.username,
-                address: u.hostname,
-                port: u.port,
-                params: Object.fromEntries(u.searchParams.entries())
-              };
-            } catch(_) { return null; }
-          }
-          function generateXrayConfig(uri) { /* مشابه قبل */ 
-            const p = parseURI(uri); if (!p) return null;
-            const inbound = { port: 10808, protocol: 'socks', settings: { auth: 'noauth', udp: true } };
-            let outbound = { protocol: p.protocol, streamSettings: { network: p.params.type || 'tcp' } };
-            if (p.protocol === 'trojan') outbound.settings = { servers: [{ address: p.address, port: parseInt(p.port), password: p.uuid }] };
-            else outbound.settings = { vnext: [{ address: p.address, port: parseInt(p.port), users: [{ id: p.uuid, encryption: p.params.encryption || 'none', flow: p.params.flow || '' }] }] };
-            const net = p.params.type || 'tcp'; outbound.streamSettings.network = net;
-            if (net === 'ws') outbound.streamSettings.wsSettings = { path: p.params.path || '/', headers: p.params.host ? { Host: p.params.host } : {} };
-            const sec = p.params.security || 'none';
-            if (sec === 'tls' || sec === 'reality') {
-              outbound.streamSettings.security = sec;
-              const tls = { serverName: p.params.sni || p.address };
-              if (sec === 'reality') { tls.fingerprint = p.params.fp || 'chrome'; tls.publicKey = p.params.pbk || ''; tls.shortId = p.params.sid || ''; tls.spiderX = ''; }
-              if (p.params.allowInsecure === '1') tls.allowInsecure = true;
-              if (p.params.alpn) tls.alpn = p.params.alpn.split(',');
-              outbound.streamSettings.tlsSettings = tls;
-            } else outbound.streamSettings.security = 'none';
-            return { inbounds: [inbound], outbounds: [outbound] };
-          }
-          async function startXray(uri, idx) {
-            const config = generateXrayConfig(uri); if (!config) return null;
-            const cfgPath = `/tmp/xray_search_${idx}.json`;
-            fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
-            const proc = spawn(path.join('.', 'xray', 'xray'), ['run', '-config', cfgPath], { stdio: 'pipe' });
-            await sleep(4000);
-            return proc;
-          }
-          function testProxyConnection() {
-            try {
-              execSync('curl --socks5 127.0.0.1:10808 --max-time 8 -s http://ip-api.com/json', { encoding: 'utf8', stdio: 'pipe' });
-              return true;
-            } catch(e) { return false; }
-          }
-          async function switchToRandomProxy() {
-            if (xrayProc) { xrayProc.kill(); await sleep(500); xrayProc = null; }
-            currentProxy = null;
-            if (proxies.length === 0) return false;
-            // چندتا تصادفی امتحان کن
-            for (let attempt = 0; attempt < Math.min(proxies.length, 5); attempt++) {
-              const candidate = proxies[Math.floor(Math.random() * proxies.length)];
-              log(`🔀 تلاش پروکسی تصادفی: ${candidate.substring(0,60)}...`);
-              xrayProc = await startXray(candidate, Date.now());
-              await sleep(4000);
-              if (testProxyConnection()) {
-                currentProxy = candidate;
-                return true;
-              } else {
-                if (xrayProc) { xrayProc.kill(); await sleep(500); xrayProc = null; }
-              }
-            }
-            return false;
-          }
+    proc.stdout.on('data', (data) => {
+      stdout += data.toString();
+      if (stdout.length > MAX_BUFFER) {
+        proc.kill();
+        logError('حجم خروجی yt-dlp از حد مجاز فراتر رفت');
+        reject(new Error('stdout maxBuffer exceeded'));
+      }
+    });
 
-          // ======================== Rubika API ========================
-          const BASE = `https://botapi.rubika.ir/v3/${TOKEN}`;
-          async function api(method, body={}, retries=5) {
-            const url = `${BASE}/${method}`;
-            for (let a=0; a<retries; a++) {
-              try {
-                const ctrl = new AbortController(); const id = setTimeout(()=>ctrl.abort(),30000);
-                const res = await fetch(url, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:ctrl.signal});
-                clearTimeout(id);
-                const t = await res.text();
-                if (t.startsWith('<!DOCTYPE html>') || t.includes('nginx')) {
-                  await sleep((1<<a)*1000);
-                  continue;
-                }
-                let d; try { d = JSON.parse(t); } catch(_) { if (a<retries-1) { await sleep(2000*(a+1)); continue; } return {error:true, raw:t}; }
-                return d;
-              } catch(e) { if (a<retries-1) { await sleep(2000*(a+1)); continue; } return {error:true, message:e.message}; }
-            }
-            return {error:true, message:'بعد از ۵ تلاش ناموفق'};
-          }
-          async function sendMessage(chatId, text, keypad = null) {
-            const body = { chat_id: chatId, text };
-            if (keypad) { body.chat_keypad = keypad; body.chat_keypad_type = 'New'; }
-            return await api('sendMessage', body);
-          }
-          async function uploadAndSendImage(chatId, imagePath, caption='') {
-            const start = Date.now();
-            const req = await api('requestSendFile', {type:'Image'});
-            const upUrl = req?.data?.upload_url;
-            if (!upUrl) { log('❌ نگرفتن upload_url عکس'); return false; }
-            const buf = fs.readFileSync(imagePath);
-            const form = new FormData();
-            form.append('file', new Blob([buf], {type:'application/octet-stream'}), path.basename(imagePath));
-            const upRes = await fetch(upUrl, {method:'POST', body:form});
-            const upText = await upRes.text();
-            let j = {}; try { j = JSON.parse(upText); } catch(_) {}
-            const fileId = j?.file_id || j?.data?.file_id;
-            if (!fileId) { log('❌ file_id عکس پیدا نشد'); return false; }
-            const s = await api('sendFile', {chat_id:chatId, file_id:fileId, text:caption});
-            const elapsed = ((Date.now()-start)/1000).toFixed(1);
-            log(`⬆️ عکس ارسال شد در ${elapsed}s`);
-            return !!s?.data?.message_id;
-          }
+    proc.stderr.on('data', (data) => {
+      stderr += data.toString();
+      log('⚠️ stderr yt-dlp:', data.toString().substring(0, 200));
+    });
 
-          // ======================== جستجو و دانلود thumbnail ========================
-          async function searchYouTube(query) {
-            if (!currentProxy) throw new Error('پروکسی فعال نیست');
-            const cmd = `yt-dlp --no-flat-playlist --dump-json --socket-timeout 30 -R 2 --proxy socks5h://127.0.0.1:10808 "ytsearch${MAX_RESULTS}:${query}"`;
-            log(`🔍 جستجو: "${query}"`);
-            return new Promise((resolve, reject) => {
-              exec(cmd, { timeout: SEARCH_TIMEOUT, maxBuffer: 10*1024*1024 }, (error, stdout, stderr) => {
-                if (error) {
-                  log('❌ خطای yt-dlp:', error.message);
-                  return reject(error);
-                }
-                const lines = stdout.trim().split('\n').filter(l => l.startsWith('{'));
-                const results = [];
-                for (const line of lines) {
-                  try {
-                    const data = JSON.parse(line);
-                    if (data.webpage_url && data.thumbnail) {
-                      results.push({
-                        title: data.title,
-                        url: data.webpage_url,
-                        thumbnail: data.thumbnail,
-                        duration: data.duration,
-                        view_count: data.view_count,
-                        upload_date: data.upload_date
-                      });
-                    }
-                  } catch(e) {}
-                  if (results.length >= MAX_RESULTS) break;
-                }
-                log(`✅ ${results.length} نتیجه یافت شد`);
-                resolve(results);
-              });
+    proc.on('close', (code) => {
+      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+      log(`⏱️ yt-dlp در ${elapsed}s با کد ${code} به پایان رسید`);
+      if (code !== 0 && stdout.length === 0) {
+        logError('yt-dlp بدون خروجی مفید با خطا بسته شد. stderr:', stderr.substring(0, 500));
+        reject(new Error(`yt-dlp exited with code ${code}`));
+        return;
+      }
+      const lines = stdout.split('\n').filter(l => l.trim().startsWith('{'));
+      const results = [];
+      for (const line of lines) {
+        try {
+          const data = JSON.parse(line);
+          if (data.webpage_url && data.thumbnail) {
+            results.push({
+              title: data.title,
+              url: data.webpage_url,
+              thumbnail: data.thumbnail,
+              duration: data.duration,
+              view_count: data.view_count,
+              upload_date: data.upload_date
             });
           }
+        } catch (e) {
+          logError('خطا در تجزیه JSON یک خط از خروجی yt-dlp:', e.message);
+        }
+        if (results.length >= MAX_RESULTS) break;
+      }
+      log(`📊 تعداد نتایج نهایی: ${results.length}`);
+      resolve(results);
+    });
 
-          async function downloadThumbnail(thumbnailUrl, idx) {
-            const outPath = `/tmp/thumb_${idx}.jpg`;
-            try {
-              execSync(`curl --socks5-hostname 127.0.0.1:10808 -s -L --max-time 15 -o "${outPath}" "${thumbnailUrl}"`, {stdio:'pipe'});
-              return outPath;
-            } catch(e) { log(`⚠️ خطای دانلود thumbnail: ${e.message}`); return null; }
-          }
+    proc.on('error', (err) => {
+      logError('خطا در spawn yt-dlp:', err.message);
+      reject(err);
+    });
 
-          // ======================== صف و پردازش درخواست‌ها ========================
-          const queue = [];
-          let isProcessing = false;
-          const userDailyMap = new Map();           // chatId -> تعداد جستجوهای انجام‌شده
-          const adminUsers = new Set();
+    setTimeout(() => {
+      proc.kill();
+      reject(new Error('yt-dlp timeout'));
+    }, SEARCH_TIMEOUT);
+  });
+}
 
-          function getAverageSearchTime() { return 35; } // تخمین ۳۵ ثانیه برای هر جستجو (پردازش + ارسال)
+async function downloadThumbnail(thumbnailUrl, idx) {
+  const outPath = `/tmp/thumb_${idx}.jpg`;
+  log(`⬇️ دانلود thumbnail ${idx}: ${thumbnailUrl}`);
+  const start = Date.now();
+  try {
+    execSync(`curl --socks5-hostname 127.0.0.1:10808 -s -L --max-time 15 -o "${outPath}" "${thumbnailUrl}"`, {
+      stdio: 'pipe',
+      timeout: 20000
+    });
+    const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+    if (fs.existsSync(outPath) && fs.statSync(outPath).size > 0) {
+      log(`✅ thumbnail ${idx} دانلود شد (${elapsed}s, ${(fs.statSync(outPath).size / 1024).toFixed(1)}KB)`);
+      return outPath;
+    } else {
+      logError(`thumbnail ${idx} خالی یا صفر بایت است`);
+      return null;
+    }
+  } catch (e) {
+    logError(`دانلود thumbnail ${idx} شکست خورد:`, e.message);
+    return null;
+  }
+}
 
-          async function processNext() {
-            if (queue.length === 0) { isProcessing = false; return; }
-            isProcessing = true;
-            const next = queue.shift();
-            await sendMessage(next.chatId, '🔜 نوبت شما رسید! در حال جستجو...');
-            processSearchRequest(next.chatId, next.query);
-          }
+// ======================== صف و پردازش ========================
+const queue = [];
+let isProcessing = false;
+const userDailyMap = new Map();
+const adminUsers = new Set();
 
-          async function processSearchRequest(chatId, query) {
-            try {
-              const results = await searchYouTube(query);
-              if (results.length === 0) {
-                await sendMessage(chatId, '⚠️ هیچ ویدیویی با این عبارت پیدا نشد.');
-                return;
-              }
-              await sendMessage(chatId, `📊 ${results.length} نتیجه پیدا شد. در حال ارسال...`);
-              // ارسال هر نتیجه به صورت عکس + کپشن
-              for (let i = 0; i < results.length; i++) {
-                const video = results[i];
-                const durMin = Math.floor(video.duration / 60);
-                const durSec = Math.floor(video.duration % 60).toString().padStart(2,'0');
-                const durationStr = `${durMin}:${durSec}`;
-                const viewStr = video.view_count ? `${(video.view_count/1000000).toFixed(1)}M` : 'نامشخص';
-                const uploadStr = video.upload_date ? video.upload_date.replace(/^(\d{4})(\d{2})(\d{2})$/, '$3/$2/$1') : 'نامشخص';
+function getAverageSearchTime() { return 35; }
 
-                const caption = `🎬 ${video.title}\n⏱ ${durationStr}  |  👁 ${viewStr} بازدید  |  📅 ${uploadStr}\n🔗 ${video.url}`;
+async function processNext() {
+  log(`🔄 processNext فراخوانی شد - طول صف: ${queue.length}, در حال پردازش: ${isProcessing}`);
+  if (queue.length === 0) {
+    isProcessing = false;
+    log('⏸️ صف خالی است، پردازش متوقف شد');
+    return;
+  }
+  isProcessing = true;
+  const next = queue.shift();
+  log(`🚀 شروع پردازش درخواست از ${next.chatId} (عبارت: "${next.query}")`);
+  await sendMessage(next.chatId, '🔜 نوبت شما رسید! در حال جستجو...');
+  await processSearchRequest(next.chatId, next.query);
+}
 
-                const thumbPath = await downloadThumbnail(video.thumbnail, i);
-                if (thumbPath) {
-                  await uploadAndSendImage(chatId, thumbPath, caption);
-                  try { fs.unlinkSync(thumbPath); } catch(_) {}
-                } else {
-                  // اگه عکس دانلود نشد، حداقل متن رو بفرست
-                  await sendMessage(chatId, caption);
-                }
-                // کمی تاخیر برای جلوگیری از rate limit روبیکا
-                await sleep(400);
-              }
-              await sendMessage(chatId, '✅ جستجو با موفقیت انجام شد. برای جستجوی جدید عبارت دیگری بفرستید.');
-            } catch(e) {
-              log(`❌ خطا در پاسخ به ${chatId}:`, e.message);
-              await sendMessage(chatId, '❌ مشکلی در جستجو پیش آمد. لطفاً دوباره تلاش کنید.');
-            } finally {
-              processNext();
-            }
-          }
+async function processSearchRequest(chatId, query) {
+  log(`📥 پردازش جستجو برای ${chatId}: "${query}"`);
+  try {
+    const results = await searchYouTube(query);
+    if (results.length === 0) {
+      await sendMessage(chatId, '⚠️ هیچ ویدیویی با این عبارت پیدا نشد.');
+      return;
+    }
+    await sendMessage(chatId, `📊 ${results.length} نتیجه پیدا شد. در حال ارسال...`);
+    for (let i = 0; i < results.length; i++) {
+      const video = results[i];
+      const durMin = Math.floor(video.duration / 60);
+      const durSec = Math.floor(video.duration % 60).toString().padStart(2, '0');
+      const durationStr = `${durMin}:${durSec}`;
+      const viewStr = video.view_count ? `${(video.view_count / 1000000).toFixed(1)}M` : 'نامشخص';
+      const uploadStr = video.upload_date
+        ? video.upload_date.replace(/^(\d{4})(\d{2})(\d{2})$/, '$3/$2/$1')
+        : 'نامشخص';
 
-          function addToQueue(chatId, query) {
-            const isAdmin = adminUsers.has(chatId);
-            if (!isAdmin) {
-              const used = userDailyMap.get(chatId) || 0;
-              if (used >= DAILY_SEARCH_LIMIT) {
-                sendMessage(chatId, `⚠️ شما به سقف ${DAILY_SEARCH_LIMIT} جستجو در این بازه رسیده‌اید.`);
-                return;
-              }
-              userDailyMap.set(chatId, used + 1);
-            }
-            if (queue.length >= MAX_QUEUE && !isAdmin) {
-              sendMessage(chatId, '⚠️ صف پر شده، لطفاً بعداً تلاش کنید.');
-              return;
-            }
-            if (!isProcessing) {
-              isProcessing = true;
-              sendMessage(chatId, '📥 در حال جستجو...');
-              processSearchRequest(chatId, query);
-              return;
-            }
-            if (queue.some(item => item.chatId === chatId)) {
-              sendMessage(chatId, '⚠️ شما قبلاً یک درخواست در صف دارید.');
-              return;
-            }
-            queue.push({ chatId, query });
-            const position = queue.length;
-            const avg = getAverageSearchTime();
-            const estMin = Math.ceil((position * avg) / 60);
-            sendMessage(chatId, `🔢 شما نفر ${position} در صف هستید.\n⏱️ زمان انتظار تقریبی: ${estMin} دقیقه`, mainKeypad);
-          }
+      const caption = `🎬 ${video.title}\n⏱ ${durationStr}  |  👁 ${viewStr} بازدید  |  📅 ${uploadStr}\n🔗 ${video.url}`;
+      log(`🖼️ ارسال نتیجه ${i + 1}/${results.length} - ${video.title.substring(0, 60)}`);
 
-          // ======================== دکمه‌ها و راهنما ========================
-          const mainKeypad = {
-            rows: [{ buttons: [
-              { id: 'QUEUE_STATUS', type: 'Simple', button_text: '⏳ وضعیت صف' },
-              { id: 'HELP', type: 'Simple', button_text: '❓ راهنما' }
-            ]}],
-            resize_keyboard: true, one_time_keyboard: false
-          };
+      const thumbPath = await downloadThumbnail(video.thumbnail, i);
+      if (thumbPath) {
+        const sendOk = await uploadAndSendImage(chatId, thumbPath, caption);
+        if (!sendOk) logError(`ارسال عکس برای نتیجه ${i + 1} ناموفق بود`);
+        try { fs.unlinkSync(thumbPath); } catch (_) {}
+      } else {
+        log('⚠️ ارسال متن به دلیل نبود thumbnail');
+        await sendMessage(chatId, caption);
+      }
+      await sleep(400); // تنفس بین ارسال‌ها
+    }
+    await sendMessage(chatId, '✅ جستجو با موفقیت انجام شد. برای جستجوی جدید عبارت دیگری بفرستید.');
+    log(`✅ جستجوی "${query}" برای ${chatId} کامل شد`);
+  } catch (e) {
+    logError(`خطا در جستجوی "${query}" برای ${chatId}:`, e.message);
+    await sendMessage(chatId, '❌ مشکلی در جستجو پیش آمد. لطفاً دوباره تلاش کنید.');
+  } finally {
+    processNext();
+  }
+}
 
-          async function handleQueueStatus(chatId) {
-            const idx = queue.findIndex(item => item.chatId === chatId);
-            if (idx === -1) {
-              await sendMessage(chatId, 'ℹ️ شما درخواست فعالی در صف ندارید.');
-              return;
-            }
-            const position = idx + 1;
-            const avg = getAverageSearchTime();
-            const estSec = Math.ceil(position * avg);
-            const estMin = Math.floor(estSec / 60);
-            const estRemSec = estSec % 60;
-            const timeText = estMin > 0 ? `${estMin} دقیقه و ${estRemSec} ثانیه` : `${estSec} ثانیه`;
-            await sendMessage(chatId, `📍 شما نفر ${position} در صف هستید.\n⏳ حدود ${timeText} دیگر نوبت شماست.`);
-          }
+function addToQueue(chatId, query) {
+  log(`➕ addToQueue - کاربر: ${chatId}, عبارت: "${query}"`);
+  const isAdmin = adminUsers.has(chatId);
+  if (!isAdmin) {
+    const used = userDailyMap.get(chatId) || 0;
+    if (used >= DAILY_SEARCH_LIMIT) {
+      log(`⛔ کاربر ${chatId} به سقف جستجو رسید`);
+      sendMessage(chatId, `⚠️ شما به سقف ${DAILY_SEARCH_LIMIT} جستجو در این بازه رسیده‌اید.`);
+      return;
+    }
+    userDailyMap.set(chatId, used + 1);
+    log(`📊 کاربر ${chatId}: ${used + 1}/${DAILY_SEARCH_LIMIT} جستجو`);
+  }
+  if (queue.length >= MAX_QUEUE && !isAdmin) {
+    log('⛔ صف پر است');
+    sendMessage(chatId, '⚠️ صف پر شده، لطفاً بعداً تلاش کنید.');
+    return;
+  }
+  if (!isProcessing) {
+    isProcessing = true;
+    log('🚀 صف خالی بود، شروع مستقیم پردازش');
+    processSearchRequest(chatId, query);
+    return;
+  }
+  if (queue.some(item => item.chatId === chatId)) {
+    log(`⚠️ کاربر ${chatId} قبلاً در صف است`);
+    sendMessage(chatId, '⚠️ شما قبلاً یک درخواست در صف دارید.');
+    return;
+  }
+  queue.push({ chatId, query });
+  const position = queue.length;
+  const avg = getAverageSearchTime();
+  const estMin = Math.ceil((position * avg) / 60);
+  log(`📍 کاربر ${chatId} در صف قرار گرفت - موقعیت: ${position}`);
+  sendMessage(chatId, `🔢 شما نفر ${position} در صف هستید.\n⏱️ زمان انتظار تقریبی: ${estMin} دقیقه`, mainKeypad);
+}
 
-          async function handleHelp(chatId) {
-            const helpText =
-              '🔍 ربات جستجوی هوشمند یوتیوب\n\n' +
-              '✅ کافیست عبارت مورد نظر خود را به صورت یک پیام متنی ارسال کنید.\n' +
-              '✅ ربات ۲۰ نتیجهٔ برتر را جستجو کرده و هر کدام را در یک پیام جداگانه (با تصویر کاور، عنوان، مدت زمان، تعداد بازدید و لینک) برایتان می‌فرستد.\n\n' +
-              '⚠️ محدودیت‌ها:\n' +
-              `- هر کاربر می‌تواند حداکثر ${DAILY_SEARCH_LIMIT} جستجو در این بازه ۶ ساعته انجام دهد.\n` +
-              '- در صورت شلوغی، درخواست شما در صف قرار می‌گیرد.\n\n' +
-              '🔗 برای دانلود ویدیو می‌توانید لینک آن را به ربات دانلودر ما بفرستید.\n' +
-              '📢 کانال رسمی ما در روبیکا:\nhttps://rubika.ir/joinc/EIJHJDBI0JVRYRXAUOPHHLSQFFKWQBCB';
-            await sendMessage(chatId, helpText);
-          }
+// ======================== دکمه‌ها و پیام‌های ثابت ========================
+const mainKeypad = {
+  rows: [{
+    buttons: [
+      { id: 'QUEUE_STATUS', type: 'Simple', button_text: '⏳ وضعیت صف' },
+      { id: 'HELP', type: 'Simple', button_text: '❓ راهنما' }
+    ]
+  }],
+  resize_keyboard: true,
+  one_time_keyboard: false
+};
 
-          // ======================== حلقه اصلی ربات ========================
-          (async () => {
-            // راه‌اندازی اولیه
-            const me = await api('getMe');
-            if (!me?.data?.bot?.username) { log('❌ توکن نامعتبر'); process.exit(1); }
-            log(`✅ ربات جستجو: ${me.data.bot.username}`);
+async function handleQueueStatus(chatId) {
+  log(`📊 درخواست وضعیت صف از ${chatId}`);
+  const idx = queue.findIndex(item => item.chatId === chatId);
+  if (idx === -1) {
+    await sendMessage(chatId, 'ℹ️ شما درخواست فعالی در صف ندارید.');
+    return;
+  }
+  const position = idx + 1;
+  const avg = getAverageSearchTime();
+  const estSec = Math.ceil(position * avg);
+  const estMin = Math.floor(estSec / 60);
+  const estRemSec = estSec % 60;
+  const timeText = estMin > 0 ? `${estMin} دقیقه و ${estRemSec} ثانیه` : `${estSec} ثانیه`;
+  await sendMessage(chatId, `📍 شما نفر ${position} در صف هستید.\n⏳ حدود ${timeText} دیگر نوبت شماست.`);
+}
 
-            // خواندن پروکسی‌ها
-            if (!fs.existsSync(PROXY_FILE)) { log(`❌ فایل ${PROXY_FILE} یافت نشد`); process.exit(1); }
-            proxies = fs.readFileSync(PROXY_FILE, 'utf8').split('\n').map(l=>l.trim()).filter(l=>/^(vless|trojan|ss|vmess):\/\//.test(l));
-            if (proxies.length === 0) { log('❌ هیچ پروکسی در فایل نیست'); process.exit(1); }
-            log(`📋 ${proxies.length} پروکسی بارگذاری شد`);
+async function handleHelp(chatId) {
+  log(`📖 درخواست راهنما از ${chatId}`);
+  const helpText =
+    '🔍 ربات جستجوی هوشمند یوتیوب\n\n' +
+    '✅ کافیست عبارت مورد نظر خود را به صورت یک پیام متنی ارسال کنید.\n' +
+    '✅ ربات ۲۰ نتیجهٔ برتر را جستجو کرده و هر کدام را در یک پیام جداگانه (با تصویر کاور، عنوان، مدت زمان، تعداد بازدید و لینک) برایتان می‌فرستد.\n\n' +
+    '⚠️ محدودیت‌ها:\n' +
+    `- هر کاربر می‌تواند حداکثر ${DAILY_SEARCH_LIMIT} جستجو در این بازه ۶ ساعته انجام دهد.\n` +
+    '- در صورت شلوغی، درخواست شما در صف قرار می‌گیرد.\n\n' +
+    '🔗 برای دانلود ویدیو می‌توانید لینک آن را به ربات دانلودر ما بفرستید.\n' +
+    '📢 کانال رسمی ما در روبیکا:\nhttps://rubika.ir/joinc/EIJHJDBI0JVRYRXAUOPHHLSQFFKWQBCB';
+  await sendMessage(chatId, helpText);
+}
 
-            // اتصال اولیه
-            if (!(await switchToRandomProxy())) {
-              log('❌ هیچ پروکسی سالمی یافت نشد');
-              process.exit(1);
-            }
-            log('🔌 اتصال اولیه برقرار شد');
+async function handleStart(chatId) {
+  log(`👋 پیام /start از ${chatId}`);
+  const welcome = '👋 سلام! من ربات جستجوی یوتیوب هستم.\n🔍 هر عبارتی که می‌خواهید جستجو کنید را برایم بفرستید تا ۲۰ نتیجهٔ برتر را با عکس و اطلاعات کامل برایتان ارسال کنم.\n\nاز دکمه‌های زیر هم می‌توانید استفاده کنید.';
+  await sendMessage(chatId, welcome, mainKeypad);
+}
 
-            // پاکسازی history روبیکا (مثل قبل)
-            log('🧹 پاکسازی پیام‌های قدیمی...');
-            let offset = null;
-            while (true) {
-              const res = await api('getUpdates', { limit: 100, offset_id: offset });
-              const updates = res?.data?.updates;
-              if (!updates || updates.length === 0) break;
-              offset = res.data.next_offset_id;
-              if (!offset) break;
-            }
+// ======================== حلقه اصلی ========================
+(async () => {
+  log('🚀 راه‌اندازی ربات جستجوی یوتیوب');
 
-            const DEADLINE_END = Date.now() + 19740 * 1000; // ۵ ساعت و ۲۹ دقیقه
-            const sentHelp = new Set();
+  const me = await api('getMe');
+  if (!me?.data?.bot?.username) {
+    logError('توکن نامعتبر است یا ربات یافت نشد');
+    process.exit(1);
+  }
+  log(`✅ ربات: @${me.data.bot.username}`);
 
-            while (Date.now() < DEADLINE_END) {
-              try {
-                const res = await api('getUpdates', { limit: 10, offset_id: offset });
-                if (res.error) { log('⚠️ خطای API:', res.message); await sleep(5000); continue; }
-                const updates = res?.data?.updates;
-                if (!updates || updates.length === 0) { await sleep(4000); continue; }
+  // خواندن پروکسی‌ها
+  if (!fs.existsSync(PROXY_FILE)) {
+    logError(`فایل ${PROXY_FILE} یافت نشد`);
+    process.exit(1);
+  }
+  proxies = fs.readFileSync(PROXY_FILE, 'utf8').split('\n').map(l => l.trim()).filter(l => /^(vless|trojan|ss|vmess):\/\//.test(l));
+  if (proxies.length === 0) {
+    logError('هیچ پروکسی معتبری در فایل نیست');
+    process.exit(1);
+  }
+  log(`📋 ${proxies.length} پروکسی بارگذاری شد`);
 
-                for (const u of updates) {
-                  if (u.type !== 'NewMessage') continue;
-                  const chatId = u.chat_id;
-                  const msg = u.new_message;
-                  const buttonId = msg.aux_data?.button_id;
+  if (!(await switchToRandomProxy())) {
+    logError('اتصال اولیه با هیچ پروکسی ممکن نشد');
+    process.exit(1);
+  }
 
-                  // دکمه‌ها
-                  if (buttonId === 'QUEUE_STATUS') { await handleQueueStatus(chatId); continue; }
-                  if (buttonId === 'HELP') { await handleHelp(chatId); continue; }
+  // پاک‌سازی پیام‌های قدیمی
+  log('🧹 پاکسازی پیام‌های قدیمی از روبیکا...');
+  let offset = null;
+  while (true) {
+    const res = await api('getUpdates', { limit: 100, offset_id: offset });
+    const updates = res?.data?.updates;
+    if (!updates || updates.length === 0) break;
+    offset = res.data.next_offset_id;
+    if (!offset) break;
+  }
+  log('✅ تاریخچه پاک شد');
 
-                  if (!msg?.text) continue;
-                  const text = msg.text.trim();
+  const DEADLINE_END = Date.now() + 19740 * 1000; // ۵ ساعت و ۲۹ دقیقه
+  log(`⏳ زمان پایان ربات: ${new Date(DEADLINE_END).toISOString()}`);
 
-                  // رمز ادمین
-                  if (ADMIN_SECRET && text === ADMIN_SECRET) {
-                    adminUsers.add(chatId);
-                    await sendMessage(chatId, '🔑 حالت ادمین فعال شد. دیگر محدودیت جستجو ندارید.');
-                    continue;
-                  }
+  while (Date.now() < DEADLINE_END) {
+    try {
+      const res = await api('getUpdates', { limit: 10, offset_id: offset });
+      if (res.error) {
+        logError('خطا در getUpdates:', res.message || res.raw);
+        await sleep(5000);
+        continue;
+      }
+      const updates = res?.data?.updates;
+      if (!updates || updates.length === 0) {
+        await sleep(4000);
+        continue;
+      }
 
-                  // اگر لینک یوتیوب باشه نادیده بگیریم (کار ربات دانلودره)
-                  if (/youtube\.com\/watch|youtu\.be\//.test(text)) {
-                    if (!sentHelp.has(chatId)) {
-                      await sendMessage(chatId, '⚠️ این ربات فقط جستجو می‌کند. لینک دانلود را به ربات دانلودر بفرستید.', mainKeypad);
-                      sentHelp.add(chatId);
-                    }
-                    continue;
-                  }
+      for (const u of updates) {
+        log(`📨 به‌روزرسانی: chat=${u.chat_id}, type=${u.type}, message_id=${u.message_id}`);
 
-                  // در غیر این صورت، یک عبارت جستجو است
-                  log(`🔎 جستجوی "${text}" از ${chatId}`);
-                  addToQueue(chatId, text);
-                }
+        if (u.type !== 'NewMessage') continue;
 
-                if (res.data?.next_offset_id) offset = res.data.next_offset_id;
-              } catch(e) { log('❌ حلقه اصلی:', e.message); await sleep(5000); }
-            }
+        const chatId = u.chat_id;
+        const msg = u.new_message;
+        const buttonId = msg.aux_data?.button_id;
 
-            if (xrayProc) xrayProc.kill();
-            log('⏹️ ربات جستجو خاموش شد');
-          })();
-          ENDSCRIPT
+        // --- دکمه‌ها ---
+        if (buttonId === 'QUEUE_STATUS') {
+          log(`🔘 دکمه وضعیت صف از ${chatId}`);
+          await handleQueueStatus(chatId);
+          continue;
+        }
+        if (buttonId === 'HELP') {
+          log(`🔘 دکمه راهنما از ${chatId}`);
+          await handleHelp(chatId);
+          continue;
+        }
 
-          timeout 19740 node search_bot.cjs
+        if (!msg?.text) continue;
+        const text = msg.text.trim();
+        log(`💬 پیام متنی از ${chatId}: "${text}"`);
+
+        // --- دستور ادمین ---
+        if (ADMIN_SECRET && text === ADMIN_SECRET) {
+          adminUsers.add(chatId);
+          log(`🔑 کاربر ${chatId} ادمین شد`);
+          await sendMessage(chatId, '🔑 حالت ادمین فعال شد. دیگر محدودیت جستجو ندارید.');
+          continue;
+        }
+
+        // --- دستور /start یا start ---
+        if (text === '/start' || text.toLowerCase() === 'start') {
+          await handleStart(chatId);
+          continue;
+        }
+
+        // --- دستور /help یا help ---
+        if (text === '/help' || text.toLowerCase() === 'help') {
+          await handleHelp(chatId);
+          continue;
+        }
+
+        // --- لینک یوتیوب (نادیده بگیر با یک پیام راهنما) ---
+        if (/youtube\.com\/watch|youtu\.be\//.test(text)) {
+          log(`🔗 لینک یوتیوب دریافت شد از ${chatId} - نادیده گرفته شد`);
+          await sendMessage(chatId, '⚠️ این ربات فقط جستجو می‌کند. لینک را به ربات دانلودر بفرستید.');
+          continue;
+        }
+
+        // --- در غیر این صورت، عبارت جستجو ---
+        log(`🔎 عبارت جستجو: "${text}"`);
+        addToQueue(chatId, text);
+      }
+
+      if (res.data?.next_offset_id) offset = res.data.next_offset_id;
+    } catch (e) {
+      logError('خطا در حلقه اصلی:', e.message);
+      await sleep(5000);
+    }
+  }
+
+  // پایان
+  log('⏹️ زمان ربات به پایان رسید. خاموش شدن...');
+  if (xrayProc) {
+    xrayProc.kill();
+    log('🛑 پروکسی قطع شد');
+  }
+  log('👋 ربات جستجو خاموش شد');
+})();
