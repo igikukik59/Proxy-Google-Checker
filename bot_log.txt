@@ -28620,3 +28620,17 @@ ERROR: [youtube] shcgzjTWuAU: Requested format is not available. Use --list-form
 [2026-05-04 14:58:25] ⬇️ دانلود در 45.9s
 [2026-05-04 14:58:33] ⬆️ آپلود video_raw.mp4 در 7.9s
 [2026-05-04 14:58:33] 📊 آمار به‌روزرسانی شد
+[2026-05-04 14:58:35] 📤 لاگ و آمار push شد
+[2026-05-04 14:58:35] 🔀 تلاش با پروکسی تصادفی: vless://6202b230-417c-4d8e-b624-0f71afa9c75d@91.193.58.247:4...
+[2026-05-04 14:58:48] 🎬 درخواست از b0KQsS099P065373ce39f7c88eae6362: https://www.youtube.com/watch?v=Agggu0gHIc0
+[2026-05-04 14:58:52] 🍪 کوکی جدید دریافت شد
+[2026-05-04 14:58:58] ❌ دانلود شکست: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 -N 16 --concurrent-fragments 16 --buffer-size 2048K --no-playlist --format "best[height<=480][ext=mp4] / best[height<=480]" --merge-output-format mp4 --output "/tmp/video_raw.mp4" "https://www.youtube.com/watch?v=Dy15mfkypMQ"
+[2026-05-04 14:58:58] ❌ دانلود با این پروکسی ناموفق
+[2026-05-04 14:58:58] 🔄 تلاش مجدد (2/3)...
+[2026-05-04 14:58:59] 🔀 تلاش با پروکسی تصادفی: vless://a01daac7-1e65-4645-854d-b47d226f6b08@104.20.6.134:44...
+[2026-05-04 14:59:16] 🍪 کوکی جدید دریافت شد
+[2026-05-04 14:59:24] ⬇️ دانلود در 8.3s
+[2026-05-04 14:59:35] 🎬 درخواست از b0DBYKS099P02a958606844b012a3c0a: https://youtu.be/NROCQCmA8ko
+[2026-05-04 14:59:47] 🎬 درخواست از b0CralC099P0e5f288d759b19dee95df: https://www.youtube.com/watch?v=CJ26NwCT4RE
+[2026-05-04 14:59:47] ⬆️ آپلود video_raw.mp4 در 22.4s
+[2026-05-04 14:59:48] 📊 آمار به‌روزرسانی شد
