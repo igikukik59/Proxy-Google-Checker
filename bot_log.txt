@@ -37276,3 +37276,26 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 <p>Sorry, the page you are looking for is currently unavailable.<br
 [2026-05-05 11:11:14] ❌ ارسال قطعه 3/3 پس از 2 تلاش ناموفق
 [2026-05-05 11:11:17] 📊 آمار به‌روزرسانی شد
+[2026-05-05 11:11:19] 📤 لاگ و آمار push شد
+[2026-05-05 11:11:31] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 11:11:31] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+
+[2026-05-05 11:11:31] 🔄 تلاش مجدد (2/3)...
+[2026-05-05 11:11:31] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@172.64.145.158:...
+[2026-05-05 11:11:41] 🍪 کوکی جدید دریافت شد
+[2026-05-05 11:11:42] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 11:11:42] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube
+[2026-05-05 11:11:42] 🔄 تلاش مجدد (3/3)...
+[2026-05-05 11:11:43] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@185.16.110.238:...
+[2026-05-05 11:11:45] 🎬 درخواست از b0CD2p099P05d1067ce6b130b541ea2b: https://www.youtube.com/watch?v=MdQK_Hx2q8U
+[2026-05-05 11:11:46] ⚠️ دریافت اطلاعات ویدیو شکست (exit code: 1): WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction
+[2026-05-05 11:11:46] 📛 خطا در getRealVideoInfo: 🤖 یوتیوب درخواست را مشکوک تشخیص داد. لطفاً چند دقیقه بعد دوباره امتحان کنید.
+[2026-05-05 11:11:47] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 11:11:47] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube
+[2026-05-05 11:11:48] 🔀 تلاش با پروکسی تصادفی (شکست دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.155.106:4...
+[2026-05-05 11:11:58] 📊 آمار به‌روزرسانی شد
