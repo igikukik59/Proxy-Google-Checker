@@ -1,13 +1,13 @@
 {
-  "totalDataMB": "1197.35",
-  "totalVideos": 20,
-  "totalDurationMinutes": "344.5",
-  "uniqueUsers": 12,
+  "totalDataMB": "1399.49",
+  "totalVideos": 21,
+  "totalDurationMinutes": "385.7",
+  "uniqueUsers": 13,
   "failedAttempts": 2,
-  "avgProcessingTimeSec": "38.9",
-  "avgVideoSizeMB": "59.87",
-  "avgVideoDurationMin": "17.2",
-  "queueLength": 2,
+  "avgProcessingTimeSec": "54.8",
+  "avgVideoSizeMB": "66.64",
+  "avgVideoDurationMin": "18.4",
+  "queueLength": 3,
   "currentProxy": "trojan://humanity@8.6.112.0:443?security",
   "proxies": [
     {
@@ -68,10 +68,10 @@
     },
     {
       "proxy": "trojan://humanity@8.6.112.0:443?security=tls&sni=www.gossipg",
-      "avgSpeedMBps": "4.34",
-      "samples": 2,
+      "avgSpeedMBps": "4.92",
+      "samples": 3,
       "failures": 0,
-      "lastUsed": "2026-05-05T06:12:57.399Z"
+      "lastUsed": "2026-05-05T06:13:52.485Z"
     }
   ]
 }
