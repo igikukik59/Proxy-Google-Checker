@@ -34901,3 +34901,67 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 <p>Sorry, the page you are looking for is currently unavailable.<br
 [2026-05-05 10:03:25] ❌ ارسال قطعه 2/2 پس از 2 تلاش ناموفق
 [2026-05-05 10:03:27] 📊 آمار به‌روزرسانی شد
+[2026-05-05 10:03:28] 📤 لاگ و آمار push شد
+[2026-05-05 10:03:55] 🎬 درخواست از b0DDNYt099P02ffd0f7662361f950057: https://www.youtube.com/watch?v=H_yykwId0EM
+[2026-05-05 10:04:12] 📺 اطلاعات ویدیو: 11دقیقه, حجم ۴۸۰p: 61.2MB
+[2026-05-05 10:04:33] 🎬 درخواست از b0DVDZW099P059be8170e4ad3639fc96: https://www.youtube.com/watch?v=oc2yNV61FIs
+[2026-05-05 10:04:53] ⚠️ دریافت اطلاعات ویدیو شکست (exit code: null): WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction
+[2026-05-05 10:04:55] 📛 خطا در getRealVideoInfo: ⚠️ نتوانستم اطلاعات ویدیو را دریافت کنم.
+[2026-05-05 10:04:56] 🎬 درخواست از b0BuEkp099P0d272e69e8c049a9e3c6a: https://youtu.be/jfrY07d2EBY
+[2026-05-05 10:05:14] 📺 اطلاعات ویدیو: 25دقیقه, حجم ۴۸۰p: 36.7MB
+[2026-05-05 10:05:15] 🎬 درخواست از b0DVDZW099P059be8170e4ad3639fc96: https://www.youtube.com/watch?v=rwPXeEDg5zY
+[2026-05-05 10:05:31] 📺 اطلاعات ویدیو: 5دقیقه, حجم ۴۸۰p: 18.0MB
+[2026-05-05 10:06:12] 🎬 درخواست از b0CxpPG099P07aacde81ce00d6fddb5d: youtube.com/watch?v=UvMZGSsXkJ8
+[2026-05-05 10:06:23] ✅ دانلود کامل | حجم: 58.5MB | زمان: 170.6s | سرعت میانگین: 0.3 MB/s
+[2026-05-05 10:06:24] ✂️ شروع تقسیم video_raw (58.5MB)
+[2026-05-05 10:06:25] 🎯 بیت‌ریت: 272kbps | مدت: 1803.1s | زمان قطعه: 1357s
+[2026-05-05 10:06:29] 📺 اطلاعات ویدیو: 3دقیقه, حجم ۴۸۰p: 11.6MB
+[2026-05-05 10:06:30] 🎬 درخواست از b0H8a6S099P035e9ed7eb2ebb1a56581: https://youtube.com/watch?v=ZMlu-dk75S4
+[2026-05-05 10:06:34] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 10:06:36] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part01.mp4
+[2026-05-05 10:06:40] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 10:06:40] ❌ ارسال قطعه 1/2 پس از 2 تلاش ناموفق
+[2026-05-05 10:06:42] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 10:06:44] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part02.mp4
+[2026-05-05 10:06:45] 📺 اطلاعات ویدیو: 42دقیقه, حجم ۴۸۰p: 56.9MB
+[2026-05-05 10:06:46] 🎬 درخواست از b0ruGg099P0e0d3fceac0e853963c63f: https://www.youtube.com/watch?v=WkrCqkhyFMg
+[2026-05-05 10:06:59] 📺 اطلاعات ویدیو: 1دقیقه, حجم ۴۸۰p: 2.6MB
+[2026-05-05 10:07:33] 📄 پاسخ آپلود (file_id یافت نشد): {"status":"SERVER_ERROR"}
+[2026-05-05 10:07:33] ❌ ارسال قطعه 2/2 پس از 2 تلاش ناموفق
+[2026-05-05 10:07:34] 📊 آمار به‌روزرسانی شد
