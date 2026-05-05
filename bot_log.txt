@@ -42724,3 +42724,52 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 <h1>An error occurred.</h1>
 <p>Sorry, the page you are looking for is currently unavailable.<br
 [2026-05-05 12:55:18] 📊 آمار به‌روزرسانی شد
+[2026-05-05 12:55:19] 📤 لاگ و آمار push شد
+[2026-05-05 12:55:42] ✅ دانلود کامل | حجم: 82.9MB | زمان: 18.4s | سرعت میانگین: 4.5 MB/s
+[2026-05-05 12:55:44] ✂️ شروع تقسیم video_raw (82.9MB)
+[2026-05-05 12:55:45] 🎯 بیت‌ریت: 365kbps | مدت: 1905.8s | زمان قطعه: 1012s
+[2026-05-05 12:55:53] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 12:55:55] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part01.mp4
+[2026-05-05 12:56:12] 📄 پاسخ آپلود (file_id یافت نشد): {"status":"SERVER_ERROR"}
+[2026-05-05 12:56:12] ❌ ارسال قطعه 1/2 پس از 2 تلاش ناموفق
+[2026-05-05 12:56:16] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 12:56:18] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part02.mp4
+[2026-05-05 12:56:21] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 12:56:21] ❌ ارسال قطعه 2/2 پس از 2 تلاش ناموفق
+[2026-05-05 12:56:23] 📊 آمار به‌روزرسانی شد
