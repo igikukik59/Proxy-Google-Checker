@@ -36576,3 +36576,73 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 [2026-05-05 10:55:14] 🎬 درخواست از b0xNAj099P04ea6ec279f6e48c1d5fc1: https://www.youtube.com/watch?v=uwIVm54uP8M
 [2026-05-05 10:55:15] مجموع زمان آپلود قطعات موفق: 40.3s
 [2026-05-05 10:55:16] 📊 آمار به‌روزرسانی شد
+[2026-05-05 10:55:17] 📤 لاگ و آمار push شد
+[2026-05-05 10:55:17] ⚠️ دریافت اطلاعات ویدیو شکست (exit code: 1): WARNING: [youtube] 31839 bytes read. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+WARNING
+[2026-05-05 10:55:18] 📛 خطا در getRealVideoInfo: 🔌 اتصال به یوتیوب برقرار نشد. در حال امتحان پروکسی دیگر...
+[2026-05-05 10:55:18] 🔀 تلاش با پروکسی تصادفی (سرعت نامطلوب بعد از دانلود): ss://eyJ2IjogIjIiLCAicHMiOiAiXHVkODNkXHVkZDI1Sm9pbitUZWxlZ3J...
+[2026-05-05 10:55:19] 🎬 درخواست از b0JdVdj099P011b520339ff996eaa797: https://www.youtube.com/watch?v=qpGqhlpcabA
+[2026-05-05 10:55:19] ⚠️ دریافت اطلاعات ویدیو شکست (exit code: 1): WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3
+[2026-05-05 10:55:20] 📛 خطا در getRealVideoInfo: 🔌 اتصال به یوتیوب برقرار نشد. در حال امتحان پروکسی دیگر...
+[2026-05-05 10:55:21] 🔀 تلاش با پروکسی تصادفی (سرعت نامطلوب بعد از دانلود): vless://df862b4c-2150-4b36-81ac-405036cf9ff6@162.159.152.208...
+[2026-05-05 10:55:33] 🎬 درخواست از b0D1EcR099P09f7c5c5b20f327837fb3: https://youtube.com/watch?v=FqGihHxORtI
+[2026-05-05 10:55:35] 🍪 کوکی جدید دریافت شد
+[2026-05-05 10:55:35] 📺 اطلاعات ویدیو: 25دقیقه, حجم ۴۸۰p: 38.8MB
+[2026-05-05 10:55:36] 🎬 درخواست از b0BA1ZV099P06a6d852ec7a5a21f4b58: https://www.youtube.com/watch?v=JzH6uWBtC3I
+[2026-05-05 10:55:38] 📺 اطلاعات ویدیو: 3دقیقه, حجم ۴۸۰p: 16.4MB
+[2026-05-05 10:55:42] ✅ دانلود کامل | حجم: 76.5MB | زمان: 7.5s | سرعت میانگین: 10.1 MB/s
+[2026-05-05 10:55:43] 🎬 درخواست از b0JdVdj099P011b520339ff996eaa797: https://www.youtube.com/watch?v=qpGqhlpcabA
+[2026-05-05 10:55:43] ✂️ شروع تقسیم video_raw (76.5MB)
+[2026-05-05 10:55:43] 🎯 بیت‌ریت: 692kbps | مدت: 927.2s | زمان قطعه: 533s
+[2026-05-05 10:55:45] 📺 اطلاعات ویدیو: 12دقیقه, حجم ۴۸۰p: 52.7MB
+[2026-05-05 10:55:50] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 10:55:52] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part01.mp4
+[2026-05-05 10:56:09] 📄 پاسخ آپلود (file_id یافت نشد): {"status":"SERVER_ERROR"}
+[2026-05-05 10:56:09] ❌ ارسال قطعه 1/2 پس از 2 تلاش ناموفق
+[2026-05-05 10:56:44] 🎬 درخواست از b0xNAj099P04ea6ec279f6e48c1d5fc1: https://www.youtube.com/watch?v=uwIVm54uP8M
+[2026-05-05 10:56:46] 📺 اطلاعات ویدیو: 17دقیقه, حجم ۴۸۰p: 63.8MB
+[2026-05-05 10:57:16] 📄 پاسخ آپلود (HTTP 504): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 10:57:18] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part02.mp4
+[2026-05-05 10:57:21] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 10:57:21] ❌ ارسال قطعه 2/2 پس از 2 تلاش ناموفق
+[2026-05-05 10:57:23] 📊 آمار به‌روزرسانی شد
