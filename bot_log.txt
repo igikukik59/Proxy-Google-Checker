@@ -42536,3 +42536,43 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 <p>Sorry, the page you are looking for is currently unavailable.<br
 [2026-05-05 12:50:38] ❌ ارسال قطعه 5/5 پس از 2 تلاش ناموفق
 [2026-05-05 12:50:40] 📊 آمار به‌روزرسانی شد
+[2026-05-05 12:50:41] 📤 لاگ و آمار push شد
+[2026-05-05 12:50:42] 🔀 تلاش با پروکسی تصادفی (3 دانلود موفق متوالی (تنوع)): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.148.191:2...
+[2026-05-05 12:50:49] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 12:50:49] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube
+[2026-05-05 12:50:49] 🔄 تلاش مجدد (2/3)...
+[2026-05-05 12:50:50] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@54.37.51.238:44...
+[2026-05-05 12:51:36] ✅ دانلود کامل | حجم: 186.8MB | زمان: 42.4s | سرعت میانگین: 4.4 MB/s
+[2026-05-05 12:51:37] ✂️ شروع تقسیم video_raw (186.8MB)
+[2026-05-05 12:51:38] 🎯 بیت‌ریت: 783kbps | مدت: 2001.5s | زمان قطعه: 471s
+[2026-05-05 12:51:47] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 12:51:49] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part01.mp4
+[2026-05-05 12:51:52] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 12:51:52] ❌ ارسال قطعه 1/5 پس از 2 تلاش ناموفق
+[2026-05-05 12:51:58] 📊 آمار به‌روزرسانی شد
