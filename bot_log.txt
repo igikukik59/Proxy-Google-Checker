@@ -44309,3 +44309,69 @@ ERROR: unable to download video data: HTTP Error 403: Forbidden
 [2026-05-05 13:41:34] ✂️ شروع تقسیم video_raw (125.7MB)
 [2026-05-05 13:41:35] 🎯 بیت‌ریت: 470kbps | مدت: 2244.7s | زمان قطعه: 785s
 [2026-05-05 13:41:58] 📊 آمار به‌روزرسانی شد
+[2026-05-05 13:42:00] 📤 لاگ و آمار push شد
+[2026-05-05 13:42:50] 📄 پاسخ آپلود (HTTP 504): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:42:52] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part01.mp4
+[2026-05-05 13:42:54] 🎬 درخواست از b0JTEmO099P0dbf5b201f046a6d2b872: https://www.youtube.com/watch?v=ICVw-dBk5GM
+[2026-05-05 13:42:56] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:42:56] ❌ ارسال قطعه 1/3 پس از 2 تلاش ناموفق
+[2026-05-05 13:42:56] 📺 اطلاعات ویدیو: 8دقیقه, حجم ۴۸۰p: 26.3MB
+[2026-05-05 13:43:00] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:43:02] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part02.mp4
+[2026-05-05 13:43:03] 🚫 کاربر b0JTEmO099P0dbf5b201f046a6d2b872 درخواست خود را لغو کرد.
+[2026-05-05 13:43:06] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:43:06] ❌ ارسال قطعه 2/3 پس از 2 تلاش ناموفق
+[2026-05-05 13:43:35] 🎬 درخواست از b0HnqQh099P08096439592fb82678d2e: https://www.youtube.com/watch?v=z4nZxGKmYOs
+[2026-05-05 13:43:37] 📺 اطلاعات ویدیو: 29دقیقه, حجم ۴۸۰p: 85.2MB
+[2026-05-05 13:43:44] ⬆️ آپلود video_raw.part03.mp4 در 37.6s
+[2026-05-05 13:43:44] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 37.6s
+[2026-05-05 13:43:45] مجموع زمان آپلود قطعات موفق: 37.6s
+[2026-05-05 13:43:45] 📊 آمار به‌روزرسانی شد
