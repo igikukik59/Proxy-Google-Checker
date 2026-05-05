@@ -34306,3 +34306,67 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 <p>Sorry, the page you are looking for is currently unavailable.<br
 [2026-05-05 09:47:11] ❌ ارسال قطعه 3/3 پس از 2 تلاش ناموفق
 [2026-05-05 09:47:12] 📊 آمار به‌روزرسانی شد
+[2026-05-05 09:47:13] 📤 لاگ و آمار push شد
+[2026-05-05 09:47:25] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 09:47:25] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+
+[2026-05-05 09:47:25] 🔄 تلاش مجدد (2/3)...
+[2026-05-05 09:47:26] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@212.34.148.122:...
+[2026-05-05 09:47:37] 🍪 کوکی جدید دریافت شد
+[2026-05-05 09:47:41] ✅ دانلود کامل | حجم: 62.9MB | زمان: 4.2s | سرعت میانگین: 15.1 MB/s
+[2026-05-05 09:47:42] ✂️ شروع تقسیم video_raw (62.9MB)
+[2026-05-05 09:47:42] 🎯 بیت‌ریت: 208kbps | مدت: 2541.4s | زمان قطعه: 1778s
+[2026-05-05 09:47:52] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 09:47:54] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part01.mp4
+[2026-05-05 09:47:57] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 09:47:57] ❌ ارسال قطعه 1/2 پس از 2 تلاش ناموفق
+[2026-05-05 09:48:00] 🎬 درخواست از b0JyN6c099P0933be87f3b54d9673b0c: https://www.youtube.com/watch?v=jD1z8gytDJE
+[2026-05-05 09:48:01] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 09:48:03] 📺 اطلاعات ویدیو: 23دقیقه, حجم ۴۸۰p: 60.3MB
+[2026-05-05 09:48:03] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part02.mp4
+[2026-05-05 09:48:36] 🎬 درخواست از b0B4jAs099P009bc365bfd12b7349369: https://www.youtube.com/watch?v=h6PKGED3aTQ
+[2026-05-05 09:48:39] 📺 اطلاعات ویدیو: 40دقیقه, حجم ۴۸۰p: 152.3MB
+[2026-05-05 09:48:43] 🎬 درخواست از b0Fb6v7099P0be527b823b47c807ee23: https://www.youtube.com/watch?v=AHxoA-9lzCM
+[2026-05-05 09:48:45] 📺 اطلاعات ویدیو: 16دقیقه, حجم ۴۸۰p: 48.5MB
+[2026-05-05 09:48:53] 🎬 درخواست از b0Ccv7m099P0819a98159dc124a8026f: https://www.youtube.com/watch?v=9-sqc0tIGwY
+[2026-05-05 09:48:55] 📄 پاسخ آپلود (file_id یافت نشد): {"status":"SERVER_ERROR"}
+[2026-05-05 09:48:55] ❌ ارسال قطعه 2/2 پس از 2 تلاش ناموفق
+[2026-05-05 09:48:56] 📺 اطلاعات ویدیو: 46دقیقه, حجم ۴۸۰p: 101.7MB
+[2026-05-05 09:48:57] 📊 آمار به‌روزرسانی شد
