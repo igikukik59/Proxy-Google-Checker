@@ -44039,3 +44039,58 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 [2026-05-05 13:33:20] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 34.0s
 [2026-05-05 13:33:21] مجموع زمان آپلود قطعات موفق: 34.0s
 [2026-05-05 13:33:22] 📊 آمار به‌روزرسانی شد
+[2026-05-05 13:33:23] 📤 لاگ و آمار push شد
+[2026-05-05 13:33:35] ✅ دانلود کامل | حجم: 79.8MB | زمان: 9.6s | سرعت میانگین: 8.3 MB/s
+[2026-05-05 13:33:36] ✂️ شروع تقسیم video_raw (79.8MB)
+[2026-05-05 13:33:36] 🎯 بیت‌ریت: 367kbps | مدت: 1824.8s | زمان قطعه: 1005s
+[2026-05-05 13:33:44] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:33:46] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part01.mp4
+[2026-05-05 13:33:50] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:33:50] ❌ ارسال قطعه 1/2 پس از 2 تلاش ناموفق
+[2026-05-05 13:33:53] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:33:55] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part02.mp4
+[2026-05-05 13:34:37] 🎬 درخواست از b0JZNUN099P033ceb00b8c00cb63d0fa: https://www.youtube.com/watch?v=mNxc7V8IhNQ
+[2026-05-05 13:34:39] 📺 اطلاعات ویدیو: 12دقیقه, حجم ۴۸۰p: 37.4MB
+[2026-05-05 13:34:40] 🎬 درخواست از b0Jb9c4099P0fc7e0d5c01105ab2da07: https://www.youtube.com/watch?v=iRb3u77NdGg
+[2026-05-05 13:34:42] ⚠️ دریافت اطلاعات ویدیو شکست (exit code: 1): WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction
+[2026-05-05 13:34:42] 📛 خطا در getRealVideoInfo: ⚠️ نتوانستم اطلاعات ویدیو را دریافت کنم.
+[2026-05-05 13:34:51] ⬆️ آپلود video_raw.part02.mp4 در 55.9s
+[2026-05-05 13:34:51] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 60.9s
+[2026-05-05 13:34:52] مجموع زمان آپلود قطعات موفق: 60.9s
+[2026-05-05 13:34:52] 📊 آمار به‌روزرسانی شد
