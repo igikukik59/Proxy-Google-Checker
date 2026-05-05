@@ -44163,3 +44163,59 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 <p>Sorry, the page you are looking for is currently unavailable.<br
 [2026-05-05 13:36:31] ❌ ارسال قطعه 2/2 پس از 2 تلاش ناموفق
 [2026-05-05 13:36:32] 📊 آمار به‌روزرسانی شد
+[2026-05-05 13:36:33] 📤 لاگ و آمار push شد
+[2026-05-05 13:36:46] ✅ دانلود کامل | حجم: 52.7MB | زمان: 9.8s | سرعت میانگین: 5.4 MB/s
+[2026-05-05 13:36:46] ✂️ شروع تقسیم video_raw (52.7MB)
+[2026-05-05 13:36:47] 🎯 بیت‌ریت: 299kbps | مدت: 1479.3s | زمان قطعه: 1235s
+[2026-05-05 13:36:54] 🎬 درخواست از b0Jb9c4099P0fc7e0d5c01105ab2da07: https://www.youtube.com/watch?v=3XAW28volDw
+[2026-05-05 13:36:54] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:36:55] ⚠️ دریافت اطلاعات ویدیو شکست (exit code: 1): WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction
+[2026-05-05 13:36:55] 📛 خطا در getRealVideoInfo: ⚠️ نتوانستم اطلاعات ویدیو را دریافت کنم.
+[2026-05-05 13:36:56] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part01.mp4
+[2026-05-05 13:37:00] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:37:00] ❌ ارسال قطعه 1/2 پس از 2 تلاش ناموفق
+[2026-05-05 13:37:02] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:37:04] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part02.mp4
+[2026-05-05 13:37:29] 🎬 درخواست از b0Jb9c4099P0fc7e0d5c01105ab2da07: https://www.youtube.com/watch?v=KfNOINXfjq0
+[2026-05-05 13:37:30] ⚠️ دریافت اطلاعات ویدیو شکست (exit code: 1): WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction
+[2026-05-05 13:37:30] 📛 خطا در getRealVideoInfo: ⚠️ نتوانستم اطلاعات ویدیو را دریافت کنم.
+[2026-05-05 13:37:34] ⬆️ آپلود video_raw.part02.mp4 در 29.8s
+[2026-05-05 13:37:34] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 33.3s
+[2026-05-05 13:37:35] مجموع زمان آپلود قطعات موفق: 33.3s
+[2026-05-05 13:37:35] 📊 آمار به‌روزرسانی شد
