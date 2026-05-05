@@ -32,7 +32,7 @@ jobs:
           const path = require('path');
 
           const PROXY_FILE = 'کانفیگ های خوب.txt';
-          const CONCURRENCY = 20; // هم‌زمانی بالا برای سرعت بیشتر
+          const CONCURRENCY = 20;
 
           execSync('git config --global user.name "github-actions[bot]"', {stdio:'pipe'});
           execSync('git config --global user.email "github-actions[bot]@users.noreply.github.com"', {stdio:'pipe'});
@@ -76,39 +76,38 @@ jobs:
             const cfgPath = `/tmp/xray_test_${idx}.json`;
             fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
             const proc = spawn(path.join(process.cwd(), 'xray', 'xray'), ['run', '-config', cfgPath], { stdio: 'pipe' });
-            await sleep(1500); // کاهش زمان انتظار به ۱.۵ ثانیه
+            await sleep(1500);
             return proc;
           }
 
           async function testProxy(uri, index) {
             const xrayProc = await startXray(uri, index);
             if (!xrayProc) return { ok: false, uri };
-          
-            // تست ۱: اتصال اینترنت (بدون تغییر)
+
+            // تست ۱: اتصال اینترنت
             let connOk = false;
             try {
               execSync('curl --socks5 127.0.0.1:10808 --max-time 3 -o /dev/null -s http://www.gstatic.com/generate_204', { stdio:'pipe' });
               connOk = true;
             } catch(_) {}
-          
+
             if (!connOk) {
               xrayProc.kill();
               return { ok: false, uri };
             }
-          
-            // تست ۲: دسترسی به یوتیوب با کد وضعیت واقعی
+
+            // تست ۲: دسترسی به یوتیوب (فقط کد وضعیت HTTP)
             let ytOk = false;
             try {
               const httpCode = execSync(
                 `curl --socks5 127.0.0.1:10808 -o /dev/null -s -w '%{http_code}' --max-time 5 https://www.youtube.com/`,
                 { encoding: 'utf8' }
               ).trim();
-              // کد 2xx یا 3xx یعنی صفحه در دسترسه
               if (httpCode.startsWith('2') || httpCode.startsWith('3')) {
                 ytOk = true;
               }
             } catch(_) {}
-          
+
             xrayProc.kill();
             return { ok: ytOk, uri };
           }
@@ -144,7 +143,7 @@ jobs:
           })();
           ENDTEST
 
-          timeout 600 node test_proxies.cjs   # حداکثر ۱۰ دقیقه برای تست سریع
+          timeout 600 node test_proxies.cjs
 
       - name: 🤖 اجرای ربات طلایی
         env:
@@ -170,8 +169,8 @@ jobs:
           const ADMIN_SECRET = process.env.ADMIN_SECRET || '';
           if (!TOKEN) { console.error('❌ TOKEN تنظیم نشده'); process.exit(1); }
 
-          const MAX_DURATION = 3600;
-          const DAILY_LIMIT = 3600;
+          const MAX_DURATION = 5400;         // ۱.۵ ساعت
+          const DAILY_LIMIT = 5400;          // ۱.۵ ساعت
           const MAX_PROXY_RETRIES = 3;
           const MAX_QUEUE = 200;
           const MIN_SPEED_BYTES = 1 * 1024 * 1024; // 1 مگابایت بر ثانیه
@@ -182,11 +181,12 @@ jobs:
           const recentTimes = [];
           let currentProxy = null;
           let xrayProc = null;
+          let consecutiveSuccess = 0;           // <-- تعریف شده
           const userDailyUsage = new Map();
           const proxyStats = new Map();
           const rateLimitQueue = new Map();
           const adminUsers = new Set();
-          const proxyCookieMap = new Set(); // پروکسی‌هایی که کوکی دارند
+          const proxyCookieMap = new Set();
 
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
           function log(...args) {
@@ -293,10 +293,10 @@ jobs:
             return !!s?.data?.message_id;
           }
 
-          // ======================== کوکی یوتیوب (فقط برای پروکسی جدید) ========================
+          // ======================== کوکی یوتیوب ========================
           async function grabCookies() {
             if (!currentProxy) return false;
-            if (proxyCookieMap.has(currentProxy)) return true; // از قبل کوکی داریم
+            if (proxyCookieMap.has(currentProxy)) return true;
 
             let browser;
             try {
@@ -328,18 +328,17 @@ jobs:
             const idx = Math.floor(Math.random() * proxies.length);
             return proxies[idx];
           }
-          async function switchToRandomProxy() {
+          async function switchToRandomProxy(reason = '') {
             if (xrayProc) { xrayProc.kill(); await sleep(500); xrayProc = null; }
             currentProxy = null;
             for (let i=0; i<proxies.length; i++) {
               const candidate = getRandomProxy();
               if (!candidate) break;
-              log(`🔀 تلاش با پروکسی تصادفی: ${candidate.substring(0,60)}...`);
+              log(`🔀 تلاش با پروکسی تصادفی (${reason}): ${candidate.substring(0,60)}...`);
               xrayProc = await startXray(candidate, Date.now());
               await sleep(1500);
               if (testCurlQuick()) {
                 currentProxy = candidate;
-                // حذف کوکی قدیمی اگه برای این پروکسی ذخیره نشده
                 if (!proxyCookieMap.has(currentProxy)) {
                   try { fs.unlinkSync(COOKIE_FILE); } catch(_) {}
                 }
@@ -351,7 +350,7 @@ jobs:
             return false;
           }
 
-          // ======================== دریافت غیرهمگام اطلاعات ویدیو ========================
+          // ======================== دریافت اطلاعات ویدیو ========================
           function getVideoInfo(url) {
             const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "${url}"`;
             return new Promise((resolve) => {
@@ -365,13 +364,20 @@ jobs:
             });
           }
 
-          // ======================== دانلود ویدیو با نظارت سرعت ========================
+          // ======================== دانلود با نظارت سرعت و لاگ پیشرفته ========================
           async function downloadYouTube(url) {
             if (!currentProxy) return null;
             if (!(await grabCookies())) return null;
 
+            // لاگ اطلاعات ویدیو
+            const info = await getVideoInfo(url);
+            if (info) {
+              log(`📺 شروع دانلود | مدت: ${Math.floor(info.duration/60)}دقیقه | حجم تقریبی: ${(info.size/(1024*1024)).toFixed(1)}MB`);
+            } else {
+              log(`📺 شروع دانلود (اطلاعات در دسترس نیست)`);
+            }
+
             const out = '/tmp/video_raw.mp4';
-            // فرمت انتخاب شده برای جلوگیری از تبدیل
             const fmt = `bestvideo[height<=480][vcodec^=avc1]+bestaudio[acodec^=mp4a]/best[height<=480][ext=mp4]`;
             const args = [
               '--cookies', COOKIE_FILE,
@@ -391,25 +397,35 @@ jobs:
               const startTime = Date.now();
               let lastSize = 0;
               let lowSpeedCount = 0;
-              const SPEED_CHECK_INTERVAL = 1000; // هر ۱ ثانیه
-              const LOW_SPEED_THRESHOLD = MIN_SPEED_BYTES; // 1 مگابایت بر ثانیه
-              const REQUIRED_LOW_COUNT = 5; // ۵ ثانیه متوالی
+              const SPEED_CHECK_INTERVAL = 1000;
+              const LOW_SPEED_THRESHOLD = MIN_SPEED_BYTES;
+              const REQUIRED_LOW_COUNT = 5;
+              let lastLogTime = 0;
 
               let checkTimer = setInterval(() => {
                 try {
                   if (fs.existsSync(out)) {
                     const stat = fs.statSync(out);
                     const currentSize = stat.size;
-                    const speed = currentSize - lastSize; // بایت در ثانیه
+                    const speed = currentSize - lastSize;
                     lastSize = currentSize;
+
+                    // لاگ سرعت هر ۵ ثانیه
+                    const now = Date.now();
+                    if (now - lastLogTime >= 5000) {
+                      const speedMB = (speed / (1024*1024)).toFixed(2);
+                      const totalMB = (currentSize / (1024*1024)).toFixed(1);
+                      log(`📊 سرعت: ${speedMB} MB/s | حجم تا الان: ${totalMB} MB`);
+                      lastLogTime = now;
+                    }
+
                     if (speed < LOW_SPEED_THRESHOLD) {
                       lowSpeedCount++;
                       if (lowSpeedCount >= REQUIRED_LOW_COUNT) {
                         log(`🐌 سرعت زیر ۱ مگابایت/ثانیه برای ۵ ثانیه متوالی، قطع دانلود`);
                         proc.kill('SIGTERM');
                         clearInterval(checkTimer);
-                        // حذف پروکسی
-                        removeCurrentProxy();
+                        removeCurrentProxy('سرعت خیلی پایین');
                         resolve(null);
                       }
                     } else {
@@ -426,12 +442,13 @@ jobs:
                 clearInterval(checkTimer);
                 const elapsed = (Date.now() - startTime) / 1000;
                 if (code === 0 && fs.existsSync(out) && fs.statSync(out).size > 0) {
-                  log(`⬇️ دانلود در ${elapsed.toFixed(1)}s`);
+                  const totalSize = fs.statSync(out).size;
+                  const avgSpeed = totalSize / elapsed;
+                  log(`✅ دانلود کامل | حجم: ${(totalSize/(1024*1024)).toFixed(1)}MB | زمان: ${elapsed.toFixed(1)}s | سرعت میانگین: ${(avgSpeed/(1024*1024)).toFixed(1)} MB/s`);
                   resolve({ path: out, time: elapsed });
                 } else {
                   log(`❌ دانلود شکست خورد (exit code: ${code})`);
                   if (stderr.includes('403') || stderr.includes('Forbidden')) {
-                    // کوکی مشکل داره، پاک می‌کنیم تا بعداً دوباره بگیره
                     proxyCookieMap.delete(currentProxy);
                     try { fs.unlinkSync(COOKIE_FILE); } catch(_) {}
                   }
@@ -447,22 +464,22 @@ jobs:
             });
           }
 
-          // ======================== حذف پروکسی فعلی و push ========================
-          function removeCurrentProxy() {
+          // ======================== حذف پروکسی و push ========================
+          function removeCurrentProxy(reason = '') {
             if (!currentProxy) return;
-            log(`🗑️ حذف پروکسی از لیست: ${currentProxy.substring(0,60)}...`);
+            log(`🗑️ حذف پروکسی از لیست (${reason}): ${currentProxy.substring(0,60)}...`);
             proxies = proxies.filter(p => p !== currentProxy);
             proxyCookieMap.delete(currentProxy);
             try {
               fs.writeFileSync(PROXY_FILE, proxies.join('\n') + '\n');
               execSync('git add کانفیگ های خوب.txt', {stdio:'pipe'});
-              execSync('git commit -m "🗑️ حذف پروکسی ضعیف"', {stdio:'pipe'});
+              execSync(`git commit -m "🗑️ حذف پروکسی ضعیف (${reason})"`, {stdio:'pipe'});
               execSync('git push', {stdio:'pipe'});
               log('📤 پروکسی ضعیف حذف و push شد');
             } catch(e) { err('خطا در push حذف پروکسی:', e.message); }
           }
 
-          // ======================== تبدیل سریع (فقط در صورت نیاز) ========================
+          // ======================== تبدیل فقط در صورت نیاز ========================
           async function makeCompatible(inputPath) {
             const v = execSync(`ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 "${inputPath}"`, {encoding:'utf8'}).trim();
             const a = execSync(`ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of csv=p=0 "${inputPath}"`, {encoding:'utf8'}).trim();
@@ -474,7 +491,7 @@ jobs:
             return out;
           }
 
-          // ======================== تقسیم‌کنندهٔ پیشرفته ========================
+          // ======================== تقسیم هوشمند ========================
           async function splitAndSend(chatId, videoPath, baseName) {
             const stats = fs.statSync(videoPath);
             const sizeMB = (stats.size / (1024*1024)).toFixed(1);
@@ -487,6 +504,8 @@ jobs:
             let segTime = Math.floor((targetChunkBytes * 8) / br);
             segTime = Math.min(1800, Math.max(30, segTime));
             log(`🎯 بیت‌ریت: ${(br/1000).toFixed(0)}kbps | مدت: ${dur.toFixed(1)}s | زمان قطعه: ${segTime}s`);
+            const estimatedChunks = Math.ceil(dur / segTime);
+            await sendMessage(chatId, `🕒 حدود ${estimatedChunks} قطعه تولید خواهد شد.`);
 
             if (dur <= segTime + 10) {
               await sendMessage(chatId, `📤 ویدیو مستقیماً ارسال می‌شود.`);
@@ -529,7 +548,7 @@ jobs:
             return true;
           }
 
-          // ======================== صف و زمان‌بندی ========================
+          // ======================== صف ========================
           function getAverageTime() {
             if (recentTimes.length === 0) return 90;
             return recentTimes.reduce((a,b)=>a+b, 0) / recentTimes.length;
@@ -635,7 +654,7 @@ jobs:
                 if (attempt > 0) {
                   log(`🔄 تلاش مجدد (${attempt+1}/${MAX_PROXY_RETRIES})...`);
                   await sendMessage(chatId, `🔄 تعویض پروکسی و تلاش مجدد (${attempt+1}/${MAX_PROXY_RETRIES})...`);
-                  if (!(await switchToRandomProxy())) {
+                  if (!(await switchToRandomProxy('تلاش مجدد دانلود'))) {
                     await sendMessage(chatId, '❌ هیچ پروکسی در دسترس نیست.');
                     return;
                   }
@@ -698,19 +717,19 @@ jobs:
                 saveStatsToFile();
                 gitPushAll();
 
-                // تغییر پروکسی بعد از ۳ موفقیت متوالی برای تنوع
                 const speed = finalSize / dlTime;
                 if (speed < MIN_SPEED_BYTES) {
-                  await switchToRandomProxy();
+                  await switchToRandomProxy('سرعت نامطلوب بعد از دانلود');
+                  consecutiveSuccess = 0;
                 } else {
                   consecutiveSuccess++;
                   if (consecutiveSuccess >= 3) {
-                    await switchToRandomProxy();
+                    await switchToRandomProxy('3 دانلود موفق متوالی (تنوع)');
                     consecutiveSuccess = 0;
                   }
                 }
               } else {
-                await switchToRandomProxy();
+                await switchToRandomProxy('شکست دانلود');
                 consecutiveSuccess = 0;
               }
               processNext();
@@ -760,12 +779,12 @@ jobs:
           async function handleHelp(chatId) {
             const helpText = 
               'راهنمای ربات دانلود یوتیوب\n\n' +
-              '(1) یک ویدیو در یوتیوب پیدا کنید (در گوگل سرچ کنید یا از لینک مستقیم استفاده کنید).\n' +
-              '(2) لینک کامل ویدیو (مثلاً https://youtube.com/watch?v=... یا https://youtu.be/...) را کپی کنید و در همین چت بفرستید.\n' +
-              '(3) ربات ابتدا مدت ویدیو را بررسی می‌کند (حداکثر ۶۰ دقیقه) و در صورت تأیید، دانلود را شروع می‌کند.\n' +
-              '(4) در صورت شلوغ بودن ربات، درخواست شما در صف قرار می‌گیرد و می‌توانید با دکمه «چقدر مونده؟» وضعیت خود را بپرسید.\n' +
+              '(1) یک ویدیو در یوتیوب پیدا کنید.\n' +
+              '(2) لینک کامل ویدیو را کپی کنید و در همین چت بفرستید.\n' +
+              '(3) ربات مدت ویدیو را بررسی می‌کند (حداکثر ۱.۵ ساعت) و در صورت تأیید، دانلود را شروع می‌کند.\n' +
+              '(4) در صورت شلوغ بودن، درخواست شما در صف قرار می‌گیرد.\n' +
               '(5) پس از دانلود، ویدیو به صورت قطعات زیر ۵۰ مگابایت برای شما ارسال می‌شود.\n\n' +
-              'محدودیت‌ها:\n- هر ویدیو حداکثر ۱ ساعت\n- هر کاربر مجموعاً ۱ ساعت در این بازه (۶ ساعت) می‌تواند دانلود کند.\n\n' +
+              'محدودیت‌ها:\n- هر ویدیو حداکثر ۱.۵ ساعت\n- هر کاربر مجموعاً ۱.۵ ساعت در این بازه (۶ ساعت) می‌تواند دانلود کند.\n\n' +
               'نحوه اتصال و شفاف‌سازی:\n' +
               'این ربات برای دانلود محتوای درخواستی شما، از منابع و مسیرهای ارتباطی استفاده می‌کند که توسط نهادهای رسمی و مسئول در کشور برای دسترسی به اینترنت بین‌الملل مجاز شمرده شده است. ' +
               'این سرویس صرفاً یک واسط برای دریافت محتوای آموزشی و عمومی بوده و هیچ‌گونه ترافیک حساس، ارتباط رمزنگاری‌شده غیرمتعارف، یا داده‌ای که به امنیت ملی یا منافع کشور آسیب برساند، از طریق آن رد و بدل نمی‌شود. ' +
@@ -785,7 +804,7 @@ jobs:
             if (proxies.length === 0) { err('هیچ پروکسی وجود ندارد'); process.exit(1); }
             log(`${proxies.length} پروکسی خوب`);
 
-            if (!(await switchToRandomProxy())) { err('❌ هیچ پروکسی سالمی یافت نشد'); process.exit(1); }
+            if (!(await switchToRandomProxy('شروع ربات'))) { err('❌ هیچ پروکسی سالمی یافت نشد'); process.exit(1); }
 
             log('🧹 پاکسازی پیام‌های قدیمی...');
             let offset = null;
@@ -843,7 +862,10 @@ jobs:
                   if (!info || !info.duration) { await sendMessage(chatId, '⚠️ نتوانستم اطلاعات ویدیو را دریافت کنم.'); continue; }
 
                   if (!adminUsers.has(chatId)) {
-                    if (info.duration > MAX_DURATION) { await sendMessage(chatId, `⚠️ مدت ویدیو (${Math.floor(info.duration/60)} دقیقه) بیش از ۶۰ دقیقه مجاز است.`); continue; }
+                    if (info.duration > MAX_DURATION) {
+                      await sendMessage(chatId, `⚠️ مدت ویدیو (${Math.floor(info.duration/60)} دقیقه) بیش از ۱.۵ ساعت مجاز است.`);
+                      continue;
+                    }
                     const used = userDailyUsage.get(chatId) || 0;
                     const remaining = DAILY_LIMIT - used;
                     if (info.duration > remaining) {
