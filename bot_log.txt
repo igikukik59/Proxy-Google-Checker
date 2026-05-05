@@ -44436,3 +44436,80 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 [2026-05-05 13:47:26] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 20.5s
 [2026-05-05 13:47:28] مجموع زمان آپلود قطعات موفق: 73.8s
 [2026-05-05 13:47:28] 📊 آمار به‌روزرسانی شد
+[2026-05-05 13:47:30] 📤 لاگ و آمار push شد
+[2026-05-05 13:47:30] 🔀 تلاش با پروکسی تصادفی (سرعت نامطلوب بعد از دانلود): vless://26524cce-d514-4014-a426-365fb266a14d@104.20.6.134:44...
+[2026-05-05 13:47:32] 🚫 کاربر b0Ch2Ko099P008c5f205145b41b05a81 درخواست خود را لغو کرد.
+[2026-05-05 13:47:43] 🍪 کوکی جدید دریافت شد
+[2026-05-05 13:47:53] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 13:47:53] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+
+[2026-05-05 13:47:53] 🔄 تلاش مجدد (2/3)...
+[2026-05-05 13:47:54] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@172.64.155.209:...
+[2026-05-05 13:48:06] 🍪 کوکی جدید دریافت شد
+[2026-05-05 13:48:08] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 13:48:08] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+
+[2026-05-05 13:48:08] 🔄 تلاش مجدد (3/3)...
+[2026-05-05 13:48:08] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@172.64.154.211:...
+[2026-05-05 13:48:19] ✅ دانلود کامل | حجم: 54.0MB | زمان: 7.3s | سرعت میانگین: 7.4 MB/s
+[2026-05-05 13:48:19] ✂️ شروع تقسیم video_raw (54.0MB)
+[2026-05-05 13:48:21] 🎯 بیت‌ریت: 632kbps | مدت: 717.0s | زمان قطعه: 583s
+[2026-05-05 13:48:28] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:48:30] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part01.mp4
+[2026-05-05 13:48:33] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:48:33] ❌ ارسال قطعه 1/2 پس از 2 تلاش ناموفق
+[2026-05-05 13:48:36] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:48:38] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part02.mp4
+[2026-05-05 13:48:40] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:48:40] ❌ ارسال قطعه 2/2 پس از 2 تلاش ناموفق
+[2026-05-05 13:48:41] 📊 آمار به‌روزرسانی شد
