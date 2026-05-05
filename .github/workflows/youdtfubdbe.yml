@@ -164,6 +164,8 @@ jobs:
           const MAX_QUEUE = 200;
           const MIN_SPEED_BYTES = 1 * 1024 * 1024;
           const SMALL_FILE_BYTES = 10 * 1024 * 1024;
+          const UPLOAD_RETRIES = 3;
+          const CHUNK_DELAY_MS = 2500; // افزایش تأخیر بین قطعات
 
           let proxies = [];
           const queue = [];
@@ -265,28 +267,59 @@ jobs:
             if (keypad) { body.chat_keypad = keypad; body.chat_keypad_type = 'New'; }
             return await api('sendMessage', body);
           }
-          async function uploadAndSendVideo(chatId, videoPath, caption='') {
-            const start = Date.now();
-            const req = await api('requestSendFile', {type:'Video'});
-            const upUrl = req?.data?.upload_url;
-            if (!upUrl) { err('upload_url نگرفت'); return false; }
-            const buf = fs.readFileSync(videoPath);
-            const form = new FormData();
-            form.append('file', new Blob([buf], {type:'application/octet-stream'}), path.basename(videoPath));
-            const upRes = await fetch(upUrl, {method:'POST', body:form});
-            const upText = await upRes.text();
-            let j = {}; try { j = JSON.parse(upText); } catch(e) { log('📄 پاسخ غیر JSON:', upText.substring(0,200)); return false; }
-            // مسیرهای مختلف برای file_id
-            const fileId = j?.file_id || j?.data?.file_id || j?.result?.file_id || j?.file?.file_id;
-            if (!fileId) {
-              log('📄 پاسخ آپلود (file_id یافت نشد):', upText.substring(0,400));
-              err('file_id یافت نشد');
-              return false;
+
+          // ======================== آپلود با retry ========================
+          async function uploadAndSendVideoWithRetry(chatId, videoPath, caption='') {
+            for (let attempt = 0; attempt < UPLOAD_RETRIES; attempt++) {
+              if (attempt > 0) {
+                log(`🔄 تلاش مجدد آپلود (${attempt+1}/${UPLOAD_RETRIES}) برای ${path.basename(videoPath)}`);
+                await sleep(2000); // تأخیر قبل از retry
+              }
+              const start = Date.now();
+              try {
+                const req = await api('requestSendFile', {type:'Video'});
+                const upUrl = req?.data?.upload_url;
+                if (!upUrl) { err('upload_url نگرفت'); continue; }
+
+                const buf = fs.readFileSync(videoPath);
+                const form = new FormData();
+                form.append('file', new Blob([buf], {type:'application/octet-stream'}), path.basename(videoPath));
+
+                const upRes = await fetch(upUrl, {method:'POST', body:form});
+                const upText = await upRes.text();
+
+                if (!upRes.ok || upRes.status !== 200) {
+                  log(`📄 پاسخ آپلود (HTTP ${upRes.status}): ${upText.substring(0,300)}`);
+                  continue; // تلاش بعدی
+                }
+
+                let j = {};
+                try { j = JSON.parse(upText); } catch(e) {
+                  log(`📄 پاسخ غیر JSON: ${upText.substring(0,300)}`);
+                  continue;
+                }
+
+                const fileId = j?.file_id || j?.data?.file_id || j?.result?.file_id || j?.file?.file_id;
+                if (!fileId) {
+                  log(`📄 پاسخ آپلود (file_id یافت نشد): ${upText.substring(0,400)}`);
+                  continue;
+                }
+
+                const s = await api('sendFile', {chat_id:chatId, file_id:fileId, text:caption});
+                const elapsed = ((Date.now()-start)/1000).toFixed(1);
+                if (s?.data?.message_id) {
+                  log(`⬆️ آپلود ${path.basename(videoPath)} در ${elapsed}s`);
+                  return true;
+                } else {
+                  log(`❌ sendFile ناموفق برای ${path.basename(videoPath)}`);
+                  continue;
+                }
+              } catch(e) {
+                log(`📛 استثنا در آپلود: ${e.message}`);
+                continue;
+              }
             }
-            const s = await api('sendFile', {chat_id:chatId, file_id:fileId, text:caption});
-            const elapsed = ((Date.now()-start)/1000).toFixed(1);
-            log(`⬆️ آپلود ${path.basename(videoPath)} در ${elapsed}s`);
-            return !!s?.data?.message_id;
+            return false; // همهٔ تلاش‌ها ناموفق
           }
 
           // ======================== کوکی یوتیوب ========================
@@ -524,7 +557,7 @@ jobs:
             return out;
           }
 
-          // ======================== تقسیم ========================
+          // ======================== تقسیم با retry آپلود ========================
           async function splitAndSend(chatId, videoPath, baseName) {
             const stats = fs.statSync(videoPath);
             const sizeMB = (stats.size / (1024*1024)).toFixed(1);
@@ -541,8 +574,11 @@ jobs:
             await sendMessage(chatId, `🕒 حدود ${estimatedChunks} قطعه تولید خواهد شد.`);
 
             if (dur <= segTime + 10) {
-              await sendMessage(chatId, `📤 ویدیو مستقیماً ارسال می‌شود.`);
-              return await uploadAndSendVideo(chatId, videoPath, `🎬 ${baseName}.mp4`);
+              await sendMessage(chatId, '📤 ویدیو مستقیماً ارسال می‌شود.');
+              const ok = await uploadAndSendVideoWithRetry(chatId, videoPath, `🎬 ${baseName}.mp4`);
+              if (ok) await sendMessage(chatId, '📤 ویدیو با موفقیت ارسال شد.');
+              else await sendMessage(chatId, '❌ ارسال ناموفق.');
+              return ok;
             }
 
             const chunkDir = `/tmp/chunks_${Date.now()}`;
@@ -567,7 +603,7 @@ jobs:
               fs.renameSync(chunkPath, finalPath);
 
               const startUp = Date.now();
-              const ok = await uploadAndSendVideo(chatId, finalPath,
+              const ok = await uploadAndSendVideoWithRetry(chatId, finalPath,
                 (i===total-1 ? `🎬 قسمت آخر ${baseName}` : `📦 ${newName} (${chunkSize}MB)`));
               const upTime = ((Date.now()-startUp)/1000).toFixed(1);
               if (ok) {
@@ -575,11 +611,11 @@ jobs:
                 log(`📤 قطعه ${i+1}/${total}: ${newName} آپلود در ${upTime}s`);
                 await sendMessage(chatId, `📤 قطعه ${i+1}/${total} ارسال شد (${upTime}s) — ${chunkSize}MB`);
               } else {
-                log(`❌ ارسال قطعه ${i+1}/${total} ناموفق`);
+                log(`❌ ارسال قطعه ${i+1}/${total} پس از ${UPLOAD_RETRIES} تلاش ناموفق`);
                 await sendMessage(chatId, `❌ ارسال قطعه ${i+1}/${total} ناموفق بود.`);
               }
               try { fs.unlinkSync(finalPath); } catch(_){}
-              await sleep(500);
+              await sleep(CHUNK_DELAY_MS + Math.floor(Math.random() * 1500)); // تأخیر تصادفی برای جلوگیری از rate limit
             }
             fs.rmSync(chunkDir, {recursive:true});
             if (totalUpTime > 0) log(`مجموع زمان آپلود قطعات موفق: ${totalUpTime.toFixed(1)}s`);
@@ -700,7 +736,6 @@ jobs:
                 }
                 dlResult = await downloadYouTube(url);
                 if (dlResult && !dlResult.error) break;
-                // خطاهای غیرقابل حل با تعویض پروکسی
                 if (dlResult && dlResult.stderr) {
                   const errMsg = getErrorMessageFromStderr(dlResult.stderr);
                   if (errMsg.includes('محدودیت جغرافیایی') || errMsg.includes('خصوصی') || errMsg.includes('ربات')) {
@@ -750,7 +785,7 @@ jobs:
               await sendMessage(chatId, `✅ دانلود شد | حجم: ${finalMB}MB | زمان: ${dlTime}s`);
 
               if (finalSize <= 50*1024*1024) {
-                const sent = await uploadAndSendVideo(chatId, videoPath, `🎬 ${path.basename(videoPath)}`);
+                const sent = await uploadAndSendVideoWithRetry(chatId, videoPath, `🎬 ${path.basename(videoPath)}`);
                 if (sent) await sendMessage(chatId, '📤 ویدیو با موفقیت ارسال شد.');
                 else await sendMessage(chatId, '❌ ارسال ناموفق.');
               } else {
@@ -814,7 +849,7 @@ jobs:
               const pos = queue.length - advanced;
               if (pos <= 0) {
                 queue.unshift({ chatId, url, duration });
-                sendMessage(chatId, `🎫 با اعتبار جبرانی، درخواست شما در صدر صف قرار گرفت.`);
+                sendMessage(chatId, '🎫 با اعتبار جبرانی، درخواست شما در صدر صف قرار گرفت.');
               } else {
                 queue.splice(pos, 0, { chatId, url, duration });
                 sendMessage(chatId, `🎫 به‌دلیل خرابی قبلی، ${advanced} نوبت جلو افتادید.`);
