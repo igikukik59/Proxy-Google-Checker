@@ -44297,3 +44297,15 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 [2026-05-05 13:39:58] 📺 اطلاعات ویدیو: 13دقیقه, حجم ۴۸۰p: 51.4MB
 [2026-05-05 13:41:02] ⬆️ آپلود video_raw.mp4 در 73.8s
 [2026-05-05 13:41:03] 📊 آمار به‌روزرسانی شد
+[2026-05-05 13:41:04] 📤 لاگ و آمار push شد
+[2026-05-05 13:41:10] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 13:41:10] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+
+[2026-05-05 13:41:10] 🔄 تلاش مجدد (2/3)...
+[2026-05-05 13:41:11] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@193.227.99.138:...
+[2026-05-05 13:41:21] 🍪 کوکی جدید دریافت شد
+[2026-05-05 13:41:34] ✅ دانلود کامل | حجم: 125.7MB | زمان: 12.8s | سرعت میانگین: 9.8 MB/s
+[2026-05-05 13:41:34] ✂️ شروع تقسیم video_raw (125.7MB)
+[2026-05-05 13:41:35] 🎯 بیت‌ریت: 470kbps | مدت: 2244.7s | زمان قطعه: 785s
+[2026-05-05 13:41:58] 📊 آمار به‌روزرسانی شد
