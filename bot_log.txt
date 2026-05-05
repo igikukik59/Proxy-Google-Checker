@@ -36852,3 +36852,35 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 <h1>An error occurred.</h1>
 <p>Sorry, the page you are looking for is currently unavailable.<br
 [2026-05-05 11:01:11] 📊 آمار به‌روزرسانی شد
+[2026-05-05 11:01:12] 📤 لاگ و آمار push شد
+[2026-05-05 11:01:13] 🔀 تلاش با پروکسی تصادفی (3 دانلود موفق متوالی (تنوع)): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@91.193.58.247:4...
+[2026-05-05 11:01:20] 🚫 کاربر b0GSgZp099P071dc5c8595204452e17d درخواست خود را لغو کرد.
+[2026-05-05 11:01:26] 🎬 درخواست از b0GSgZp099P071dc5c8595204452e17d: https://youtu.be/DAY5jygHAnM
+[2026-05-05 11:01:26] 🍪 کوکی جدید دریافت شد
+[2026-05-05 11:01:27] ⚠️ دریافت اطلاعات ویدیو شکست (exit code: 1): WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction
+[2026-05-05 11:01:27] 📛 خطا در getRealVideoInfo: 🤖 یوتیوب درخواست را مشکوک تشخیص داد. لطفاً چند دقیقه بعد دوباره امتحان کنید.
+[2026-05-05 11:01:27] 🎬 درخواست از b0E8Vns099P021327990dd3ecd467641: https://www.youtube.com/watch?v=ML-6Wg5_NcM
+[2026-05-05 11:01:28] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 11:01:28] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube
+[2026-05-05 11:01:28] 🔄 تلاش مجدد (2/3)...
+[2026-05-05 11:01:28] ⚠️ دریافت اطلاعات ویدیو شکست (exit code: 1): WARNING: [youtube] 165842 bytes read. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+WARNIN
+[2026-05-05 11:01:28] 📛 خطا در getRealVideoInfo: 🔌 اتصال به یوتیوب برقرار نشد. در حال امتحان پروکسی دیگر...
+[2026-05-05 11:01:29] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.74.118:4...
+[2026-05-05 11:01:34] 🎬 درخواست از b0E8Vns099P021327990dd3ecd467641: https://www.youtube.com/watch?v=ML-6Wg5_NcM
+[2026-05-05 11:01:36] ⚠️ دریافت اطلاعات ویدیو شکست (exit code: 1): WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction
+[2026-05-05 11:01:36] 📛 خطا در getRealVideoInfo: 🤖 یوتیوب درخواست را مشکوک تشخیص داد. لطفاً چند دقیقه بعد دوباره امتحان کنید.
+[2026-05-05 11:01:38] 🍪 کوکی جدید دریافت شد
+[2026-05-05 11:01:40] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 11:01:40] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube
+[2026-05-05 11:01:40] 🔄 تلاش مجدد (3/3)...
+[2026-05-05 11:01:40] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@54.36.98.76:844...
+[2026-05-05 11:01:52] 🍪 کوکی جدید دریافت شد
+[2026-05-05 11:01:56] 🎬 درخواست از b0GSgZp099P071dc5c8595204452e17d: https://youtu.be/DAY5jygHAnM
+[2026-05-05 11:01:58] 📊 آمار به‌روزرسانی شد
