@@ -30675,6 +30675,7 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 [2026-05-05 08:11:23] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 10.1s
 [2026-05-05 08:11:28] مجموع زمان آپلود قطعات موفق: 88.9s
 [2026-05-05 08:11:28] 📊 آمار به‌روزرسانی شد
+<<<<<<< Updated upstream
 [2026-05-05 08:11:30] 📤 لاگ و آمار push شد
 [2026-05-05 08:13:05] 🎬 درخواست از b0EazUa099P0ef33be7360d8344ef384: https://www.youtube.com/watch?v=2oSViFaZ0yY
 [2026-05-05 08:13:09] 📺 اطلاعات ویدیو: 30دقیقه, حجم ۴۸۰p: 48.5MB
@@ -30682,6 +30683,35 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 [2026-05-05 08:14:02] ✂️ شروع تقسیم video_raw (403.4MB)
 [2026-05-05 08:14:04] 🎯 بیت‌ریت: 1057kbps | مدت: 3201.1s | زمان قطعه: 349s
 [2026-05-05 08:14:16] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+=======
+[2026-05-05 08:14:21] ✅ ربات: youtuberubikabot
+[2026-05-05 08:14:21] 98 پروکسی خوب
+[2026-05-05 08:14:21] 🔀 تلاش با پروکسی تصادفی (شروع ربات): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.128.181.24:8...
+[2026-05-05 08:14:25] 🧹 پاکسازی پیام‌های قدیمی...
+[2026-05-05 08:16:01] ✅ تاریخچه پاک شد
+[2026-05-05 08:16:06] 🎬 درخواست از b0JmoBC099P03db135ad1aae0e504378: https://www.youtube.com/watch?v=lG-em56F7uY
+[2026-05-05 08:16:08] 📺 اطلاعات ویدیو: 14دقیقه, حجم ۴۸۰p: 23.3MB
+[2026-05-05 08:16:19] 🍪 کوکی جدید دریافت شد
+[2026-05-05 08:16:29] 🎬 درخواست از b0C6Y2z099P03b3c6f360d30f65d852f: https://youtu.be/i8PV2DTXGQ8
+[2026-05-05 08:16:31] 📺 اطلاعات ویدیو: 89دقیقه, حجم ۴۸۰p: 157.8MB
+[2026-05-05 08:17:12] 🎬 درخواست از b0Iuwgo099P007daa99f6a39abf7db46: https://www.youtube.com/watch?v=tCiSiwE58NU
+[2026-05-05 08:17:14] 📺 اطلاعات ویدیو: 19دقیقه, حجم ۴۸۰p: 25.9MB
+[2026-05-05 08:18:53] 🎬 درخواست از b0CD3W099P0292fa21ded360c02506e0: https://www.youtube.com/watch?v=lv9Je-BJK1Y
+[2026-05-05 08:18:55] 📺 اطلاعات ویدیو: 48دقیقه, حجم ۴۸۰p: 163.6MB
+[2026-05-05 08:19:01] 🎬 درخواست از b0FkVTl099P0cdb2da2b5c354d0d3cf6: https://www.youtube.com/watch?v=_DG9JUYwtDs
+[2026-05-05 08:19:03] 📺 اطلاعات ویدیو: 139دقیقه, حجم ۴۸۰p: 539.9MB
+[2026-05-05 08:19:44] 🎬 درخواست از b0Jbol1099P0e646e137e8ccf1088360: https://www.youtube.com/watch?v=M2vrDF6BXNM
+[2026-05-05 08:19:46] 📺 اطلاعات ویدیو: 4دقیقه, حجم ۴۸۰p: 13.8MB
+[2026-05-05 08:20:25] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 08:20:25] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [download] Got error: The read operation timed out. Giving up after 10 retries
+
+[2026-05-05 08:20:25] 🔄 تلاش مجدد (2/3)...
+[2026-05-05 08:20:25] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://df862b4c-2150-4b36-81ac-405036cf9ff6@104.18.41.14:20...
+[2026-05-05 08:20:35] 🍪 کوکی جدید دریافت شد
+[2026-05-05 08:20:38] ✅ دانلود کامل | حجم: 28.4MB | زمان: 2.8s | سرعت میانگین: 10.1 MB/s
+[2026-05-05 08:20:43] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+>>>>>>> Stashed changes
 <html>
 <head>
 <title>Error</title>
@@ -30694,8 +30724,13 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 <body>
 <h1>An error occurred.</h1>
 <p>Sorry, the page you are looking for is currently unavailable.<br
+<<<<<<< Updated upstream
 [2026-05-05 08:14:16] 🔄 تلاش مجدد آپلود (2/3) برای video_raw.part01.mp4
 [2026-05-05 08:14:22] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+=======
+[2026-05-05 08:20:43] 🔄 تلاش مجدد آپلود (2/3) برای video_raw.mp4
+[2026-05-05 08:20:47] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+>>>>>>> Stashed changes
 <html>
 <head>
 <title>Error</title>
@@ -30708,6 +30743,7 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 <body>
 <h1>An error occurred.</h1>
 <p>Sorry, the page you are looking for is currently unavailable.<br
+<<<<<<< Updated upstream
 [2026-05-05 08:14:22] 🔄 تلاش مجدد آپلود (3/3) برای video_raw.part01.mp4
 [2026-05-05 08:14:28] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
 <html>
@@ -30872,3 +30908,12 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 [2026-05-05 08:16:51] 📄 پاسخ آپلود (file_id یافت نشد): {"status":"SERVER_ERROR"}
 [2026-05-05 08:16:51] ❌ ارسال قطعه 5/10 پس از 3 تلاش ناموفق
 [2026-05-05 08:16:55] 📊 آمار به‌روزرسانی شد
+=======
+[2026-05-05 08:20:47] 🔄 تلاش مجدد آپلود (3/3) برای video_raw.mp4
+[2026-05-05 08:20:59] 🎬 درخواست از b0C6Y2z099P03b3c6f360d30f65d852f: https://youtu.be/i8PV2DTXGQ8
+[2026-05-05 08:21:01] 📺 اطلاعات ویدیو: 89دقیقه, حجم ۴۸۰p: 157.8MB
+[2026-05-05 08:21:26] 🎬 درخواست از b0B9lfW099P0a6d75d5fc3a3eefd4334: https://www.youtube.com/watch?v=6p0fyMYAv4A
+[2026-05-05 08:21:28] 📺 اطلاعات ویدیو: 54دقیقه, حجم ۴۸۰p: 140.0MB
+[2026-05-05 08:21:38] ⬆️ آپلود video_raw.mp4 در 49.0s
+[2026-05-05 08:21:38] 📊 آمار به‌روزرسانی شد
+>>>>>>> Stashed changes
