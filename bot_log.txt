@@ -32581,3 +32581,40 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 <h1>An error occurred.</h1>
 <p>Sorry, the page you are looking for is currently unavailable.<br
 [2026-05-05 09:13:02] 📊 آمار به‌روزرسانی شد
+[2026-05-05 09:13:03] 📤 لاگ و آمار push شد
+[2026-05-05 09:13:04] 🔀 تلاش با پروکسی تصادفی (3 دانلود موفق متوالی (تنوع)): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.77.214.109:2...
+[2026-05-05 09:13:19] 🍪 کوکی جدید دریافت شد
+[2026-05-05 09:13:22] 🎬 درخواست از b0IhgcV099P0293bd5d36561abb0d004: https://www.youtube.com/watch?v=xvcUmGZ6PJQ
+[2026-05-05 09:13:24] ⚠️ دریافت اطلاعات ویدیو شکست (exit code: 1): WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction
+[2026-05-05 09:13:25] 📛 خطا در getRealVideoInfo: 🤖 یوتیوب درخواست را مشکوک تشخیص داد. لطفاً چند دقیقه بعد دوباره امتحان کنید.
+[2026-05-05 09:13:26] 🎬 درخواست از b0Jwqo5099P0cc84a9638291ba5ceba1: https://youtube.com/watch?v=Ja_0tEGxg8s
+[2026-05-05 09:13:28] 📺 اطلاعات ویدیو: 31دقیقه, حجم ۴۸۰p: 42.2MB
+[2026-05-05 09:13:33] ✅ دانلود کامل | حجم: 49.7MB | زمان: 13.7s | سرعت میانگین: 3.6 MB/s
+[2026-05-05 09:13:39] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 09:13:41] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.mp4
+[2026-05-05 09:13:47] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 09:13:47] 📊 آمار به‌روزرسانی شد
