@@ -41414,3 +41414,39 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 <h1>An error occurred.</h1>
 <p>Sorry, the page you are looking for is currently unavailable.<br
 [2026-05-05 12:25:59] 📊 آمار به‌روزرسانی شد
+[2026-05-05 12:26:00] 📤 لاگ و آمار push شد
+[2026-05-05 12:26:08] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 12:26:08] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+
+[2026-05-05 12:26:08] 🔄 تلاش مجدد (2/3)...
+[2026-05-05 12:26:09] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@193.169.105.239...
+[2026-05-05 12:26:21] ✅ دانلود کامل | حجم: 34.6MB | زمان: 8.3s | سرعت میانگین: 4.2 MB/s
+[2026-05-05 12:26:27] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 12:26:29] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.mp4
+[2026-05-05 12:26:32] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 12:26:32] 📊 آمار به‌روزرسانی شد
