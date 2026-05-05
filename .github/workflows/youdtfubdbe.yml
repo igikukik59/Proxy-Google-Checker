@@ -8,7 +8,7 @@ on:
 jobs:
   bot:
     runs-on: ubuntu-latest
-    timeout-minutes: 330         # ۵ ساعت و ۳۰ دقیقه
+    timeout-minutes: 330
     permissions:
       contents: write
     steps:
@@ -24,7 +24,7 @@ jobs:
           npm init -y
           npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
 
-      - name: 🧪 پیش‌آزمون سریع پروکسی‌ها (فقط اتصال و یوتیوب)
+      - name: 🧪 پیش‌آزمون سریع پروکسی‌ها
         run: |
           cat > test_proxies.cjs << 'ENDTEST'
           const { spawn, execSync } = require('child_process');
@@ -84,7 +84,6 @@ jobs:
             const xrayProc = await startXray(uri, index);
             if (!xrayProc) return { ok: false, uri };
 
-            // تست ۱: اتصال اینترنت
             let connOk = false;
             try {
               execSync('curl --socks5 127.0.0.1:10808 --max-time 3 -o /dev/null -s http://www.gstatic.com/generate_204', { stdio:'pipe' });
@@ -96,16 +95,13 @@ jobs:
               return { ok: false, uri };
             }
 
-            // تست ۲: دسترسی به یوتیوب (فقط کد وضعیت HTTP)
             let ytOk = false;
             try {
               const httpCode = execSync(
                 `curl --socks5 127.0.0.1:10808 -o /dev/null -s -w '%{http_code}' --max-time 5 https://www.youtube.com/`,
                 { encoding: 'utf8' }
               ).trim();
-              if (httpCode.startsWith('2') || httpCode.startsWith('3')) {
-                ytOk = true;
-              }
+              if (httpCode.startsWith('2') || httpCode.startsWith('3')) ytOk = true;
             } catch(_) {}
 
             xrayProc.kill();
@@ -114,26 +110,19 @@ jobs:
 
           (async () => {
             if (!fs.existsSync(PROXY_FILE)) { log('❌ فایل پروکسی یافت نشد.'); process.exit(1); }
-
             const allProxies = fs.readFileSync(PROXY_FILE, 'utf8').split('\n').map(l=>l.trim()).filter(l=>/^(vless|trojan|ss|vmess):\/\//.test(l));
             log(`📋 ${allProxies.length} پروکسی برای تست پیدا شد.`);
-
             const good = [];
             for (let i = 0; i < allProxies.length; i += CONCURRENCY) {
               const batch = allProxies.slice(i, i + CONCURRENCY);
               const results = await Promise.all(batch.map((p, idx) => testProxy(p, i + idx)));
               for (const r of results) {
-                if (r.ok) {
-                  good.push(r.uri);
-                } else {
-                  log(`🗑️ پروکسی حذف شد (ناموفق در اتصال یا یوتیوب)`);
-                }
+                if (r.ok) good.push(r.uri);
+                else log(`🗑️ پروکسی حذف شد (ناموفق در اتصال یا یوتیوب)`);
               }
             }
-
             fs.writeFileSync(PROXY_FILE, good.join('\n') + '\n');
             log(`✅ ${good.length} پروکسی سالم باقی ماند.`);
-
             try {
               execSync('git add کانفیگ های خوب.txt', {stdio:'pipe'});
               execSync('git commit -m "🧪 به‌روزرسانی پروکسی‌های خوب (تست سریع)"', {stdio:'pipe'});
@@ -169,11 +158,12 @@ jobs:
           const ADMIN_SECRET = process.env.ADMIN_SECRET || '';
           if (!TOKEN) { console.error('❌ TOKEN تنظیم نشده'); process.exit(1); }
 
-          const MAX_DURATION = 5400;         // ۱.۵ ساعت
-          const DAILY_LIMIT = 5400;          // ۱.۵ ساعت
+          const MAX_DURATION = 5400;          // ۱.۵ ساعت
+          const DAILY_LIMIT = 5400;           // ۱.۵ ساعت
           const MAX_PROXY_RETRIES = 3;
           const MAX_QUEUE = 200;
           const MIN_SPEED_BYTES = 1 * 1024 * 1024; // 1 مگابایت بر ثانیه
+          const SMALL_FILE_BYTES = 10 * 1024 * 1024; // زیر 10MB سرعت بررسی نشود
 
           let proxies = [];
           const queue = [];
@@ -181,12 +171,13 @@ jobs:
           const recentTimes = [];
           let currentProxy = null;
           let xrayProc = null;
-          let consecutiveSuccess = 0;           // <-- تعریف شده
+          let consecutiveSuccess = 0;
           const userDailyUsage = new Map();
           const proxyStats = new Map();
           const rateLimitQueue = new Map();
           const adminUsers = new Set();
           const proxyCookieMap = new Set();
+          const priorityCredits = new Map();   // اعتبار اولویت برای جبران صف
 
           function ts() { return new Date().toISOString().replace('T',' ').substring(0,19); }
           function log(...args) {
@@ -297,7 +288,6 @@ jobs:
           async function grabCookies() {
             if (!currentProxy) return false;
             if (proxyCookieMap.has(currentProxy)) return true;
-
             let browser;
             try {
               browser = await puppeteer.launch({ headless:'new', args:['--no-sandbox','--disable-setuid-sandbox','--proxy-server=socks5://127.0.0.1:10808','--disable-dev-shm-usage'] });
@@ -350,35 +340,52 @@ jobs:
             return false;
           }
 
-          // ======================== دریافت اطلاعات ویدیو ========================
-          function getVideoInfo(url) {
-            const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "${url}"`;
-            return new Promise((resolve) => {
-              exec(cmd, { timeout: 15000 }, (error, stdout) => {
-                if (error) { log('⚠️ دریافت اطلاعات ویدیو ممکن نشد:', error.message); resolve(null); return; }
-                try {
-                  const data = JSON.parse(stdout);
-                  resolve({ duration: data.duration || 0, size: data.filesize_approx || data.filesize || 0 });
-                } catch(e) { log('⚠️ JSON نامعتبر'); resolve(null); }
-              });
-            });
+          // ======================== تشخیص حجم واقعی فرمت ۴۸۰p ========================
+          function getRealVideoInfo(url) {
+            // فرمت نهایی ما
+            const fmt = `bestvideo[height<=480][vcodec^=avc1]+bestaudio[acodec^=mp4a]/best[height<=480][ext=mp4]`;
+            const cmd = `yt-dlp --cookies ${COOKIE_FILE} --proxy socks5h://127.0.0.1:10808 -f "${fmt}" -J --no-playlist "${url}"`;
+            let stdout, stderr;
+            try {
+              const res = execSync(cmd, { timeout: 20000, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+              stdout = res.stdout;
+              stderr = res.stderr;
+            } catch(e) {
+              return { error: true, stderr: e.stderr || e.message };
+            }
+            try {
+              const data = JSON.parse(stdout);
+              const duration = data.duration || 0;
+              let size = 0;
+              if (data.requested_formats) {
+                size = data.requested_formats.reduce((s, f) => s + (f.filesize || f.filesize_approx || 0), 0);
+              } else if (data.filesize || data.filesize_approx) {
+                size = data.filesize || data.filesize_approx;
+              }
+              return { duration, size, stderr };
+            } catch(e) {
+              return { error: true, stderr: 'JSON parse error: ' + e.message };
+            }
           }
 
-          // ======================== دانلود با نظارت سرعت و لاگ پیشرفته ========================
+          // ======================== تحلیل خطا و پیام مناسب ========================
+          function getErrorMessageFromStderr(stderrText) {
+            const s = stderrText || '';
+            if (s.includes('Sign in to confirm you’re not a bot')) return '🤖 یوتیوب درخواست را مشکوک تشخیص داد. لطفاً چند دقیقه بعد دوباره امتحان کنید.';
+            if (s.includes('The uploader has not made this video available in your country')) return '🌍 این ویدیو در کشور شما قابل مشاهده نیست (محدودیت جغرافیایی).';
+            if (s.includes('Video unavailable') || s.includes('private video')) return '🔒 ویدیو خصوصی یا حذف شده است.';
+            if (s.includes('Connection refused')) return '🔌 اتصال به یوتیوب برقرار نشد. در حال امتحان پروکسی دیگر...';
+            if (s.includes('This video is not available')) return '🚫 ویدیو در دسترس نیست.';
+            return '⚠️ نتوانستم اطلاعات ویدیو را دریافت کنم.';
+          }
+
+          // ======================== دانلود با نظارت سرعت (با در نظر گرفتن حجم کم) ========================
           async function downloadYouTube(url) {
             if (!currentProxy) return null;
             if (!(await grabCookies())) return null;
 
-            // لاگ اطلاعات ویدیو
-            const info = await getVideoInfo(url);
-            if (info) {
-              log(`📺 شروع دانلود | مدت: ${Math.floor(info.duration/60)}دقیقه | حجم تقریبی: ${(info.size/(1024*1024)).toFixed(1)}MB`);
-            } else {
-              log(`📺 شروع دانلود (اطلاعات در دسترس نیست)`);
-            }
-
-            const out = '/tmp/video_raw.mp4';
             const fmt = `bestvideo[height<=480][vcodec^=avc1]+bestaudio[acodec^=mp4a]/best[height<=480][ext=mp4]`;
+            const out = '/tmp/video_raw.mp4';
             const args = [
               '--cookies', COOKIE_FILE,
               '--proxy', `socks5h://127.0.0.1:10808`,
@@ -397,70 +404,74 @@ jobs:
               const startTime = Date.now();
               let lastSize = 0;
               let lowSpeedCount = 0;
-              const SPEED_CHECK_INTERVAL = 1000;
-              const LOW_SPEED_THRESHOLD = MIN_SPEED_BYTES;
-              const REQUIRED_LOW_COUNT = 5;
-              let lastLogTime = 0;
-
-              let checkTimer = setInterval(() => {
-                try {
-                  if (fs.existsSync(out)) {
-                    const stat = fs.statSync(out);
-                    const currentSize = stat.size;
-                    const speed = currentSize - lastSize;
-                    lastSize = currentSize;
-
-                    // لاگ سرعت هر ۵ ثانیه
-                    const now = Date.now();
-                    if (now - lastLogTime >= 5000) {
-                      const speedMB = (speed / (1024*1024)).toFixed(2);
-                      const totalMB = (currentSize / (1024*1024)).toFixed(1);
-                      log(`📊 سرعت: ${speedMB} MB/s | حجم تا الان: ${totalMB} MB`);
-                      lastLogTime = now;
-                    }
-
-                    if (speed < LOW_SPEED_THRESHOLD) {
-                      lowSpeedCount++;
-                      if (lowSpeedCount >= REQUIRED_LOW_COUNT) {
-                        log(`🐌 سرعت زیر ۱ مگابایت/ثانیه برای ۵ ثانیه متوالی، قطع دانلود`);
-                        proc.kill('SIGTERM');
-                        clearInterval(checkTimer);
-                        removeCurrentProxy('سرعت خیلی پایین');
-                        resolve(null);
-                      }
-                    } else {
-                      lowSpeedCount = 0;
-                    }
-                  }
-                } catch(e) {}
-              }, SPEED_CHECK_INTERVAL);
-
+              let checkTimer;
+              let monitorActive = true; // در صورت فایل کوچک نظارت خاموش شود
               let stderr = '';
-              proc.stderr.on('data', d => stderr += d.toString());
+
+              proc.stderr.on('data', d => { stderr += d.toString(); });
 
               proc.on('close', (code) => {
-                clearInterval(checkTimer);
+                if (checkTimer) clearInterval(checkTimer);
                 const elapsed = (Date.now() - startTime) / 1000;
                 if (code === 0 && fs.existsSync(out) && fs.statSync(out).size > 0) {
                   const totalSize = fs.statSync(out).size;
                   const avgSpeed = totalSize / elapsed;
                   log(`✅ دانلود کامل | حجم: ${(totalSize/(1024*1024)).toFixed(1)}MB | زمان: ${elapsed.toFixed(1)}s | سرعت میانگین: ${(avgSpeed/(1024*1024)).toFixed(1)} MB/s`);
-                  resolve({ path: out, time: elapsed });
+                  resolve({ path: out, time: elapsed, stderr });
                 } else {
                   log(`❌ دانلود شکست خورد (exit code: ${code})`);
+                  if (stderr) log('📄 stderr:', stderr.substring(0, 500));
                   if (stderr.includes('403') || stderr.includes('Forbidden')) {
                     proxyCookieMap.delete(currentProxy);
                     try { fs.unlinkSync(COOKIE_FILE); } catch(_) {}
                   }
                   try { if (fs.existsSync(out)) fs.unlinkSync(out); } catch(_) {}
-                  resolve(null);
+                  resolve({ error: true, stderr });
                 }
               });
+
               proc.on('error', (e) => {
-                clearInterval(checkTimer);
+                if (checkTimer) clearInterval(checkTimer);
                 err('خطای spawn yt-dlp:', e.message);
-                resolve(null);
+                resolve({ error: true, stderr: e.message });
               });
+
+              // نظارت بر سرعت فقط اگر فایل اولیه کوچک نباشد (با تأخیر 5 ثانیه چک می‌کنیم)
+              setTimeout(() => {
+                try {
+                  if (fs.existsSync(out)) {
+                    const initSize = fs.statSync(out).size;
+                    if (initSize < SMALL_FILE_BYTES) {
+                      monitorActive = false;
+                      return;
+                    }
+                  }
+                } catch(_) {}
+
+                if (monitorActive) {
+                  checkTimer = setInterval(() => {
+                    try {
+                      if (!fs.existsSync(out)) return;
+                      const stat = fs.statSync(out);
+                      const currentSize = stat.size;
+                      const speed = currentSize - lastSize;
+                      lastSize = currentSize;
+                      if (speed < MIN_SPEED_BYTES) {
+                        lowSpeedCount++;
+                        if (lowSpeedCount >= 5) {
+                          log(`🐌 سرعت زیر ۱ مگابایت/ثانیه برای ۵ ثانیه متوالی، قطع دانلود`);
+                          proc.kill('SIGTERM');
+                          clearInterval(checkTimer);
+                          removeCurrentProxy('سرعت خیلی پایین');
+                          resolve({ error: true, stderr: 'low speed' });
+                        }
+                      } else {
+                        lowSpeedCount = 0;
+                      }
+                    } catch(_) {}
+                  }, 1000);
+                }
+              }, 5000);
             });
           }
 
@@ -635,7 +646,8 @@ jobs:
           const mainKeypad = {
             rows: [{ buttons: [
               { id: 'QUEUE_STATUS', type: 'Simple', button_text: '⏳ چقدر مونده؟' },
-              { id: 'HELP', type: 'Simple', button_text: '❓ راهنما' }
+              { id: 'HELP', type: 'Simple', button_text: '❓ راهنما' },
+              { id: 'CANCEL_REQUEST', type: 'Simple', button_text: '❌ لغو درخواست' }
             ]}],
             resize_keyboard: true, one_time_keyboard: false
           };
@@ -660,11 +672,30 @@ jobs:
                   }
                 }
                 dlResult = await downloadYouTube(url);
-                if (dlResult) break;
-                else log('❌ دانلود با این پروکسی ناموفق');
+                if (dlResult && !dlResult.error) break;
+                // اگر خطا غیرقابل حل باشه، تلاش بیهوده نکنیم
+                if (dlResult && dlResult.stderr) {
+                  const errMsg = getErrorMessageFromStderr(dlResult.stderr);
+                  if (errMsg.includes('محدودیت جغرافیایی') || errMsg.includes('خصوصی') || errMsg.includes('ربات')) {
+                    await sendMessage(chatId, errMsg);
+                    stats.failedAttempts++;
+                    return; // خروج از کل پردازش
+                  }
+                }
               }
 
-              if (!dlResult) { stats.failedAttempts++; await sendMessage(chatId, '❌ بعد از چندین تلاش دانلود ممکن نشد.'); return; }
+              if (!dlResult || dlResult.error) {
+                stats.failedAttempts++;
+                await sendMessage(chatId, '❌ بعد از چندین تلاش دانلود ممکن نشد.');
+                // جبران صف: اگر کاربر منتظر بوده باشد
+                if (priorityCredits.has(chatId)) {
+                  priorityCredits.set(chatId, (priorityCredits.get(chatId)||0) + 1);
+                } else {
+                  priorityCredits.set(chatId, 1);
+                }
+                await sendMessage(chatId, '🔄 دفعهٔ بعد لینک بدید، ۲۰ نوبت جلوتر قرار می‌گیرید.');
+                return;
+              }
 
               let videoPath = dlResult.path;
               dlTime = dlResult.time;
@@ -705,6 +736,8 @@ jobs:
               }
               try { fs.unlinkSync(videoPath); } catch(_){}
               success = true;
+              // پاک کردن اعتبار اولویت در صورت موفقیت
+              priorityCredits.delete(chatId);
             } catch(e) {
               err('خطای غیرمنتظره:', e.message);
               await sendMessage(chatId, '❌ خطایی رخ داد.');
@@ -718,7 +751,7 @@ jobs:
                 gitPushAll();
 
                 const speed = finalSize / dlTime;
-                if (speed < MIN_SPEED_BYTES) {
+                if (finalSize > SMALL_FILE_BYTES && speed < MIN_SPEED_BYTES) {
                   await switchToRandomProxy('سرعت نامطلوب بعد از دانلود');
                   consecutiveSuccess = 0;
                 } else {
@@ -745,7 +778,30 @@ jobs:
           }
 
           function addToQueue(chatId, url, duration) {
-            if (queue.some(item => item.chatId === chatId)) { sendMessage(chatId, '⚠️ شما قبلاً یک درخواست در صف دارید.'); return; }
+            if (queue.some(item => item.chatId === chatId)) {
+              sendMessage(chatId, '⚠️ شما قبلاً یک درخواست در صف دارید.');
+              return;
+            }
+            // اعمال اعتبار اولویت
+            const credit = priorityCredits.get(chatId) || 0;
+            if (credit > 0) {
+              priorityCredits.set(chatId, credit - 1);
+              const advanced = Math.min(20, queue.length); // ۲۰ نوبت جلوتر، اما نه بیشتر از طول صف
+              const pos = queue.length - advanced;
+              if (pos <= 0) {
+                queue.unshift({ chatId, url, duration });
+                sendMessage(chatId, `🎫 با اعتبار جبرانی، درخواست شما در صدر صف قرار گرفت.`);
+              } else {
+                queue.splice(pos, 0, { chatId, url, duration });
+                sendMessage(chatId, `🎫 به‌دلیل خرابی قبلی، ${advanced} نوبت جلو افتادید.`);
+              }
+              if (!isProcessing) {
+                isProcessing = true;
+                processNext();
+              }
+              return;
+            }
+
             if (!isProcessing) {
               isProcessing = true;
               sendMessage(chatId, '📥 شروع دانلود...');
@@ -757,7 +813,7 @@ jobs:
             const position = queue.length;
             const avg = getAverageTime();
             const estMin = Math.ceil((position * avg) / 60);
-            sendMessage(chatId, `🔢 شما نفر ${position} در صف هستید.\n⏱️ زمان انتظار تقریبی: ${estMin} دقیقه`, mainKeypad);
+            sendMessage(chatId, `🔢 شما نفر ${position} در صف هستید.\n⏱️ زمان انتظار تقریبی: ${estMin} دقیقه\nبرای لغو از دکمه زیر استفاده کنید.`, mainKeypad);
           }
 
           async function handleQueueStatus(chatId) {
@@ -776,15 +832,31 @@ jobs:
             await sendMessage(chatId, `📍 شما نفر ${position} در صف هستید.\n⏳ حدود ${timeText} دیگر نوبت شماست.`);
           }
 
+          async function handleCancelRequest(chatId) {
+            const idx = queue.findIndex(item => item.chatId === chatId);
+            if (idx !== -1) {
+              queue.splice(idx, 1);
+              await sendMessage(chatId, '❌ درخواست شما لغو شد. می‌تونید لینک جدید بفرستید.');
+              log(`🚫 کاربر ${chatId} درخواست خود را لغو کرد.`);
+            } else if (isProcessing) {
+              // شاید در حال پردازش همین کاربر باشه؟ چک کنیم
+              // ولی چون processRequest همون موقع از صف حذف شده، نمیشه
+              await sendMessage(chatId, '⚠️ درخواست شما در حال پردازش است و قابل لغو نیست.');
+            } else {
+              await sendMessage(chatId, 'ℹ️ درخواست فعالی ندارید.');
+            }
+          }
+
           async function handleHelp(chatId) {
             const helpText = 
               'راهنمای ربات دانلود یوتیوب\n\n' +
               '(1) یک ویدیو در یوتیوب پیدا کنید.\n' +
               '(2) لینک کامل ویدیو را کپی کنید و در همین چت بفرستید.\n' +
               '(3) ربات مدت ویدیو را بررسی می‌کند (حداکثر ۱.۵ ساعت) و در صورت تأیید، دانلود را شروع می‌کند.\n' +
-              '(4) در صورت شلوغ بودن، درخواست شما در صف قرار می‌گیرد.\n' +
+              '(4) در صورت شلوغ بودن، درخواست شما در صف قرار می‌گیرد و می‌توانید با دکمه «لغو درخواست» آن را کنسل کنید.\n' +
               '(5) پس از دانلود، ویدیو به صورت قطعات زیر ۵۰ مگابایت برای شما ارسال می‌شود.\n\n' +
               'محدودیت‌ها:\n- هر ویدیو حداکثر ۱.۵ ساعت\n- هر کاربر مجموعاً ۱.۵ ساعت در این بازه (۶ ساعت) می‌تواند دانلود کند.\n\n' +
+              'جبران خرابی:\nاگر دانلود شما به دلیل مشکل فنی ناموفق باشد، دفعهٔ بعد ۲۰ نوبت در صف جلو می‌افتید.\n\n' +
               'نحوه اتصال و شفاف‌سازی:\n' +
               'این ربات برای دانلود محتوای درخواستی شما، از منابع و مسیرهای ارتباطی استفاده می‌کند که توسط نهادهای رسمی و مسئول در کشور برای دسترسی به اینترنت بین‌الملل مجاز شمرده شده است. ' +
               'این سرویس صرفاً یک واسط برای دریافت محتوای آموزشی و عمومی بوده و هیچ‌گونه ترافیک حساس، ارتباط رمزنگاری‌شده غیرمتعارف، یا داده‌ای که به امنیت ملی یا منافع کشور آسیب برساند، از طریق آن رد و بدل نمی‌شود. ' +
@@ -838,6 +910,7 @@ jobs:
 
                   if (buttonId === 'QUEUE_STATUS') { await handleQueueStatus(chatId); continue; }
                   if (buttonId === 'HELP') { await handleHelp(chatId); continue; }
+                  if (buttonId === 'CANCEL_REQUEST') { await handleCancelRequest(chatId); continue; }
 
                   if (!msg?.text) continue;
                   const text = msg.text.trim();
@@ -858,23 +931,37 @@ jobs:
                   const videoUrl = m[0];
                   log(`🎬 درخواست از ${chatId}: ${videoUrl}`);
 
-                  const info = await getVideoInfo(videoUrl);
-                  if (!info || !info.duration) { await sendMessage(chatId, '⚠️ نتوانستم اطلاعات ویدیو را دریافت کنم.'); continue; }
+                  // دریافت اطلاعات ویدیو با حجم دقیق
+                  const info = getRealVideoInfo(videoUrl);
+                  if (info.error) {
+                    const errMsg = getErrorMessageFromStderr(info.stderr);
+                    await sendMessage(chatId, errMsg);
+                    log(`📛 خطا در getRealVideoInfo: ${errMsg}`);
+                    continue;
+                  }
+                  if (!info.duration) {
+                    await sendMessage(chatId, '⚠️ نتوانستم اطلاعات ویدیو را دریافت کنم.');
+                    continue;
+                  }
+
+                  const videoDuration = info.duration;
+                  const estimatedMB = info.size ? (info.size/(1024*1024)).toFixed(1) : 'نامشخص';
+                  log(`📺 اطلاعات ویدیو: ${Math.floor(videoDuration/60)}دقیقه, حجم ۴۸۰p: ${estimatedMB}MB`);
 
                   if (!adminUsers.has(chatId)) {
-                    if (info.duration > MAX_DURATION) {
-                      await sendMessage(chatId, `⚠️ مدت ویدیو (${Math.floor(info.duration/60)} دقیقه) بیش از ۱.۵ ساعت مجاز است.`);
+                    if (videoDuration > MAX_DURATION) {
+                      await sendMessage(chatId, `⚠️ مدت ویدیو (${Math.floor(videoDuration/60)} دقیقه) بیش از ۱.۵ ساعت مجاز است.`);
                       continue;
                     }
                     const used = userDailyUsage.get(chatId) || 0;
                     const remaining = DAILY_LIMIT - used;
-                    if (info.duration > remaining) {
+                    if (videoDuration > remaining) {
                       await sendMessage(chatId, `⚠️ شما امروز ${Math.floor(used/60)} دقیقه دانلود کرده‌اید. سهمیهٔ باقی‌مانده: ${Math.floor(remaining/60)} دقیقه.`);
                       continue;
                     }
                   }
 
-                  addToQueue(chatId, videoUrl, info.duration);
+                  addToQueue(chatId, videoUrl, videoDuration);
                 }
 
                 if (res.data?.next_offset_id) offset = res.data.next_offset_id;
