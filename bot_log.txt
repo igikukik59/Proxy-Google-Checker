@@ -29465,3 +29465,75 @@ You might want to use a VPN or a proxy server (with --proxy) to workaround.
 [2026-05-05 05:57:30] 🎬 درخواست از b0ByzlW099P0881da29e227557aa3f36: https://www.youtube.com/watch?v=sTtyjrtxmEQ
 [2026-05-05 05:57:42] ⬆️ آپلود video_raw.mp4 در 20.7s
 [2026-05-05 05:57:42] 📊 آمار به‌روزرسانی شد
+[2026-05-05 05:57:44] 📤 لاگ و آمار push شد
+[2026-05-05 05:57:49] 📺 شروع دانلود | مدت: 57دقیقه | حجم تقریبی: 5165.4MB
+[2026-05-05 05:57:59] 🎬 درخواست از b0Ecu7M099P05c32a6ffcf18c044d715: https://youtu.be/LM3RL9WeucQ
+[2026-05-05 05:57:59] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 05:57:59] ❌ دانلود با این پروکسی ناموفق
+[2026-05-05 05:57:59] 🔄 تلاش مجدد (2/3)...
+[2026-05-05 05:58:00] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://youtu.be/LM3RL9WeucQ"
+WARNING: [youtube] 165312 bytes read. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+WARNING: [youtube] Unable to download webpage: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused')). Giving up after 3 retries
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (1/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (2/3)...
+WARNING: [youtube] [Errno 111] Connection refused. Retrying (3/3)...
+ERROR: [youtube] LM3RL9WeucQ: Unable to download API page: [Errno 111] Connection refused (caused by TransportError('[Errno 111] Connection refused'))
+
+[2026-05-05 05:58:00] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://40afa553-1745-4f62-a380-4163c7bb4870@188.114.96.0:44...
+[2026-05-05 05:58:10] 🍪 کوکی جدید دریافت شد
+[2026-05-05 05:58:11] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=4hibHwBLOps"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube] 4hibHwBLOps: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-05 05:58:11] 📺 شروع دانلود (اطلاعات در دسترس نیست)
+[2026-05-05 05:58:13] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 05:58:13] ❌ دانلود با این پروکسی ناموفق
+[2026-05-05 05:58:13] 🔄 تلاش مجدد (3/3)...
+[2026-05-05 05:58:14] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://40afa553-1745-4f62-a380-4163c7bb4870@188.114.96.0:44...
+[2026-05-05 05:58:24] 🍪 کوکی جدید دریافت شد
+[2026-05-05 05:58:25] 📺 شروع دانلود | مدت: 57دقیقه | حجم تقریبی: 5165.4MB
+[2026-05-05 05:58:26] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 05:58:26] ❌ دانلود با این پروکسی ناموفق
+[2026-05-05 05:58:27] 🔀 تلاش با پروکسی تصادفی (شکست دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.74.118:4...
+[2026-05-05 05:58:41] 🍪 کوکی جدید دریافت شد
+[2026-05-05 05:58:41] 🎬 درخواست از b0B4jAs099P009bc365bfd12b7349369: https://www.youtube.com/watch?v=4hibHwBLOps
+[2026-05-05 05:58:43] 📺 شروع دانلود | مدت: 22دقیقه | حجم تقریبی: 148.7MB
+[2026-05-05 05:58:44] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 05:58:44] ❌ دانلود با این پروکسی ناموفق
+[2026-05-05 05:58:44] 🔄 تلاش مجدد (2/3)...
+[2026-05-05 05:58:45] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.13.149:4...
+[2026-05-05 05:58:54] 🍪 کوکی جدید دریافت شد
+[2026-05-05 05:58:56] 📺 شروع دانلود | مدت: 22دقیقه | حجم تقریبی: 148.7MB
+[2026-05-05 05:58:57] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 05:58:57] ❌ دانلود با این پروکسی ناموفق
+[2026-05-05 05:58:57] 🔄 تلاش مجدد (3/3)...
+[2026-05-05 05:58:58] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@5.101.101.166:4...
+[2026-05-05 05:59:05] 🎬 درخواست از b0JbW1a099P0cde4af9738f30002a9ff: https://youtu.be/qmsvAzxj7ac
+[2026-05-05 05:59:10] 🍪 کوکی جدید دریافت شد
+[2026-05-05 05:59:12] 📺 شروع دانلود | مدت: 22دقیقه | حجم تقریبی: 148.7MB
+[2026-05-05 05:59:15] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 05:59:15] ❌ دانلود با این پروکسی ناموفق
+[2026-05-05 05:59:16] 🔀 تلاش با پروکسی تصادفی (شکست دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@216.24.57.4:443...
+[2026-05-05 05:59:29] 🍪 کوکی جدید دریافت شد
+[2026-05-05 05:59:30] 📺 شروع دانلود | مدت: 57دقیقه | حجم تقریبی: 5165.4MB
+[2026-05-05 05:59:36] ✅ دانلود کامل | حجم: 428.9MB | زمان: 5.7s | سرعت میانگین: 75.0 MB/s
+[2026-05-05 05:59:36] ✂️ شروع تقسیم video_raw (428.9MB)
+[2026-05-05 05:59:37] 🎯 بیت‌ریت: 1045kbps | مدت: 3441.1s | زمان قطعه: 353s
+[2026-05-05 06:00:01] ⬆️ آپلود video_raw.part01.mp4 در 19.9s
+[2026-05-05 06:00:01] 📤 قطعه 1/10: video_raw.part01.mp4 آپلود در 19.9s
+[2026-05-05 06:00:21] ⬆️ آپلود video_raw.part02.mp4 در 17.8s
+[2026-05-05 06:00:21] 📤 قطعه 2/10: video_raw.part02.mp4 آپلود در 17.8s
+[2026-05-05 06:00:29] 🎬 درخواست از b0Jaxmz099P0a9943711dd492e812630: https://www.youtube.com/watch?v=ldZnyWI5lec
+[2026-05-05 06:00:37] 🎬 درخواست از b0Ecu7M099P05c32a6ffcf18c044d715: https://www.youtube.com/watch?v=3mBiVd_dLq4
+[2026-05-05 06:00:38] ⚠️ دریافت اطلاعات ویدیو ممکن نشد: Command failed: yt-dlp --cookies /tmp/youtube_cookies.txt --proxy socks5h://127.0.0.1:10808 --no-playlist --dump-json "https://www.youtube.com/watch?v=3mBiVd_dLq4"
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] 3mBiVd_dLq4: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp  for how to manually pass cookies. Also see  https://github.com/yt-dlp/yt-dlp/wiki/Extractors#exporting-youtube-cookies  for tips on effectively exporting YouTube cookies
+
+[2026-05-05 06:00:41] ⬆️ آپلود video_raw.part03.mp4 در 18.9s
+[2026-05-05 06:00:41] 📤 قطعه 3/10: video_raw.part03.mp4 آپلود در 18.9s
+[2026-05-05 06:01:04] ⬆️ آپلود video_raw.part04.mp4 در 21.8s
+[2026-05-05 06:01:04] 📤 قطعه 4/10: video_raw.part04.mp4 آپلود در 21.8s
+[2026-05-05 06:01:14] 📊 آمار به‌روزرسانی شد
