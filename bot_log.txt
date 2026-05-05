@@ -44094,3 +44094,72 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 [2026-05-05 13:34:51] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 60.9s
 [2026-05-05 13:34:52] مجموع زمان آپلود قطعات موفق: 60.9s
 [2026-05-05 13:34:52] 📊 آمار به‌روزرسانی شد
+[2026-05-05 13:34:54] 📤 لاگ و آمار push شد
+[2026-05-05 13:34:55] 🔀 تلاش با پروکسی تصادفی (3 دانلود موفق متوالی (تنوع)): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@172.64.154.211:...
+[2026-05-05 13:35:06] ✅ دانلود کامل | حجم: 74.3MB | زمان: 6.8s | سرعت میانگین: 10.9 MB/s
+[2026-05-05 13:35:06] ✂️ شروع تقسیم video_raw (74.3MB)
+[2026-05-05 13:35:07] 🎯 بیت‌ریت: 1137kbps | مدت: 547.7s | زمان قطعه: 324s
+[2026-05-05 13:35:09] 🎬 درخواست از b0Jb9c4099P0fc7e0d5c01105ab2da07: https://www.youtube.com/watch?v=lJ-zN4h_JMk
+[2026-05-05 13:35:10] ⚠️ دریافت اطلاعات ویدیو شکست (exit code: 1): WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction
+[2026-05-05 13:35:10] 📛 خطا در getRealVideoInfo: ⚠️ نتوانستم اطلاعات ویدیو را دریافت کنم.
+[2026-05-05 13:35:14] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:35:16] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part01.mp4
+[2026-05-05 13:35:19] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:35:19] ❌ ارسال قطعه 1/2 پس از 2 تلاش ناموفق
+[2026-05-05 13:35:19] 🎬 درخواست از b0GfATB099P0c359e8127deb0d27f154: https://www.youtube.com/watch?v=VhpT1kEDVl4
+[2026-05-05 13:35:21] 📺 اطلاعات ویدیو: 50دقیقه, حجم ۴۸۰p: 83.4MB
+[2026-05-05 13:36:25] 📄 پاسخ آپلود (HTTP 504): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:36:26] 🎬 درخواست از b0GN4af099P0b61eaa5d2d65670b3022: https://www.youtube.com/watch?v=X-CCo9DT2Ug
+[2026-05-05 13:36:27] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part02.mp4
+[2026-05-05 13:36:27] 📺 اطلاعات ویدیو: 16دقیقه, حجم ۴۸۰p: 33.7MB
+[2026-05-05 13:36:31] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 13:36:31] ❌ ارسال قطعه 2/2 پس از 2 تلاش ناموفق
+[2026-05-05 13:36:32] 📊 آمار به‌روزرسانی شد
