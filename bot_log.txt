@@ -48006,3 +48006,43 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 <h1>An error occurred.</h1>
 <p>Sorry, the page you are looking for is currently unavailable.<br
 [2026-05-05 20:28:04] 📊 آمار به‌روزرسانی شد
+[2026-05-05 20:28:06] 📤 لاگ و آمار push شد
+[2026-05-05 20:28:07] 🔀 تلاش با پروکسی تصادفی (سرعت نامطلوب بعد از دانلود): vless://df862b4c-2150-4b36-81ac-405036cf9ff6@162.159.152.201...
+[2026-05-05 20:28:18] 🍪 کوکی جدید دریافت شد
+[2026-05-05 20:28:20] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 20:28:20] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] J49iJhdIApk: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://gi
+[2026-05-05 20:28:20] 🔄 تلاش مجدد (2/3)...
+[2026-05-05 20:28:20] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@185.16.110.238:...
+[2026-05-05 20:28:30] 🍪 کوکی جدید دریافت شد
+[2026-05-05 20:28:36] ✅ دانلود کامل | حجم: 40.7MB | زمان: 5.8s | سرعت میانگین: 7.0 MB/s
+[2026-05-05 20:28:37] 🎬 درخواست از b0JrLRV099P0d5eebeec8f4bcc942c34: https://www.youtube.com/watch?v=Y9joKAQpA88
+[2026-05-05 20:28:39] 📺 اطلاعات ویدیو: 14دقیقه, حجم ۴۸۰p: 41.0MB
+[2026-05-05 20:28:43] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 20:28:45] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.mp4
+[2026-05-05 20:28:50] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 20:28:50] 📊 آمار به‌روزرسانی شد
