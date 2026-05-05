@@ -34432,3 +34432,41 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 <h1>An error occurred.</h1>
 <p>Sorry, the page you are looking for is currently unavailable.<br
 [2026-05-05 09:49:45] 📊 آمار به‌روزرسانی شد
+[2026-05-05 09:49:47] 📤 لاگ و آمار push شد
+[2026-05-05 09:49:48] 🎬 درخواست از b0JdTUU099P002da0667b1325087818b: https://www.youtube.com/watch?v=2T-QRIs8y7M
+[2026-05-05 09:49:49] 📺 اطلاعات ویدیو: 78دقیقه, حجم ۴۸۰p: 232.2MB
+[2026-05-05 09:49:52] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 09:49:52] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+
+[2026-05-05 09:49:52] 🔄 تلاش مجدد (2/3)...
+[2026-05-05 09:49:53] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://981fca81-5be1-41f8-ac9b-d138e8109943@50.228.203.26:4...
+[2026-05-05 09:50:03] 🍪 کوکی جدید دریافت شد
+[2026-05-05 09:50:06] ✅ دانلود کامل | حجم: 18.7MB | زمان: 2.8s | سرعت میانگین: 6.8 MB/s
+[2026-05-05 09:50:10] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 09:50:12] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.mp4
+[2026-05-05 09:50:15] 🎬 درخواست از b0Jbol1099P0e646e137e8ccf1088360: https://www.youtube.com/watch?v=M2vrDF6BXNM
+[2026-05-05 09:50:16] 📺 اطلاعات ویدیو: 4دقیقه, حجم ۴۸۰p: 13.8MB
+[2026-05-05 09:50:22] 🎬 درخواست از b0HdB3D099P0caf0e40a509741b75d77: https://www.youtube.com/watch?v=xdzt0eAyAiQ
+[2026-05-05 09:50:24] 📺 اطلاعات ویدیو: 24دقیقه, حجم ۴۸۰p: 50.8MB
+[2026-05-05 09:50:46] 🎬 درخواست از b0HVhiw099P0ce98fa0fae6508beeda9: https://www.youtube.com/watch?v=s-XKL49962g
+[2026-05-05 09:50:48] 📺 اطلاعات ویدیو: 36دقیقه, حجم ۴۸۰p: 40.0MB
+[2026-05-05 09:50:48] 🚫 کاربر b0JdTUU099P002da0667b1325087818b درخواست خود را لغو کرد.
+[2026-05-05 09:50:49] 🎬 درخواست از b0CTixy099P0c353522db8f23aa31668: https://www.youtube.com/watch?v=_sc4KTVvxcI
+[2026-05-05 09:50:51] 📺 اطلاعات ویدیو: 36دقیقه, حجم ۴۸۰p: 119.9MB
+[2026-05-05 09:50:51] 🎬 درخواست از b0EIbsg099P02245527bee99342d435d: https://www.youtube.com/watch?v=aqXKzLIcmlo
+[2026-05-05 09:50:53] 📺 اطلاعات ویدیو: 42دقیقه, حجم ۴۸۰p: 61.6MB
+[2026-05-05 09:51:14] ⬆️ آپلود video_raw.mp4 در 61.9s
+[2026-05-05 09:51:14] 📊 آمار به‌روزرسانی شد
