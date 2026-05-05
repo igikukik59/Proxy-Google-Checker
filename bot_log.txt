@@ -42036,3 +42036,163 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 <p>Sorry, the page you are looking for is currently unavailable.<br
 [2026-05-05 12:42:23] ❌ ارسال قطعه 3/3 پس از 2 تلاش ناموفق
 [2026-05-05 12:42:24] 📊 آمار به‌روزرسانی شد
+[2026-05-05 12:42:26] 📤 لاگ و آمار push شد
+[2026-05-05 12:42:29] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 12:42:29] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube
+[2026-05-05 12:42:29] 🔄 تلاش مجدد (2/3)...
+[2026-05-05 12:42:30] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.148.191:2...
+[2026-05-05 12:42:39] 🍪 کوکی جدید دریافت شد
+[2026-05-05 12:42:41] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 12:42:41] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube
+[2026-05-05 12:42:41] 🔄 تلاش مجدد (3/3)...
+[2026-05-05 12:42:41] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://df862b4c-2150-4b36-81ac-405036cf9ff6@104.18.41.14:20...
+[2026-05-05 12:42:51] 🍪 کوکی جدید دریافت شد
+[2026-05-05 12:42:52] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-05 12:42:52] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+WARNING: [youtube] No title found in player responses; falling back to title from initial data. Other metadata may also be missing
+ERROR: [youtube
+[2026-05-05 12:42:54] 🔀 تلاش با پروکسی تصادفی (شکست دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.128.183.90:4...
+[2026-05-05 12:43:11] 🎬 درخواست از b0Ixtuf099P0b9bb32687b81a262fecf: https://www.youtube.com/watch?v=Qqci8UQdvic
+[2026-05-05 12:43:14] 📺 اطلاعات ویدیو: 39دقیقه, حجم ۴۸۰p: 64.0MB
+[2026-05-05 12:43:42] ✅ دانلود کامل | حجم: 208.3MB | زمان: 39.3s | سرعت میانگین: 5.3 MB/s
+[2026-05-05 12:43:44] ✂️ شروع تقسیم video_raw (208.3MB)
+[2026-05-05 12:43:44] 🎯 بیت‌ریت: 859kbps | مدت: 2034.3s | زمان قطعه: 429s
+[2026-05-05 12:43:50] 🎬 درخواست از b0DXU2J099P0af25c238b40c2e9cd5b4: https://www.youtube.com/watch?v=PmzuU611RI0
+[2026-05-05 12:43:52] 📺 اطلاعات ویدیو: 8دقیقه, حجم ۴۸۰p: 35.5MB
+[2026-05-05 12:43:54] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 12:43:56] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part01.mp4
+[2026-05-05 12:44:00] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 12:44:00] ❌ ارسال قطعه 1/5 پس از 2 تلاش ناموفق
+[2026-05-05 12:44:04] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 12:44:06] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part02.mp4
+[2026-05-05 12:44:10] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 12:44:10] ❌ ارسال قطعه 2/5 پس از 2 تلاش ناموفق
+[2026-05-05 12:44:14] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 12:44:16] 🎬 درخواست از b0JsZIL099P01a5827e290d62e2ba50f: https://www.youtube.com/watch?v=2O7pKhEY5Mo
+[2026-05-05 12:44:16] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part03.mp4
+[2026-05-05 12:44:18] 📺 اطلاعات ویدیو: 50دقیقه, حجم ۴۸۰p: 202.7MB
+[2026-05-05 12:44:20] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 12:44:20] ❌ ارسال قطعه 3/5 پس از 2 تلاش ناموفق
+[2026-05-05 12:44:23] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 12:44:25] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part04.mp4
+[2026-05-05 12:44:28] 🎬 درخواست از b0C5bGB099P0c91e7a9b0b4213e388f7: https://www.youtube.com/watch?v=YHfKuESWkAg
+[2026-05-05 12:44:31] 📺 اطلاعات ویدیو: 15دقیقه, حجم ۴۸۰p: 27.8MB
+[2026-05-05 12:45:19] 📄 پاسخ آپلود (file_id یافت نشد): {"status":"SERVER_ERROR"}
+[2026-05-05 12:45:19] ❌ ارسال قطعه 4/5 پس از 2 تلاش ناموفق
+[2026-05-05 12:45:24] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 12:45:26] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part05.mp4
+[2026-05-05 12:45:30] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 12:45:30] ❌ ارسال قطعه 5/5 پس از 2 تلاش ناموفق
+[2026-05-05 12:45:30] 📊 آمار به‌روزرسانی شد
