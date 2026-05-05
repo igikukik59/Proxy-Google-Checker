@@ -164,8 +164,8 @@ jobs:
           const MAX_QUEUE = 200;
           const MIN_SPEED_BYTES = 1 * 1024 * 1024;
           const SMALL_FILE_BYTES = 10 * 1024 * 1024;
-          const UPLOAD_RETRIES = 3;
-          const CHUNK_DELAY_MS = 2500; // افزایش تأخیر بین قطعات
+          const UPLOAD_RETRIES = 2;            // کاهش تلاش‌های مجدد
+          const CHUNK_MIN_DELAY_MS = 300;      // حداقل تأخیر بین قطعات
 
           let proxies = [];
           const queue = [];
@@ -268,12 +268,14 @@ jobs:
             return await api('sendMessage', body);
           }
 
-          // ======================== آپلود با retry ========================
-          async function uploadAndSendVideoWithRetry(chatId, videoPath, caption='') {
+          // ======================== آپلود با تلاش مجدد سبک و سریع ========================
+          async function uploadChunkWithRetry(chatId, videoPath, caption='') {
+            // تلاش اول بدون تأخیر
             for (let attempt = 0; attempt < UPLOAD_RETRIES; attempt++) {
               if (attempt > 0) {
+                // فقط در تلاش دوم یک تأخیر کوتاه می‌دهیم
+                await sleep(2000);
                 log(`🔄 تلاش مجدد آپلود (${attempt+1}/${UPLOAD_RETRIES}) برای ${path.basename(videoPath)}`);
-                await sleep(2000); // تأخیر قبل از retry
               }
               const start = Date.now();
               try {
@@ -290,7 +292,7 @@ jobs:
 
                 if (!upRes.ok || upRes.status !== 200) {
                   log(`📄 پاسخ آپلود (HTTP ${upRes.status}): ${upText.substring(0,300)}`);
-                  continue; // تلاش بعدی
+                  continue;
                 }
 
                 let j = {};
@@ -319,7 +321,7 @@ jobs:
                 continue;
               }
             }
-            return false; // همهٔ تلاش‌ها ناموفق
+            return false;
           }
 
           // ======================== کوکی یوتیوب ========================
@@ -418,7 +420,7 @@ jobs:
             return '⚠️ نتوانستم اطلاعات ویدیو را دریافت کنم.';
           }
 
-          // ======================== دانلود با نظارت سرعت اصلاح‌شده ========================
+          // ======================== دانلود با نظارت سرعت ========================
           async function downloadYouTube(url) {
             if (!currentProxy) return null;
             if (!(await grabCookies())) return null;
@@ -489,7 +491,7 @@ jobs:
                 resolve({ error: true, stderr: e.message });
               });
 
-              // نظارت بر سرعت با تأخیر فقط در صورتی که پروسه هنوز تمام نشده
+              // نظارت بر سرعت (فقط در حین دانلود و برای فایل‌های بزرگتر از SMALL_FILE_BYTES)
               monitorDelay = setTimeout(() => {
                 if (processEnded) return;
                 try {
@@ -557,7 +559,7 @@ jobs:
             return out;
           }
 
-          // ======================== تقسیم با retry آپلود ========================
+          // ======================== تقسیم هوشمند با آپلود سریع ========================
           async function splitAndSend(chatId, videoPath, baseName) {
             const stats = fs.statSync(videoPath);
             const sizeMB = (stats.size / (1024*1024)).toFixed(1);
@@ -575,7 +577,7 @@ jobs:
 
             if (dur <= segTime + 10) {
               await sendMessage(chatId, '📤 ویدیو مستقیماً ارسال می‌شود.');
-              const ok = await uploadAndSendVideoWithRetry(chatId, videoPath, `🎬 ${baseName}.mp4`);
+              const ok = await uploadChunkWithRetry(chatId, videoPath, `🎬 ${baseName}.mp4`);
               if (ok) await sendMessage(chatId, '📤 ویدیو با موفقیت ارسال شد.');
               else await sendMessage(chatId, '❌ ارسال ناموفق.');
               return ok;
@@ -594,6 +596,7 @@ jobs:
 
             const total = chunks.length;
             let totalUpTime = 0;
+            const failedChunks = [];
             for (let i=0; i<chunks.length; i++) {
               const chunkName = chunks[i];
               const chunkPath = path.join(chunkDir, chunkName);
@@ -603,7 +606,7 @@ jobs:
               fs.renameSync(chunkPath, finalPath);
 
               const startUp = Date.now();
-              const ok = await uploadAndSendVideoWithRetry(chatId, finalPath,
+              const ok = await uploadChunkWithRetry(chatId, finalPath,
                 (i===total-1 ? `🎬 قسمت آخر ${baseName}` : `📦 ${newName} (${chunkSize}MB)`));
               const upTime = ((Date.now()-startUp)/1000).toFixed(1);
               if (ok) {
@@ -611,13 +614,21 @@ jobs:
                 log(`📤 قطعه ${i+1}/${total}: ${newName} آپلود در ${upTime}s`);
                 await sendMessage(chatId, `📤 قطعه ${i+1}/${total} ارسال شد (${upTime}s) — ${chunkSize}MB`);
               } else {
+                failedChunks.push(i+1);
                 log(`❌ ارسال قطعه ${i+1}/${total} پس از ${UPLOAD_RETRIES} تلاش ناموفق`);
-                await sendMessage(chatId, `❌ ارسال قطعه ${i+1}/${total} ناموفق بود.`);
+                await sendMessage(chatId, `❌ قطعه ${i+1}/${total} ارسال نشد.`);
               }
               try { fs.unlinkSync(finalPath); } catch(_){}
-              await sleep(CHUNK_DELAY_MS + Math.floor(Math.random() * 1500)); // تأخیر تصادفی برای جلوگیری از rate limit
+              // تأخیر کم بین قطعات، فقط وقتی که قبلی موفق بوده
+              if (ok && i < chunks.length-1) {
+                await sleep(CHUNK_MIN_DELAY_MS);
+              }
             }
             fs.rmSync(chunkDir, {recursive:true});
+
+            if (failedChunks.length > 0) {
+              await sendMessage(chatId, `⚠️ قطعات ${failedChunks.join('، ')} ارسال نشدند. می‌توانید دوباره درخواست دهید (با اعتبار جبرانی نوبت سریع‌تر).`);
+            }
             if (totalUpTime > 0) log(`مجموع زمان آپلود قطعات موفق: ${totalUpTime.toFixed(1)}s`);
             return true;
           }
@@ -785,9 +796,9 @@ jobs:
               await sendMessage(chatId, `✅ دانلود شد | حجم: ${finalMB}MB | زمان: ${dlTime}s`);
 
               if (finalSize <= 50*1024*1024) {
-                const sent = await uploadAndSendVideoWithRetry(chatId, videoPath, `🎬 ${path.basename(videoPath)}`);
+                const sent = await uploadChunkWithRetry(chatId, videoPath, `🎬 ${path.basename(videoPath)}`);
                 if (sent) await sendMessage(chatId, '📤 ویدیو با موفقیت ارسال شد.');
-                else await sendMessage(chatId, '❌ ارسال ناموفق.');
+                else await sendMessage(chatId, '❌ ارسال ناموفق. می‌توانید دوباره درخواست دهید (با اعتبار جبرانی).');
               } else {
                 const splitStart = Date.now();
                 const baseName = path.basename(videoPath, path.extname(videoPath));
@@ -849,7 +860,7 @@ jobs:
               const pos = queue.length - advanced;
               if (pos <= 0) {
                 queue.unshift({ chatId, url, duration });
-                sendMessage(chatId, '🎫 با اعتبار جبرانی، درخواست شما در صدر صف قرار گرفت.');
+                sendMessage(chatId, `🎫 با اعتبار جبرانی، درخواست شما در صدر صف قرار گرفت.`);
               } else {
                 queue.splice(pos, 0, { chatId, url, duration });
                 sendMessage(chatId, `🎫 به‌دلیل خرابی قبلی، ${advanced} نوبت جلو افتادید.`);
@@ -912,8 +923,9 @@ jobs:
               '(3) ربات مدت ویدیو را بررسی می‌کند (حداکثر ۱.۵ ساعت) و در صورت تأیید، دانلود را شروع می‌کند.\n' +
               '(4) در صورت شلوغ بودن، درخواست شما در صف قرار می‌گیرد و می‌توانید با دکمه «لغو درخواست» آن را کنسل کنید.\n' +
               '(5) پس از دانلود، ویدیو به صورت قطعات زیر ۵۰ مگابایت برای شما ارسال می‌شود.\n\n' +
+              '🔄 جبران خرابی:\n' +
+              'اگر دانلود یا ارسال برخی قطعات ناموفق باشد، دفعهٔ بعد ۲۰ نوبت در صف جلو می‌افتید و خیلی سریع‌تر به نوبت می‌رسید.\n\n' +
               'محدودیت‌ها:\n- هر ویدیو حداکثر ۱.۵ ساعت\n- هر کاربر مجموعاً ۱.۵ ساعت در این بازه (۶ ساعت) می‌تواند دانلود کند.\n\n' +
-              'جبران خرابی:\nاگر دانلود شما به دلیل مشکل فنی ناموفق باشد، دفعهٔ بعد ۲۰ نوبت در صف جلو می‌افتید.\n\n' +
               'نحوه اتصال و شفاف‌سازی:\n' +
               'این ربات برای دانلود محتوای درخواستی شما، از منابع و مسیرهای ارتباطی استفاده می‌کند که توسط نهادهای رسمی و مسئول در کشور برای دسترسی به اینترنت بین‌الملل مجاز شمرده شده است. ' +
               'این سرویس صرفاً یک واسط برای دریافت محتوای آموزشی و عمومی بوده و هیچ‌گونه ترافیک حساس، ارتباط رمزنگاری‌شده غیرمتعارف، یا داده‌ای که به امنیت ملی یا منافع کشور آسیب برساند، از طریق آن رد و بدل نمی‌شود. ' +
