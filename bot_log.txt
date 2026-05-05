@@ -48430,3 +48430,28 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 <p>Sorry, the page you are looking for is currently unavailable.<br
 [2026-05-05 20:41:27] 🔄 تلاش مجدد آپلود (2/2) برای video_raw.part01.mp4
 [2026-05-05 20:41:30] 📊 آمار به‌روزرسانی شد
+[2026-05-05 20:41:32] 📤 لاگ و آمار push شد
+[2026-05-05 20:41:35] 📄 پاسخ آپلود (HTTP 502): <!DOCTYPE html>
+<html>
+<head>
+<title>Error</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>An error occurred.</h1>
+<p>Sorry, the page you are looking for is currently unavailable.<br
+[2026-05-05 20:41:35] ❌ ارسال قطعه 1/2 پس از 2 تلاش ناموفق
+[2026-05-05 20:41:51] 🎬 درخواست از b0FT6Os099P0cabef26f832761992010: https://www.youtube.com/watch?v=e8SS_onk0y4
+[2026-05-05 20:41:53] ⚠️ دریافت اطلاعات ویدیو شکست (exit code: 1): WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction
+[2026-05-05 20:41:54] 📛 خطا در getRealVideoInfo: 🔒 ویدیو خصوصی یا حذف شده است.
+[2026-05-05 20:42:35] 🎬 درخواست از b0FT6Os099P0cabef26f832761992010: https://www.youtube.com/watch?v=PdqGQ7MMfts
+[2026-05-05 20:42:37] ⚠️ دریافت اطلاعات ویدیو شکست (exit code: 1): WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction
+[2026-05-05 20:42:37] 📛 خطا در getRealVideoInfo: 🔒 ویدیو خصوصی یا حذف شده است.
+[2026-05-05 20:42:46] ⬆️ آپلود video_raw.part02.mp4 در 69.9s
+[2026-05-05 20:42:46] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 69.9s
+[2026-05-05 20:42:46] مجموع زمان آپلود قطعات موفق: 69.9s
+[2026-05-05 20:42:46] 📊 آمار به‌روزرسانی شد
