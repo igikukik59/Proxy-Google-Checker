@@ -83,26 +83,32 @@ jobs:
           async function testProxy(uri, index) {
             const xrayProc = await startXray(uri, index);
             if (!xrayProc) return { ok: false, uri };
-
-            // تست ۱: اتصال ساده (با curl به gstatic)
+          
+            // تست ۱: اتصال اینترنت (بدون تغییر)
             let connOk = false;
             try {
               execSync('curl --socks5 127.0.0.1:10808 --max-time 3 -o /dev/null -s http://www.gstatic.com/generate_204', { stdio:'pipe' });
               connOk = true;
             } catch(_) {}
-
+          
             if (!connOk) {
               xrayProc.kill();
               return { ok: false, uri };
             }
-
-            // تست ۲: دسترسی به یوتیوب (فقط هدر، بدون دریافت صفحه)
+          
+            // تست ۲: دسترسی به یوتیوب با کد وضعیت واقعی
             let ytOk = false;
             try {
-              const result = execSync('curl --socks5 127.0.0.1:10808 -I --max-time 5 -s https://www.youtube.com/', { encoding:'utf8' });
-              if (result.includes('200 OK') || result.includes('301') || result.includes('302')) ytOk = true;
+              const httpCode = execSync(
+                `curl --socks5 127.0.0.1:10808 -o /dev/null -s -w '%{http_code}' --max-time 5 https://www.youtube.com/`,
+                { encoding: 'utf8' }
+              ).trim();
+              // کد 2xx یا 3xx یعنی صفحه در دسترسه
+              if (httpCode.startsWith('2') || httpCode.startsWith('3')) {
+                ytOk = true;
+              }
             } catch(_) {}
-
+          
             xrayProc.kill();
             return { ok: ytOk, uri };
           }
