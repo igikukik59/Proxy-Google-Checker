@@ -55577,3 +55577,25 @@ ERROR: [youtube] 7NsqttgSfJ8: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-06 04:17:19] 📺 اطلاعات ویدیو: 8دقیقه, حجم ۴۸۰p: 31.8MB
 [2026-05-06 04:17:24] ⬆️ آپلود video_raw.mp4 در 6.0s
 [2026-05-06 04:17:25] 📊 آمار به‌روزرسانی شد
+[2026-05-06 04:17:27] 📤 لاگ و آمار push شد
+[2026-05-06 04:17:27] 🔀 تلاش با پروکسی تصادفی (3 دانلود موفق متوالی (تنوع)): vless://52f94104-7a84-4342-8bcd-96969eb46cbe@104.19.49.15:84...
+[2026-05-06 04:17:28] 🎬 درخواست از b0JrLRV099P0d5eebeec8f4bcc942c34: https://www.youtube.com/watch?v=Y9joKAQpA88
+[2026-05-06 04:17:29] 📺 اطلاعات ویدیو: 14دقیقه, حجم ۴۸۰p: 41.0MB
+[2026-05-06 04:17:40] 🍪 کوکی جدید دریافت شد
+[2026-05-06 04:17:41] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-06 04:17:41] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] QWwML8Nz51w: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://gi
+[2026-05-06 04:17:41] 🔄 تلاش مجدد (2/3)...
+[2026-05-06 04:17:42] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.178.137.248:...
+[2026-05-06 04:17:55] 🍪 کوکی جدید دریافت شد
+[2026-05-06 04:18:30] ✅ دانلود کامل | حجم: 119.2MB | زمان: 35.7s | سرعت میانگین: 3.3 MB/s
+[2026-05-06 04:18:31] ✂️ شروع تقسیم video_raw (119.2MB)
+[2026-05-06 04:18:32] 🎯 بیت‌ریت: 252kbps | مدت: 3963.0s | زمان قطعه: 1463s
+[2026-05-06 04:19:02] ⬆️ آپلود video_raw.part01.mp4 در 25.4s
+[2026-05-06 04:19:02] 📤 قطعه 1/3: video_raw.part01.mp4 آپلود در 25.4s
+[2026-05-06 04:19:18] ⬆️ آپلود video_raw.part02.mp4 در 15.7s
+[2026-05-06 04:19:18] 📤 قطعه 2/3: video_raw.part02.mp4 آپلود در 15.7s
+[2026-05-06 04:19:31] ⬆️ آپلود video_raw.part03.mp4 در 11.6s
+[2026-05-06 04:19:31] 📤 قطعه 3/3: video_raw.part03.mp4 آپلود در 11.6s
+[2026-05-06 04:19:32] مجموع زمان آپلود قطعات موفق: 52.7s
+[2026-05-06 04:19:33] 📊 آمار به‌روزرسانی شد
