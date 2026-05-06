@@ -56002,3 +56002,17 @@ ERROR: [youtube] 60oI3k_2e84: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-06 04:57:45] 📛 خطا در getRealVideoInfo: 🤖 یوتیوب درخواست را مشکوک تشخیص داد. لطفاً چند دقیقه بعد دوباره امتحان کنید.
 [2026-05-06 04:57:51] ⬆️ آپلود video_raw.mp4 در 9.6s
 [2026-05-06 04:57:51] 📊 آمار به‌روزرسانی شد
+[2026-05-06 04:57:53] 📤 لاگ و آمار push شد
+[2026-05-06 04:57:53] 🔀 تلاش با پروکسی تصادفی (3 دانلود موفق متوالی (تنوع)): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@185.16.110.238:...
+[2026-05-06 04:58:07] 🎬 درخواست از b0JKDRj099P09f5c330ab7884346423d: https://www.youtube.com/watch?v=pY2f-BjwnTU
+[2026-05-06 04:58:08] 🍪 کوکی جدید دریافت شد
+[2026-05-06 04:58:09] 📺 اطلاعات ویدیو: 40دقیقه, حجم ۴۸۰p: 64.6MB
+[2026-05-06 04:58:09] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-06 04:58:09] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] 5ITpmNAFSBA: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://gi
+[2026-05-06 04:58:09] 🔄 تلاش مجدد (2/3)...
+[2026-05-06 04:58:10] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.128.183.90:4...
+[2026-05-06 04:58:21] 🍪 کوکی جدید دریافت شد
+[2026-05-06 04:58:26] ✅ دانلود کامل | حجم: 3.2MB | زمان: 4.8s | سرعت میانگین: 0.7 MB/s
+[2026-05-06 04:58:31] ⬆️ آپلود video_raw.mp4 در 5.2s
+[2026-05-06 04:58:32] 📊 آمار به‌روزرسانی شد
