@@ -56074,3 +56074,32 @@ ERROR: [youtube] 5ITpmNAFSBA: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-06 05:02:36] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 13.8s
 [2026-05-06 05:02:37] مجموع زمان آپلود قطعات موفق: 31.9s
 [2026-05-06 05:02:38] 📊 آمار به‌روزرسانی شد
+[2026-05-06 05:02:39] 📤 لاگ و آمار push شد
+[2026-05-06 05:02:40] 🔀 تلاش با پروکسی تصادفی (3 دانلود موفق متوالی (تنوع)): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@91.193.58.247:4...
+[2026-05-06 05:02:40] 🎬 درخواست از b0HFh5c099P0fc7481ee76165a267ebf: https://www.youtube.com/watch?v=dMJM8_TBvWA
+[2026-05-06 05:02:41] ⚠️ دریافت اطلاعات ویدیو شکست (exit code: 1): WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction
+[2026-05-06 05:02:42] 📛 خطا در getRealVideoInfo: 🤖 یوتیوب درخواست را مشکوک تشخیص داد. لطفاً چند دقیقه بعد دوباره امتحان کنید.
+[2026-05-06 05:02:51] 🍪 کوکی جدید دریافت شد
+[2026-05-06 05:02:55] 🎬 درخواست از b0HFh5c099P0fc7481ee76165a267ebf: https://www.youtube.com/watch?v=dMJM8_TBvWA
+[2026-05-06 05:02:56] 📺 اطلاعات ویدیو: 7دقیقه, حجم ۴۸۰p: 17.7MB
+[2026-05-06 05:02:59] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-06 05:02:59] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: unable to download video data: HTTP Error 403: Forbidden
+
+[2026-05-06 05:02:59] 🔄 تلاش مجدد (2/3)...
+[2026-05-06 05:03:00] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@185.16.110.238:...
+[2026-05-06 05:03:10] 🍪 کوکی جدید دریافت شد
+[2026-05-06 05:03:17] 🎬 درخواست از b0FhRVU099P03fa4d5275cd99161a2d8: https://www.youtube.com/watch?v=IioY1ISeOOo
+[2026-05-06 05:03:18] ✅ دانلود کامل | حجم: 71.6MB | زمان: 7.7s | سرعت میانگین: 9.3 MB/s
+[2026-05-06 05:03:18] ✂️ شروع تقسیم video_raw (71.6MB)
+[2026-05-06 05:03:18] 📺 اطلاعات ویدیو: 73دقیقه, حجم ۴۸۰p: 131.1MB
+[2026-05-06 05:03:19] 🎯 بیت‌ریت: 1144kbps | مدت: 525.2s | زمان قطعه: 322s
+[2026-05-06 05:03:39] ⬆️ آپلود video_raw.part01.mp4 در 19.0s
+[2026-05-06 05:03:39] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 19.0s
+[2026-05-06 05:03:40] 🎬 درخواست از b0F5YXM099P09b56f01f52d4afb4ac73: https://youtu.be/mxizaIc5pzs
+[2026-05-06 05:03:42] 📺 اطلاعات ویدیو: 65دقیقه, حجم ۴۸۰p: 118.5MB
+[2026-05-06 05:03:50] ⬆️ آپلود video_raw.part02.mp4 در 10.0s
+[2026-05-06 05:03:50] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 10.0s
+[2026-05-06 05:03:50] 🎬 درخواست از b0Jw4vu099P065e1156904a51365340b: https://youtu.be/y69aDvuPDvE
+[2026-05-06 05:03:51] مجموع زمان آپلود قطعات موفق: 29.0s
+[2026-05-06 05:03:51] 📊 آمار به‌روزرسانی شد
