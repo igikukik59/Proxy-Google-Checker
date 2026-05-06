@@ -164,8 +164,8 @@ jobs:
           const MAX_QUEUE = 200;
           const MIN_SPEED_BYTES = 1 * 1024 * 1024;
           const SMALL_FILE_BYTES = 10 * 1024 * 1024;
-          const UPLOAD_RETRIES = 2;            // کاهش تلاش‌های مجدد
-          const CHUNK_MIN_DELAY_MS = 300;      // حداقل تأخیر بین قطعات
+          const UPLOAD_RETRIES = 2;
+          const CHUNK_MIN_DELAY_MS = 300;
 
           let proxies = [];
           const queue = [];
@@ -268,12 +268,10 @@ jobs:
             return await api('sendMessage', body);
           }
 
-          // ======================== آپلود با تلاش مجدد سبک و سریع ========================
+          // ======================== آپلود با تلاش مجدد ========================
           async function uploadChunkWithRetry(chatId, videoPath, caption='') {
-            // تلاش اول بدون تأخیر
             for (let attempt = 0; attempt < UPLOAD_RETRIES; attempt++) {
               if (attempt > 0) {
-                // فقط در تلاش دوم یک تأخیر کوتاه می‌دهیم
                 await sleep(2000);
                 log(`🔄 تلاش مجدد آپلود (${attempt+1}/${UPLOAD_RETRIES}) برای ${path.basename(videoPath)}`);
               }
@@ -619,7 +617,6 @@ jobs:
                 await sendMessage(chatId, `❌ قطعه ${i+1}/${total} ارسال نشد.`);
               }
               try { fs.unlinkSync(finalPath); } catch(_){}
-              // تأخیر کم بین قطعات، فقط وقتی که قبلی موفق بوده
               if (ok && i < chunks.length-1) {
                 await sleep(CHUNK_MIN_DELAY_MS);
               }
@@ -990,7 +987,8 @@ jobs:
                     continue;
                   }
 
-                  const ytReg = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/;
+                  // ***** اصلاح Regex برای پشتیبانی از Shorts *****
+                  const ytReg = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([\w-]+)/;
                   const m = text.match(ytReg);
                   if (!m) {
                     if (!sentHelp.has(chatId)) { await sendMessage(chatId, '👋 سلام! لینک یوتیوب رو بفرست.', mainKeypad); sentHelp.add(chatId); }
