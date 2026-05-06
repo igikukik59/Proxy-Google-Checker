@@ -55825,3 +55825,18 @@ ERROR: [youtube] ivxcJU5TsIg: Sign in to confirm you’re not a bot. Use --cooki
 [2026-05-06 04:37:22] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 6.8s
 [2026-05-06 04:37:23] مجموع زمان آپلود قطعات موفق: 25.5s
 [2026-05-06 04:37:23] 📊 آمار به‌روزرسانی شد
+[2026-05-06 04:37:25] 📤 لاگ و آمار push شد
+[2026-05-06 04:37:28] ❌ دانلود شکست خورد (exit code: 1)
+[2026-05-06 04:37:28] 📄 stderr: WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+ERROR: [youtube] 60oI3k_2e84: Sign in to confirm you’re not a bot. Use --cookies-from-browser or --cookies for the authentication. See  https://gi
+[2026-05-06 04:37:28] 🔄 تلاش مجدد (2/3)...
+[2026-05-06 04:37:29] 🔀 تلاش با پروکسی تصادفی (تلاش مجدد دانلود): vless://6202b230-417c-4d8e-b624-0f71afa9c75d@212.34.148.122:...
+[2026-05-06 04:37:50] ✅ دانلود کامل | حجم: 53.4MB | زمان: 17.0s | سرعت میانگین: 3.1 MB/s
+[2026-05-06 04:37:51] ✂️ شروع تقسیم video_raw (53.4MB)
+[2026-05-06 04:37:51] 🎯 بیت‌ریت: 924kbps | مدت: 484.7s | زمان قطعه: 399s
+[2026-05-06 04:38:10] ⬆️ آپلود video_raw.part01.mp4 در 17.7s
+[2026-05-06 04:38:10] 📤 قطعه 1/2: video_raw.part01.mp4 آپلود در 17.7s
+[2026-05-06 04:38:16] ⬆️ آپلود video_raw.part02.mp4 در 5.5s
+[2026-05-06 04:38:16] 📤 قطعه 2/2: video_raw.part02.mp4 آپلود در 5.5s
+[2026-05-06 04:38:17] مجموع زمان آپلود قطعات موفق: 23.2s
+[2026-05-06 04:38:17] 📊 آمار به‌روزرسانی شد
