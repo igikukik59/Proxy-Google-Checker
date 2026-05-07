@@ -1,6 +1,7 @@
 {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   "totalDataMB": "17698.39",
   "totalVideos": 286,
   "totalDurationMinutes": "5181.6",
@@ -232,130 +233,25 @@
   "totalDataMB": "91.19",
   "totalVideos": 1,
   "totalDurationMinutes": "12.4",
+=======
+  "totalDataMB": "182.37",
+  "totalVideos": 2,
+  "totalDurationMinutes": "24.7",
+>>>>>>> Stashed changes
   "uniqueUsers": 1,
   "failedAttempts": 0,
-  "avgProcessingTimeSec": "72.0",
+  "avgProcessingTimeSec": "75.5",
   "avgVideoSizeMB": "91.19",
   "avgVideoDurationMin": "12.4",
   "queueLength": 1,
   "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
   "proxies": [
     {
->>>>>>> Stashed changes
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.91.255.152:4",
-      "avgSpeedMBps": "4.17",
-      "samples": 1,
-      "failures": 0,
-<<<<<<< Updated upstream
-      "lastUsed": "2026-05-07T06:20:18.561Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.144.238:2",
-      "avgSpeedMBps": "6.34",
-      "samples": 5,
-      "failures": 0,
-      "lastUsed": "2026-05-07T08:26:17.996Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@172.64.154.211:",
-      "avgSpeedMBps": "3.94",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-07T06:23:11.278Z"
-    },
-    {
-      "proxy": "trojan://humanity@www.multiplydose.com:443?security=tls&type",
-      "avgSpeedMBps": "7.75",
-      "samples": 5,
-      "failures": 0,
-      "lastUsed": "2026-05-07T08:20:08.614Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.72.25:44",
-      "avgSpeedMBps": "2.94",
-      "samples": 4,
-      "failures": 0,
-      "lastUsed": "2026-05-07T06:37:39.589Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.63.133:8",
-      "avgSpeedMBps": "2.48",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-07T06:32:28.301Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.74.118:4",
-      "avgSpeedMBps": "4.53",
-      "samples": 5,
-      "failures": 0,
-      "lastUsed": "2026-05-07T08:27:15.560Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@185.135.9.138:2",
-      "avgSpeedMBps": "8.62",
+      "avgSpeedMBps": "4.22",
       "samples": 2,
       "failures": 0,
-      "lastUsed": "2026-05-07T06:49:11.281Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.155.238:2",
-      "avgSpeedMBps": "0.96",
-      "samples": 1,
-      "failures": 0,
-      "lastUsed": "2026-05-07T06:59:54.955Z"
-    },
-    {
-      "proxy": "trojan://humanity@172.64.152.23:443?path=/assignment&securit",
-      "avgSpeedMBps": "2.40",
-      "samples": 2,
-      "failures": 0,
-      "lastUsed": "2026-05-07T07:00:44.748Z"
-    },
-    {
-      "proxy": "vless://df862b4c-2150-4b36-81ac-405036cf9ff6@162.159.152.208",
-      "avgSpeedMBps": "1.66",
-      "samples": 4,
-      "failures": 0,
-      "lastUsed": "2026-05-07T07:27:55.742Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@212.34.148.122:",
-      "avgSpeedMBps": "3.46",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-07T07:43:47.178Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.77.214.109:2",
-      "avgSpeedMBps": "3.07",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-07T07:48:50.984Z"
-    },
-    {
-      "proxy": "vless://981fca81-5be1-41f8-ac9b-d138e8109943@50.228.203.26:4",
-      "avgSpeedMBps": "7.12",
-      "samples": 5,
-      "failures": 0,
-      "lastUsed": "2026-05-07T08:40:45.833Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@172.64.145.158:",
-      "avgSpeedMBps": "8.58",
-      "samples": 1,
-      "failures": 0,
-      "lastUsed": "2026-05-07T08:42:24.135Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.67.42:44",
-      "avgSpeedMBps": "7.71",
-      "samples": 1,
-      "failures": 0,
-      "lastUsed": "2026-05-07T08:43:30.355Z"
-=======
-      "lastUsed": "2026-05-07T08:43:40.416Z"
->>>>>>> Stashed changes
+      "lastUsed": "2026-05-07T08:44:47.979Z"
     }
   ]
 }
