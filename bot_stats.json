@@ -1,28 +1,14 @@
 {
-<<<<<<< Updated upstream
-  "totalDataMB": "737.43",
-  "totalVideos": 9,
-  "totalDurationMinutes": "204.3",
-  "uniqueUsers": 6,
-  "failedAttempts": 0,
-  "avgProcessingTimeSec": "67.6",
-  "avgVideoSizeMB": "81.94",
-  "avgVideoDurationMin": "22.7",
-  "queueLength": 9,
-  "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
-  "proxies": [
-    {
-=======
-  "totalDataMB": "18431.37",
-  "totalVideos": 296,
-  "totalDurationMinutes": "5406.2",
+  "totalDataMB": "18522.55",
+  "totalVideos": 297,
+  "totalDurationMinutes": "5418.6",
   "uniqueUsers": 121,
   "failedAttempts": 1,
-  "avgProcessingTimeSec": "75.8",
-  "avgVideoSizeMB": "62.27",
-  "avgVideoDurationMin": "18.3",
-  "queueLength": 9,
-  "currentProxy": "vless://df862b4c-2150-4b36-81ac-405036cf",
+  "avgProcessingTimeSec": "69.3",
+  "avgVideoSizeMB": "62.37",
+  "avgVideoDurationMin": "18.2",
+  "queueLength": 8,
+  "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
   "proxies": [
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.63.60:20",
@@ -235,29 +221,18 @@
       "lastUsed": "2026-05-07T06:47:22.015Z"
     },
     {
->>>>>>> Stashed changes
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.91.255.152:4",
-      "avgSpeedMBps": "4.26",
+      "avgSpeedMBps": "3.70",
       "samples": 3,
       "failures": 0,
-      "lastUsed": "2026-05-07T08:46:06.401Z"
+      "lastUsed": "2026-05-07T06:07:25.147Z"
     },
     {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.67.21:44",
-      "avgSpeedMBps": "10.94",
-      "samples": 3,
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.4.130:20",
+      "avgSpeedMBps": "9.33",
+      "samples": 4,
       "failures": 0,
-<<<<<<< Updated upstream
-      "lastUsed": "2026-05-07T08:50:35.854Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.128.178.36:4",
-      "avgSpeedMBps": "4.70",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-07T08:53:55.837Z"
-=======
-      "lastUsed": "2026-05-07T06:08:42.349Z"
+      "lastUsed": "2026-05-07T08:55:44.956Z"
     },
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.64.157:4",
@@ -384,7 +359,6 @@
       "samples": 2,
       "failures": 0,
       "lastUsed": "2026-05-07T08:47:51.425Z"
->>>>>>> Stashed changes
     }
   ]
 }
