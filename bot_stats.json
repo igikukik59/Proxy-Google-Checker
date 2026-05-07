@@ -4,6 +4,7 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   "totalDataMB": "955.78",
   "totalVideos": 12,
   "totalDurationMinutes": "259.3",
@@ -14,12 +15,19 @@
   "totalDurationMinutes": "277.5",
   "uniqueUsers": 10,
 >>>>>>> Stashed changes
+=======
+  "totalDataMB": "1080.36",
+  "totalVideos": 15,
+  "totalDurationMinutes": "320.8",
+  "uniqueUsers": 11,
+>>>>>>> Stashed changes
   "failedAttempts": 0,
-  "avgProcessingTimeSec": "47.2",
-  "avgVideoSizeMB": "71.47",
-  "avgVideoDurationMin": "19.8",
+  "avgProcessingTimeSec": "39.9",
+  "avgVideoSizeMB": "72.02",
+  "avgVideoDurationMin": "21.4",
   "queueLength": 7,
   "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 >>>>>>> Stashed changes
 =======
@@ -280,73 +288,36 @@
       "lastUsed": "2026-05-07T06:47:22.015Z"
     },
     {
+=======
+  "proxies": [
+    {
+>>>>>>> Stashed changes
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.91.255.152:4",
-      "avgSpeedMBps": "3.70",
+      "avgSpeedMBps": "4.26",
       "samples": 3,
       "failures": 0,
-      "lastUsed": "2026-05-07T06:07:25.147Z"
+      "lastUsed": "2026-05-07T08:46:06.401Z"
     },
     {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.4.130:20",
-      "avgSpeedMBps": "8.75",
-      "samples": 5,
-      "failures": 0,
-      "lastUsed": "2026-05-07T08:56:27.277Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.64.157:4",
-      "avgSpeedMBps": "5.05",
-      "samples": 5,
-      "failures": 0,
-      "lastUsed": "2026-05-07T07:58:43.732Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:2",
-      "avgSpeedMBps": "8.67",
-      "samples": 5,
-      "failures": 0,
-      "lastUsed": "2026-05-07T07:30:56.972Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@156.225.72.238:",
-      "avgSpeedMBps": "8.87",
-      "samples": 1,
-      "failures": 0,
-      "lastUsed": "2026-05-07T06:20:18.561Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.144.238:2",
-      "avgSpeedMBps": "6.34",
-      "samples": 5,
-      "failures": 0,
-      "lastUsed": "2026-05-07T08:26:17.996Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@172.64.154.211:",
-      "avgSpeedMBps": "3.94",
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.67.21:44",
+      "avgSpeedMBps": "10.94",
       "samples": 3,
       "failures": 0,
-      "lastUsed": "2026-05-07T06:23:11.278Z"
+      "lastUsed": "2026-05-07T08:50:35.854Z"
     },
     {
-      "proxy": "trojan://humanity@www.multiplydose.com:443?security=tls&type",
-      "avgSpeedMBps": "7.75",
-      "samples": 5,
-      "failures": 0,
-      "lastUsed": "2026-05-07T08:20:08.614Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.72.25:44",
-      "avgSpeedMBps": "2.94",
-      "samples": 4,
-      "failures": 0,
-      "lastUsed": "2026-05-07T06:37:39.589Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.63.133:8",
-      "avgSpeedMBps": "2.48",
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.128.178.36:4",
+      "avgSpeedMBps": "4.70",
       "samples": 3,
       "failures": 0,
+      "lastUsed": "2026-05-07T08:53:55.837Z"
+    },
+    {
+      "proxy": "vless://5dc15e15-f285-4a9d-959b-0e4fbdd77b63@sub.danfeng.eu.",
+      "avgSpeedMBps": "8.61",
+      "samples": 3,
+      "failures": 0,
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
       "lastUsed": "2026-05-07T08:57:04.709Z"
@@ -434,12 +405,16 @@
 =======
 =======
 >>>>>>> Stashed changes
+=======
+      "lastUsed": "2026-05-07T08:57:04.709Z"
+>>>>>>> Stashed changes
     },
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.146.201.238:",
-      "avgSpeedMBps": "3.74",
-      "samples": 2,
+      "avgSpeedMBps": "4.93",
+      "samples": 3,
       "failures": 0,
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
       "lastUsed": "2026-05-07T08:58:30.205Z"
 >>>>>>> Stashed changes
@@ -449,6 +424,9 @@
       "lastUsed": "2026-05-07T08:59:07.914Z"
 >>>>>>> Stashed changes
 =======
+>>>>>>> Stashed changes
+=======
+      "lastUsed": "2026-05-07T08:59:36.643Z"
 >>>>>>> Stashed changes
     }
   ]
