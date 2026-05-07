@@ -1,24 +1,10 @@
 {
-<<<<<<< Updated upstream
-  "totalDataMB": "1292.50",
-  "totalVideos": 17,
-  "totalDurationMinutes": "362.6",
-  "uniqueUsers": 13,
-  "failedAttempts": 0,
-  "avgProcessingTimeSec": "52.2",
-  "avgVideoSizeMB": "76.03",
-  "avgVideoDurationMin": "21.3",
-  "queueLength": 8,
-  "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
-  "proxies": [
-    {
-=======
   "totalDataMB": "18906.61",
   "totalVideos": 303,
   "totalDurationMinutes": "5521.2",
   "uniqueUsers": 123,
   "failedAttempts": 1,
-  "avgProcessingTimeSec": "49.7",
+  "avgProcessingTimeSec": "65.4",
   "avgVideoSizeMB": "62.40",
   "avgVideoDurationMin": "18.2",
   "queueLength": 7,
@@ -235,7 +221,6 @@
       "lastUsed": "2026-05-07T06:47:22.015Z"
     },
     {
->>>>>>> Stashed changes
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.91.255.152:4",
       "avgSpeedMBps": "3.70",
       "samples": 3,
@@ -254,11 +239,7 @@
       "avgSpeedMBps": "5.05",
       "samples": 5,
       "failures": 0,
-<<<<<<< Updated upstream
-      "lastUsed": "2026-05-07T08:53:55.837Z"
-=======
       "lastUsed": "2026-05-07T07:58:43.732Z"
->>>>>>> Stashed changes
     },
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:2",
@@ -307,23 +288,6 @@
       "avgSpeedMBps": "2.48",
       "samples": 3,
       "failures": 0,
-<<<<<<< Updated upstream
-      "lastUsed": "2026-05-07T08:57:04.709Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.146.201.238:",
-      "avgSpeedMBps": "4.93",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-07T08:59:36.643Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.151.191:2",
-      "avgSpeedMBps": "13.62",
-      "samples": 2,
-      "failures": 0,
-      "lastUsed": "2026-05-07T09:01:37.818Z"
-=======
       "lastUsed": "2026-05-07T06:32:28.301Z"
     },
     {
@@ -395,7 +359,6 @@
       "samples": 2,
       "failures": 0,
       "lastUsed": "2026-05-07T08:47:51.425Z"
->>>>>>> Stashed changes
     }
   ]
 }
