@@ -1,4 +1,5 @@
 {
+<<<<<<< Updated upstream
   "totalDataMB": "11514.56",
   "totalVideos": 144,
   "totalDurationMinutes": "2935.6",
@@ -8,6 +9,17 @@
   "avgVideoSizeMB": "79.96",
   "avgVideoDurationMin": "20.4",
   "queueLength": 122,
+=======
+  "totalDataMB": "1229.39",
+  "totalVideos": 25,
+  "totalDurationMinutes": "330.9",
+  "uniqueUsers": 22,
+  "failedAttempts": 0,
+  "avgProcessingTimeSec": "41.1",
+  "avgVideoSizeMB": "49.18",
+  "avgVideoDurationMin": "13.2",
+  "queueLength": 29,
+>>>>>>> Stashed changes
   "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
   "proxies": [
     {
@@ -53,6 +65,7 @@
       "lastUsed": "2026-05-07T10:58:37.565Z"
     },
     {
+<<<<<<< Updated upstream
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.210.151.193:",
       "avgSpeedMBps": "2.23",
       "samples": 3,
@@ -72,6 +85,13 @@
       "samples": 4,
       "failures": 0,
       "lastUsed": "2026-05-07T12:26:49.538Z"
+=======
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.12.30.138:20",
+      "avgSpeedMBps": "3.52",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-07T14:47:31.516Z"
+>>>>>>> Stashed changes
     },
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.137.90:8",
