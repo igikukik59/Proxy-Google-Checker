@@ -1,36 +1,14 @@
 {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  "totalDataMB": "11769.99",
-  "totalVideos": 147,
-  "totalDurationMinutes": "3011.0",
-=======
-  "totalDataMB": "11860.39",
-  "totalVideos": 148,
-  "totalDurationMinutes": "3027.7",
->>>>>>> Stashed changes
-  "uniqueUsers": 102,
+  "totalDataMB": "11880.16",
+  "totalVideos": 149,
+  "totalDurationMinutes": "3034.1",
+  "uniqueUsers": 103,
   "failedAttempts": 1,
-  "avgProcessingTimeSec": "127.5",
-  "avgVideoSizeMB": "80.14",
-  "avgVideoDurationMin": "20.5",
-  "queueLength": 123,
-<<<<<<< Updated upstream
-=======
-  "totalDataMB": "1613.01",
-  "totalVideos": 27,
-  "totalDurationMinutes": "434.8",
-  "uniqueUsers": 24,
-  "failedAttempts": 0,
-  "avgProcessingTimeSec": "130.8",
-  "avgVideoSizeMB": "59.74",
-  "avgVideoDurationMin": "16.1",
-  "queueLength": 31,
->>>>>>> Stashed changes
-  "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
-=======
+  "avgProcessingTimeSec": "121.2",
+  "avgVideoSizeMB": "79.73",
+  "avgVideoDurationMin": "20.4",
+  "queueLength": 122,
   "currentProxy": "trojan://humanity@188.114.96.3:443?secur",
->>>>>>> Stashed changes
   "proxies": [
     {
       "proxy": "trojan://humanity@8.6.112.0:443?security=tls&sni=www.gossipg",
@@ -72,7 +50,6 @@
       "avgSpeedMBps": "8.57",
       "samples": 3,
       "failures": 0,
-<<<<<<< Updated upstream
       "lastUsed": "2026-05-07T10:58:37.565Z"
     },
     {
@@ -312,26 +289,13 @@
       "samples": 3,
       "failures": 0,
       "lastUsed": "2026-05-07T14:54:56.084Z"
-<<<<<<< Updated upstream
-=======
-      "lastUsed": "2026-05-07T14:45:48.240Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.74.34:44",
-      "avgSpeedMBps": "6.80",
-      "samples": 1,
-      "failures": 0,
-      "lastUsed": "2026-05-07T14:53:03.056Z"
->>>>>>> Stashed changes
-=======
     },
     {
       "proxy": "trojan://humanity@188.114.96.3:443?security=tls&type=ws&sni=",
-      "avgSpeedMBps": "2.93",
-      "samples": 1,
+      "avgSpeedMBps": "2.35",
+      "samples": 2,
       "failures": 0,
-      "lastUsed": "2026-05-07T14:56:44.647Z"
->>>>>>> Stashed changes
+      "lastUsed": "2026-05-07T14:59:00.841Z"
     }
   ]
 }
