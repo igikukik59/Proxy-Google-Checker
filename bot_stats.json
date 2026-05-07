@@ -1,14 +1,21 @@
 {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   "totalDataMB": "753.41",
   "totalVideos": 12,
   "totalDurationMinutes": "186.6",
   "uniqueUsers": 11,
+=======
+  "totalDataMB": "779.34",
+  "totalVideos": 13,
+  "totalDurationMinutes": "199.5",
+  "uniqueUsers": 12,
+>>>>>>> Stashed changes
   "failedAttempts": 0,
-  "avgProcessingTimeSec": "109.5",
-  "avgVideoSizeMB": "62.78",
-  "avgVideoDurationMin": "15.5",
-  "queueLength": 18,
+  "avgProcessingTimeSec": "93.3",
+  "avgVideoSizeMB": "59.95",
+  "avgVideoDurationMin": "15.3",
+  "queueLength": 17,
   "currentProxy": "trojan://humanity@188.114.96.3:443?secur",
   "proxies": [
     {
@@ -245,9 +252,10 @@
     },
     {
       "proxy": "trojan://humanity@188.114.96.3:443?security=tls&type=ws&sni=",
-      "avgSpeedMBps": "2.70",
-      "samples": 1,
+      "avgSpeedMBps": "2.49",
+      "samples": 2,
       "failures": 0,
+<<<<<<< Updated upstream
       "lastUsed": "2026-05-07T14:37:51.354Z"
 =======
       "proxy": "vless://8c4604ef-749c-4b56-adf1-7da405002a21@216.24.57.1:443",
@@ -304,6 +312,9 @@
       "samples": 2,
       "failures": 0,
       "lastUsed": "2026-05-07T14:37:16.244Z"
+>>>>>>> Stashed changes
+=======
+      "lastUsed": "2026-05-07T14:38:30.596Z"
 >>>>>>> Stashed changes
     }
   ]
