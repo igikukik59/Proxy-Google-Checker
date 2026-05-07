@@ -1,6 +1,7 @@
 {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   "totalDataMB": "11514.56",
   "totalVideos": 144,
   "totalDurationMinutes": "2935.6",
@@ -16,101 +17,74 @@
   "avgVideoDurationMin": "20.3",
   "queueLength": 122,
 =======
+=======
+>>>>>>> Stashed changes
   "totalDataMB": "1229.39",
   "totalVideos": 25,
   "totalDurationMinutes": "330.9",
   "uniqueUsers": 22,
   "failedAttempts": 0,
-  "avgProcessingTimeSec": "41.1",
+  "avgProcessingTimeSec": "69.0",
   "avgVideoSizeMB": "49.18",
   "avgVideoDurationMin": "13.2",
   "queueLength": 29,
->>>>>>> Stashed changes
   "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
   "proxies": [
     {
-      "proxy": "trojan://humanity@8.6.112.0:443?security=tls&sni=www.gossipg",
-      "avgSpeedMBps": "2.79",
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@154.211.8.138:2",
+      "avgSpeedMBps": "4.54",
       "samples": 3,
       "failures": 0,
-      "lastUsed": "2026-05-07T10:46:19.058Z"
+      "lastUsed": "2026-05-07T14:22:55.032Z"
     },
     {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.63.60:20",
-      "avgSpeedMBps": "1.78",
+      "proxy": "vless://388a6c57-87e7-420b-afe2-b3eb670fd7da@104.17.138.160:",
+      "avgSpeedMBps": "4.09",
       "samples": 3,
       "failures": 0,
-      "lastUsed": "2026-05-07T10:48:28.050Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@172.64.145.158:",
-      "avgSpeedMBps": "7.09",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-07T10:50:21.742Z"
+      "lastUsed": "2026-05-07T14:25:47.711Z"
     },
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.128.178.79:8",
-      "avgSpeedMBps": "2.56",
-      "samples": 5,
+      "avgSpeedMBps": "1.49",
+      "samples": 2,
       "failures": 0,
-      "lastUsed": "2026-05-07T11:20:33.257Z"
+      "lastUsed": "2026-05-07T14:29:56.187Z"
     },
     {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.155.238:2",
-      "avgSpeedMBps": "8.03",
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@156.225.72.238:",
+      "avgSpeedMBps": "3.12",
       "samples": 3,
       "failures": 0,
-      "lastUsed": "2026-05-07T10:56:25.253Z"
+      "lastUsed": "2026-05-07T14:36:43.784Z"
     },
     {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@198.71.189.51:4",
-      "avgSpeedMBps": "8.57",
+      "proxy": "trojan://humanity@188.114.96.3:443?security=tls&type=ws&sni=",
+      "avgSpeedMBps": "1.99",
       "samples": 3,
       "failures": 0,
-      "lastUsed": "2026-05-07T10:58:37.565Z"
+      "lastUsed": "2026-05-07T14:39:04.173Z"
     },
     {
-<<<<<<< Updated upstream
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.210.151.193:",
-      "avgSpeedMBps": "2.23",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-07T11:03:32.306Z"
-    },
-    {
-      "proxy": "trojan://humanity@www.multiplydose.com:443?security=tls&type",
-      "avgSpeedMBps": "2.02",
-      "samples": 5,
-      "failures": 0,
-      "lastUsed": "2026-05-07T14:26:13.391Z"
-    },
-    {
-      "proxy": "trojan://humanity@8.6.112.0:443?path=/assignment&security=tl",
-      "avgSpeedMBps": "2.01",
-      "samples": 4,
-      "failures": 0,
-      "lastUsed": "2026-05-07T12:26:49.538Z"
-=======
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.12.30.138:20",
       "avgSpeedMBps": "3.52",
       "samples": 5,
       "failures": 0,
       "lastUsed": "2026-05-07T14:47:31.516Z"
->>>>>>> Stashed changes
     },
     {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.137.90:8",
-      "avgSpeedMBps": "2.01",
+      "proxy": "vless://df862b4c-2150-4b36-81ac-405036cf9ff6@173.245.59.145:",
+      "avgSpeedMBps": "5.35",
       "samples": 3,
       "failures": 0,
-      "lastUsed": "2026-05-07T11:14:54.976Z"
+      "lastUsed": "2026-05-07T14:43:27.090Z"
     },
     {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@209.94.90.238:2",
-      "avgSpeedMBps": "7.21",
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.64.157:4",
+      "avgSpeedMBps": "8.46",
       "samples": 3,
       "failures": 0,
+<<<<<<< Updated upstream
       "lastUsed": "2026-05-07T11:25:42.482Z"
     },
     {
@@ -315,6 +289,9 @@
       "samples": 1,
       "failures": 0,
       "lastUsed": "2026-05-07T14:49:24.000Z"
+=======
+      "lastUsed": "2026-05-07T14:45:48.240Z"
+>>>>>>> Stashed changes
     }
   ]
 }
