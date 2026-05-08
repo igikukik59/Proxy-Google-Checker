@@ -1,38 +1,14 @@
 {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  "totalDataMB": "20384.64",
-  "totalVideos": 299,
-  "totalDurationMinutes": "5685.5",
-=======
-  "totalDataMB": "20398.05",
-  "totalVideos": 300,
-  "totalDurationMinutes": "5688.7",
->>>>>>> Stashed changes
-  "uniqueUsers": 145,
+  "totalDataMB": "20573.26",
+  "totalVideos": 301,
+  "totalDurationMinutes": "5732.6",
+  "uniqueUsers": 146,
   "failedAttempts": 2,
-  "avgProcessingTimeSec": "100.1",
-  "avgVideoSizeMB": "67.99",
+  "avgProcessingTimeSec": "105.0",
+  "avgVideoSizeMB": "68.35",
   "avgVideoDurationMin": "19.0",
-<<<<<<< Updated upstream
-  "queueLength": 51,
-  "currentProxy": "vless://394f6981-a782-4779-9a85-e6cf2293",
-=======
-  "totalDataMB": "795.66",
-  "totalVideos": 11,
-  "totalDurationMinutes": "243.9",
-  "uniqueUsers": 10,
-  "failedAttempts": 0,
-  "avgProcessingTimeSec": "69.4",
-  "avgVideoSizeMB": "72.33",
-  "avgVideoDurationMin": "22.2",
-  "queueLength": 11,
+  "queueLength": 52,
   "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
->>>>>>> Stashed changes
-=======
-  "queueLength": 49,
-  "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
->>>>>>> Stashed changes
   "proxies": [
     {
       "proxy": "trojan://humanity@172.64.152.23:443?path=/assignment&securit",
@@ -70,7 +46,6 @@
       "lastUsed": "2026-05-08T05:12:29.246Z"
     },
     {
-<<<<<<< Updated upstream
       "proxy": "vless://ce069292-c8bf-40dd-a6b1-87818a1e64e9@38.180.11.15:44",
       "avgSpeedMBps": "0.82",
       "samples": 5,
@@ -489,23 +464,13 @@
       "samples": 3,
       "failures": 0,
       "lastUsed": "2026-05-08T08:06:55.908Z"
-<<<<<<< Updated upstream
-=======
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.67.42:44",
-      "avgSpeedMBps": "7.98",
-      "samples": 2,
-      "failures": 0,
-      "lastUsed": "2026-05-08T08:06:28.928Z"
->>>>>>> Stashed changes
-=======
     },
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.13.149:2",
-      "avgSpeedMBps": "2.40",
-      "samples": 1,
+      "avgSpeedMBps": "8.36",
+      "samples": 2,
       "failures": 0,
-      "lastUsed": "2026-05-08T08:07:26.466Z"
->>>>>>> Stashed changes
+      "lastUsed": "2026-05-08T08:07:58.266Z"
     }
   ]
 }
