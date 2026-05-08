@@ -1,13 +1,13 @@
 {
-  "totalDataMB": "12834.21",
-  "totalVideos": 159,
-  "totalDurationMinutes": "3325.5",
+  "totalDataMB": "12949.55",
+  "totalVideos": 160,
+  "totalDurationMinutes": "3359.5",
   "uniqueUsers": 108,
   "failedAttempts": 1,
-  "avgProcessingTimeSec": "64.8",
-  "avgVideoSizeMB": "80.72",
-  "avgVideoDurationMin": "20.9",
-  "queueLength": 47,
+  "avgProcessingTimeSec": "57.7",
+  "avgVideoSizeMB": "80.93",
+  "avgVideoDurationMin": "21.0",
+  "queueLength": 49,
   "currentProxy": "trojan://6202b230-417c-4d8e-b624-0f71afa",
   "proxies": [
     {
@@ -341,10 +341,10 @@
     },
     {
       "proxy": "trojan://6202b230-417c-4d8e-b624-0f71afa9c75d@freeyx.cloudfl",
-      "avgSpeedMBps": "2.78",
-      "samples": 2,
+      "avgSpeedMBps": "5.61",
+      "samples": 3,
       "failures": 0,
-      "lastUsed": "2026-05-08T22:46:42.836Z"
+      "lastUsed": "2026-05-08T22:48:03.792Z"
     }
   ]
 }
