@@ -1,34 +1,14 @@
 {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  "totalDataMB": "20685.51",
-  "totalVideos": 246,
-  "totalDurationMinutes": "5657.9",
-  "uniqueUsers": 158,
-=======
-  "totalDataMB": "20716.84",
-  "totalVideos": 247,
-  "totalDurationMinutes": "5672.6",
-  "uniqueUsers": 159,
->>>>>>> Stashed changes
+  "totalDataMB": "20767.60",
+  "totalVideos": 248,
+  "totalDurationMinutes": "5683.9",
+  "uniqueUsers": 160,
   "failedAttempts": 5,
-  "avgProcessingTimeSec": "69.7",
-  "avgVideoSizeMB": "83.87",
-  "avgVideoDurationMin": "23.0",
+  "avgProcessingTimeSec": "71.0",
+  "avgVideoSizeMB": "83.74",
+  "avgVideoDurationMin": "22.9",
   "queueLength": 81,
-  "currentProxy": "trojan://humanity@8.6.112.0:443?path=/as",
-=======
-  "totalDataMB": "227.52",
-  "totalVideos": 6,
-  "totalDurationMinutes": "111.3",
-  "uniqueUsers": 3,
-  "failedAttempts": 0,
-  "avgProcessingTimeSec": "63.5",
-  "avgVideoSizeMB": "37.92",
-  "avgVideoDurationMin": "18.5",
-  "queueLength": 1,
-  "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
->>>>>>> Stashed changes
+  "currentProxy": "vless://a01daac7-1e65-4645-854d-b47d226f",
   "proxies": [
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@194.247.186.199",
@@ -340,7 +320,6 @@
     },
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.210.149.2:20",
-<<<<<<< Updated upstream
       "avgSpeedMBps": "2.21",
       "samples": 2,
       "failures": 0,
@@ -442,17 +421,14 @@
       "avgSpeedMBps": "3.70",
       "samples": 3,
       "failures": 0,
-<<<<<<< Updated upstream
-      "lastUsed": "2026-05-09T08:12:48.428Z"
-=======
-      "avgSpeedMBps": "2.60",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-09T08:12:42.143Z"
->>>>>>> Stashed changes
-=======
       "lastUsed": "2026-05-09T08:13:12.608Z"
->>>>>>> Stashed changes
+    },
+    {
+      "proxy": "vless://a01daac7-1e65-4645-854d-b47d226f6b08@auth.vercel.com",
+      "avgSpeedMBps": "7.68",
+      "samples": 1,
+      "failures": 0,
+      "lastUsed": "2026-05-09T08:13:44.300Z"
     }
   ]
 }
