@@ -2,6 +2,7 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   "totalDataMB": "145.42",
   "totalVideos": 4,
   "totalDurationMinutes": "68.3",
@@ -11,12 +12,19 @@
   "totalDurationMinutes": "69.0",
 >>>>>>> Stashed changes
   "uniqueUsers": 3,
+=======
+  "totalDataMB": "159.82",
+  "totalVideos": 6,
+  "totalDurationMinutes": "71.1",
+  "uniqueUsers": 4,
+>>>>>>> Stashed changes
   "failedAttempts": 0,
-  "avgProcessingTimeSec": "41.8",
-  "avgVideoSizeMB": "29.67",
-  "avgVideoDurationMin": "13.8",
+  "avgProcessingTimeSec": "40.0",
+  "avgVideoSizeMB": "26.64",
+  "avgVideoDurationMin": "11.9",
   "queueLength": 0,
   "currentProxy": "trojan://humanity@www.multiplydose.com:4",
+<<<<<<< Updated upstream
 =======
   "totalDataMB": "11505.82",
   "totalVideos": 199,
@@ -33,6 +41,8 @@
   "avgVideoDurationMin": "17.6",
   "queueLength": 44,
   "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
+=======
+>>>>>>> Stashed changes
   "proxies": [
     {
       "proxy": "vless://d555dac9-27cb-4ddb-89f5-6a1d8d1e4798@198.41.223.121:",
@@ -44,6 +54,7 @@
     {
 <<<<<<< Updated upstream
       "proxy": "trojan://humanity@www.multiplydose.com:443?security=tls&type",
+<<<<<<< Updated upstream
       "avgSpeedMBps": "1.82",
       "samples": 2,
       "failures": 0,
@@ -421,6 +432,12 @@
       "lastUsed": "2026-05-10T08:21:16.205Z"
 >>>>>>> Stashed changes
 =======
+>>>>>>> Stashed changes
+=======
+      "avgSpeedMBps": "1.90",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T08:22:03.931Z"
 >>>>>>> Stashed changes
     }
   ]
