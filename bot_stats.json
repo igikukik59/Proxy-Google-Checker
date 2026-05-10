@@ -1,13 +1,13 @@
 {
-  "totalDataMB": "6020.09",
-  "totalVideos": 89,
-  "totalDurationMinutes": "1572.6",
+  "totalDataMB": "6050.23",
+  "totalVideos": 90,
+  "totalDurationMinutes": "1581.3",
   "uniqueUsers": 59,
   "failedAttempts": 2,
-  "avgProcessingTimeSec": "41.0",
-  "avgVideoSizeMB": "67.64",
-  "avgVideoDurationMin": "17.7",
-  "queueLength": 31,
+  "avgProcessingTimeSec": "37.4",
+  "avgVideoSizeMB": "67.22",
+  "avgVideoDurationMin": "17.6",
+  "queueLength": 30,
   "currentProxy": "vless://89b3cbba-e6ac-485a-9481-976a0415",
   "proxies": [
     {
@@ -243,10 +243,10 @@
     },
     {
       "proxy": "vless://89b3cbba-e6ac-485a-9481-976a0415eab9@ciallo-egb.page",
-      "avgSpeedMBps": "5.04",
-      "samples": 2,
+      "avgSpeedMBps": "5.16",
+      "samples": 3,
       "failures": 0,
-      "lastUsed": "2026-05-10T10:19:43.017Z"
+      "lastUsed": "2026-05-10T10:20:06.510Z"
     }
   ]
 }
