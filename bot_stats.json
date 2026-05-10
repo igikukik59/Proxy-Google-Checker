@@ -1,5 +1,6 @@
 {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   "totalDataMB": "626.46",
   "totalVideos": 7,
   "totalDurationMinutes": "259.5",
@@ -19,12 +20,18 @@
   "totalVideos": 254,
   "totalDurationMinutes": "5405.7",
   "uniqueUsers": 149,
+=======
+  "totalDataMB": "18567.58",
+  "totalVideos": 255,
+  "totalDurationMinutes": "5408.2",
+  "uniqueUsers": 150,
+>>>>>>> Stashed changes
   "failedAttempts": 3,
-  "avgProcessingTimeSec": "70.0",
-  "avgVideoSizeMB": "73.04",
-  "avgVideoDurationMin": "21.3",
+  "avgProcessingTimeSec": "50.0",
+  "avgVideoSizeMB": "72.81",
+  "avgVideoDurationMin": "21.2",
   "queueLength": 14,
-  "currentProxy": "vless://394f6981-a782-4779-9a85-e6cf2293",
+  "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
   "proxies": [
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@146.59.229.78:8",
@@ -442,26 +449,11 @@
     {
       "proxy": "trojan://humanity@172.64.152.23:443?path=/assignment&securit",
       "avgSpeedMBps": "2.65",
->>>>>>> Stashed changes
       "samples": 3,
       "failures": 0,
-      "lastUsed": "2026-05-10T13:33:46.991Z"
+      "lastUsed": "2026-05-10T12:57:00.542Z"
     },
     {
-<<<<<<< Updated upstream
-      "proxy": "vless://8c4604ef-749c-4b56-adf1-7da405002a21@216.24.57.1:443",
-      "avgSpeedMBps": "7.58",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-10T13:37:18.423Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.67.21:44",
-      "avgSpeedMBps": "3.33",
-      "samples": 1,
-      "failures": 0,
-      "lastUsed": "2026-05-10T13:38:33.872Z"
-=======
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@8.6.112.6:443?e",
       "avgSpeedMBps": "0.48",
       "samples": 1,
@@ -481,7 +473,13 @@
       "samples": 2,
       "failures": 0,
       "lastUsed": "2026-05-10T13:27:26.912Z"
->>>>>>> Stashed changes
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@162.159.12.151:",
+      "avgSpeedMBps": "5.21",
+      "samples": 1,
+      "failures": 0,
+      "lastUsed": "2026-05-10T13:39:06.196Z"
     }
   ]
 }
