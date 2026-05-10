@@ -1,4 +1,5 @@
 {
+<<<<<<< Updated upstream
   "totalDataMB": "286.90",
   "totalVideos": 3,
   "totalDurationMinutes": "147.8",
@@ -11,6 +12,405 @@
   "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
   "proxies": [
     {
+=======
+  "totalDataMB": "18248.75",
+  "totalVideos": 250,
+  "totalDurationMinutes": "5310.8",
+  "uniqueUsers": 146,
+  "failedAttempts": 3,
+  "avgProcessingTimeSec": "61.5",
+  "avgVideoSizeMB": "73.00",
+  "avgVideoDurationMin": "21.2",
+  "queueLength": 13,
+  "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
+  "proxies": [
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@146.59.229.78:8",
+      "avgSpeedMBps": "1.57",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T08:19:13.466Z"
+    },
+    {
+      "proxy": "trojan://humanity@www.multiplydose.com:443?security=tls&type",
+      "avgSpeedMBps": "3.96",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T11:14:49.368Z"
+    },
+    {
+      "proxy": "vless://26524cce-d514-4014-a426-365fb266a14d@211.199.7.162:1",
+      "avgSpeedMBps": "0.96",
+      "samples": 1,
+      "failures": 0,
+      "lastUsed": "2026-05-10T08:23:12.318Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:2",
+      "avgSpeedMBps": "6.68",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T11:40:38.180Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@5.10.245.43:443",
+      "avgSpeedMBps": "7.16",
+      "samples": 2,
+      "failures": 0,
+      "lastUsed": "2026-05-10T12:51:35.007Z"
+    },
+    {
+      "proxy": "vless://8dc7722c-2767-4eea-a28b-2f8daacc07e3@yesok42v2.ip4ex",
+      "avgSpeedMBps": "3.90",
+      "samples": 2,
+      "failures": 0,
+      "lastUsed": "2026-05-10T08:29:44.069Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.74.34:44",
+      "avgSpeedMBps": "4.74",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T13:19:51.601Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@188.226.166.176",
+      "avgSpeedMBps": "2.34",
+      "samples": 4,
+      "failures": 0,
+      "lastUsed": "2026-05-10T12:38:43.311Z"
+    },
+    {
+      "proxy": "vless://06ef598c-1555-4887-b3f9-08214a2f6792@8.6.112.0:443?a",
+      "avgSpeedMBps": "1.18",
+      "samples": 2,
+      "failures": 0,
+      "lastUsed": "2026-05-10T08:32:58.227Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@54.36.98.82:205",
+      "avgSpeedMBps": "2.87",
+      "samples": 4,
+      "failures": 0,
+      "lastUsed": "2026-05-10T10:40:14.257Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@37.59.96.47:443",
+      "avgSpeedMBps": "2.88",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T09:39:11.715Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@199.107.164.217",
+      "avgSpeedMBps": "3.93",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T13:26:18.037Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.131.211.238:",
+      "avgSpeedMBps": "2.71",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T12:51:11.283Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@8.6.112.0:8443?",
+      "avgSpeedMBps": "7.20",
+      "samples": 4,
+      "failures": 0,
+      "lastUsed": "2026-05-10T13:33:05.140Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@212.34.141.125:",
+      "avgSpeedMBps": "2.85",
+      "samples": 4,
+      "failures": 0,
+      "lastUsed": "2026-05-10T13:24:13.285Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.144.238:2",
+      "avgSpeedMBps": "5.39",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T12:02:40.258Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.63.133:8",
+      "avgSpeedMBps": "2.14",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T13:30:41.376Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@185.16.110.238:",
+      "avgSpeedMBps": "7.08",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T12:11:35.041Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.137.62:8",
+      "avgSpeedMBps": "2.37",
+      "samples": 2,
+      "failures": 0,
+      "lastUsed": "2026-05-10T09:07:33.152Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.13.149:2",
+      "avgSpeedMBps": "8.22",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T09:23:55.305Z"
+    },
+    {
+      "proxy": "vless://a01daac7-1e65-4645-854d-b47d226f6b08@104.20.6.134:44",
+      "avgSpeedMBps": "4.99",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T12:50:01.897Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@172.64.145.158:",
+      "avgSpeedMBps": "4.53",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T12:32:36.634Z"
+    },
+    {
+      "proxy": "vless://388a6c57-87e7-420b-afe2-b3eb670fd7da@104.17.138.160:",
+      "avgSpeedMBps": "3.78",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T12:30:28.713Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@199.34.228.191:",
+      "avgSpeedMBps": "4.18",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T09:34:13.692Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.91.248.38:84",
+      "avgSpeedMBps": "2.21",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T09:47:02.600Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.150.238:2",
+      "avgSpeedMBps": "5.53",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T09:53:50.062Z"
+    },
+    {
+      "proxy": "vless://388a6c57-87e7-420b-afe2-b3eb670fd7da@104.17.138.160:",
+      "avgSpeedMBps": "4.04",
+      "samples": 1,
+      "failures": 0,
+      "lastUsed": "2026-05-10T09:56:33.078Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@54.36.98.4:2053",
+      "avgSpeedMBps": "2.08",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T12:46:16.169Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.91.254.78:44",
+      "avgSpeedMBps": "2.67",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T12:36:25.278Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.73.247:4",
+      "avgSpeedMBps": "3.78",
+      "samples": 1,
+      "failures": 0,
+      "lastUsed": "2026-05-10T10:07:42.193Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@209.102.207.120",
+      "avgSpeedMBps": "2.26",
+      "samples": 1,
+      "failures": 0,
+      "lastUsed": "2026-05-10T10:09:17.650Z"
+    },
+    {
+      "proxy": "vless://8dc7722c-2767-4eea-a28b-2f8daacc07e3@yesok42v2.ip4ex",
+      "avgSpeedMBps": "7.20",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T13:09:20.190Z"
+    },
+    {
+      "proxy": "vless://388a6c57-87e7-420b-afe2-b3eb670fd7da@104.17.145.59:8",
+      "avgSpeedMBps": "5.45",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T12:19:42.724Z"
+    },
+    {
+      "proxy": "vless://89b3cbba-e6ac-485a-9481-976a0415eab9@ciallo-egb.page",
+      "avgSpeedMBps": "5.16",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T10:20:06.510Z"
+    },
+    {
+      "proxy": "vless://394f6981-a782-4779-9a85-e6cf22935d93@uk1.fromblancwi",
+      "avgSpeedMBps": "2.73",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T10:23:04.426Z"
+    },
+    {
+      "proxy": "vless://26524cce-d514-4014-a426-365fb266a14d@213.111.157.67:",
+      "avgSpeedMBps": "0.56",
+      "samples": 1,
+      "failures": 0,
+      "lastUsed": "2026-05-10T10:25:45.709Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.40.151.191:2",
+      "avgSpeedMBps": "5.76",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T10:28:22.506Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@108.165.216.138",
+      "avgSpeedMBps": "0.27",
+      "samples": 1,
+      "failures": 0,
+      "lastUsed": "2026-05-10T10:30:17.070Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:2",
+      "avgSpeedMBps": "5.99",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T10:50:30.213Z"
+    },
+    {
+      "proxy": "trojan://humanity@172.67.180.92:443?path=/assignment&securit",
+      "avgSpeedMBps": "3.60",
+      "samples": 4,
+      "failures": 0,
+      "lastUsed": "2026-05-10T11:43:51.720Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@216.205.52.138:",
+      "avgSpeedMBps": "2.18",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T10:52:55.498Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@45.12.30.138:20",
+      "avgSpeedMBps": "6.28",
+      "samples": 2,
+      "failures": 0,
+      "lastUsed": "2026-05-10T10:53:59.746Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@31.128.32.98:44",
+      "avgSpeedMBps": "1.70",
+      "samples": 1,
+      "failures": 0,
+      "lastUsed": "2026-05-10T10:55:09.714Z"
+    },
+    {
+      "proxy": "trojan://humanity@172.64.152.23:443?path=/assignment&securit",
+      "avgSpeedMBps": "3.23",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T11:02:59.353Z"
+    },
+    {
+      "proxy": "vless://a01daac7-1e65-4645-854d-b47d226f6b08@104.20.6.134:44",
+      "avgSpeedMBps": "5.89",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T11:09:41.374Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.129.63.60:20",
+      "avgSpeedMBps": "2.48",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T11:17:57.524Z"
+    },
+    {
+      "proxy": "vless://06ef598c-1555-4887-b3f9-08214a2f6792@104.20.6.134:44",
+      "avgSpeedMBps": "6.46",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T11:26:07.864Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@135.84.74.118:4",
+      "avgSpeedMBps": "6.33",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T11:30:27.034Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@154.211.8.138:2",
+      "avgSpeedMBps": "4.77",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T11:35:26.263Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:2",
+      "avgSpeedMBps": "7.82",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T11:37:16.966Z"
+    },
+    {
+      "proxy": "vless://a01daac7-1e65-4645-854d-b47d226f6b08@104.20.6.134:44",
+      "avgSpeedMBps": "5.02",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T11:47:20.698Z"
+    },
+    {
+      "proxy": "vless://394f6981-a782-4779-9a85-e6cf22935d93@152.233.28.198:",
+      "avgSpeedMBps": "3.04",
+      "samples": 5,
+      "failures": 0,
+      "lastUsed": "2026-05-10T13:12:39.578Z"
+    },
+    {
+      "proxy": "vless://394f6981-a782-4779-9a85-e6cf22935d93@uk1.fromblancwi",
+      "avgSpeedMBps": "2.31",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T12:00:55.970Z"
+    },
+    {
+      "proxy": "vless://a01daac7-1e65-4645-854d-b47d226f6b08@auth.vercel.com",
+      "avgSpeedMBps": "4.13",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T12:06:39.767Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@162.55.187.121:",
+      "avgSpeedMBps": "3.21",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T12:15:08.819Z"
+    },
+    {
+>>>>>>> Stashed changes
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@198.71.189.51:4",
       "avgSpeedMBps": "3.58",
       "samples": 3,
