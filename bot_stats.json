@@ -1,42 +1,14 @@
 {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  "totalDataMB": "286.90",
-  "totalVideos": 3,
-  "totalDurationMinutes": "147.8",
-  "uniqueUsers": 3,
-=======
-  "totalDataMB": "326.80",
-  "totalVideos": 4,
-  "totalDurationMinutes": "174.1",
-  "uniqueUsers": 4,
->>>>>>> Stashed changes
-  "failedAttempts": 0,
-  "avgProcessingTimeSec": "81.2",
-  "avgVideoSizeMB": "81.70",
-  "avgVideoDurationMin": "43.5",
-  "queueLength": 6,
-  "currentProxy": "vless://8c4604ef-749c-4b56-adf1-7da40500",
-  "proxies": [
-    {
-=======
-  "totalDataMB": "18248.75",
-  "totalVideos": 250,
-  "totalDurationMinutes": "5310.8",
-  "uniqueUsers": 146,
-=======
-  "totalDataMB": "18346.36",
-  "totalVideos": 251,
-  "totalDurationMinutes": "5355.6",
+  "totalDataMB": "18359.40",
+  "totalVideos": 252,
+  "totalDurationMinutes": "5359.6",
   "uniqueUsers": 147,
->>>>>>> Stashed changes
   "failedAttempts": 3,
-  "avgProcessingTimeSec": "67.6",
-  "avgVideoSizeMB": "73.09",
+  "avgProcessingTimeSec": "65.4",
+  "avgVideoSizeMB": "72.85",
   "avgVideoDurationMin": "21.3",
-  "queueLength": 12,
-  "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
+  "queueLength": 11,
+  "currentProxy": "vless://394f6981-a782-4779-9a85-e6cf2293",
   "proxies": [
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@146.59.229.78:8",
@@ -397,10 +369,10 @@
     },
     {
       "proxy": "vless://394f6981-a782-4779-9a85-e6cf22935d93@152.233.28.198:",
-      "avgSpeedMBps": "3.04",
+      "avgSpeedMBps": "2.49",
       "samples": 5,
       "failures": 0,
-      "lastUsed": "2026-05-10T13:12:39.578Z"
+      "lastUsed": "2026-05-10T13:36:04.582Z"
     },
     {
       "proxy": "vless://394f6981-a782-4779-9a85-e6cf22935d93@uk1.fromblancwi",
@@ -456,16 +428,6 @@
       "avgSpeedMBps": "2.65",
       "samples": 3,
       "failures": 0,
-<<<<<<< Updated upstream
-      "lastUsed": "2026-05-10T13:33:46.991Z"
-    },
-    {
-      "proxy": "vless://8c4604ef-749c-4b56-adf1-7da405002a21@216.24.57.1:443",
-      "avgSpeedMBps": "5.83",
-      "samples": 1,
-      "failures": 0,
-      "lastUsed": "2026-05-10T13:34:56.166Z"
-=======
       "lastUsed": "2026-05-10T12:57:00.542Z"
     },
     {
@@ -488,7 +450,6 @@
       "samples": 2,
       "failures": 0,
       "lastUsed": "2026-05-10T13:27:26.912Z"
->>>>>>> Stashed changes
     }
   ]
 }
