@@ -1,14 +1,21 @@
 {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   "totalDataMB": "18359.40",
   "totalVideos": 252,
   "totalDurationMinutes": "5359.6",
   "uniqueUsers": 147,
+=======
+  "totalDataMB": "18482.86",
+  "totalVideos": 253,
+  "totalDurationMinutes": "5381.2",
+  "uniqueUsers": 148,
+>>>>>>> Stashed changes
   "failedAttempts": 3,
-  "avgProcessingTimeSec": "65.4",
-  "avgVideoSizeMB": "72.85",
+  "avgProcessingTimeSec": "71.8",
+  "avgVideoSizeMB": "73.05",
   "avgVideoDurationMin": "21.3",
-  "queueLength": 12,
+  "queueLength": 14,
   "currentProxy": "vless://394f6981-a782-4779-9a85-e6cf2293",
   "proxies": [
     {
@@ -370,10 +377,10 @@
     },
     {
       "proxy": "vless://394f6981-a782-4779-9a85-e6cf22935d93@152.233.28.198:",
-      "avgSpeedMBps": "2.49",
+      "avgSpeedMBps": "2.47",
       "samples": 5,
       "failures": 0,
-      "lastUsed": "2026-05-10T13:36:04.582Z"
+      "lastUsed": "2026-05-10T13:36:53.243Z"
     },
     {
       "proxy": "vless://394f6981-a782-4779-9a85-e6cf22935d93@uk1.fromblancwi",
