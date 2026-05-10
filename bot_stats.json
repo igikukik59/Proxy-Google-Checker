@@ -1,4 +1,5 @@
 {
+<<<<<<< Updated upstream
   "totalDataMB": "11598.54",
   "totalVideos": 203,
   "totalDurationMinutes": "3534.8",
@@ -9,15 +10,28 @@
   "avgVideoDurationMin": "17.4",
   "queueLength": 42,
   "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
+=======
+  "totalDataMB": "171.27",
+  "totalVideos": 7,
+  "totalDurationMinutes": "73.3",
+  "uniqueUsers": 4,
+  "failedAttempts": 0,
+  "avgProcessingTimeSec": "44.6",
+  "avgVideoSizeMB": "24.47",
+  "avgVideoDurationMin": "10.5",
+  "queueLength": 1,
+  "currentProxy": "vless://26524cce-d514-4014-a426-365fb266",
+>>>>>>> Stashed changes
   "proxies": [
     {
-      "proxy": "vless://d555dac9-27cb-4ddb-89f5-6a1d8d1e4798@198.41.223.121:",
-      "avgSpeedMBps": "4.32",
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@146.59.229.78:8",
+      "avgSpeedMBps": "1.57",
       "samples": 3,
       "failures": 0,
-      "lastUsed": "2026-05-10T03:41:41.301Z"
+      "lastUsed": "2026-05-10T08:19:13.466Z"
     },
     {
+<<<<<<< Updated upstream
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@37.59.96.47:443",
       "avgSpeedMBps": "2.43",
       "samples": 3,
@@ -380,6 +394,20 @@
       "samples": 3,
       "failures": 0,
       "lastUsed": "2026-05-10T07:46:40.478Z"
+=======
+      "proxy": "trojan://humanity@www.multiplydose.com:443?security=tls&type",
+      "avgSpeedMBps": "1.90",
+      "samples": 3,
+      "failures": 0,
+      "lastUsed": "2026-05-10T08:22:03.931Z"
+    },
+    {
+      "proxy": "vless://26524cce-d514-4014-a426-365fb266a14d@211.199.7.162:1",
+      "avgSpeedMBps": "0.96",
+      "samples": 1,
+      "failures": 0,
+      "lastUsed": "2026-05-10T08:23:12.318Z"
+>>>>>>> Stashed changes
     }
   ]
 }
