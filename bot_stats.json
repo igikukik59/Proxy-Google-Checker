@@ -1,45 +1,13 @@
 {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  "totalDataMB": "72.63",
-  "totalVideos": 3,
-  "totalDurationMinutes": "28.3",
-=======
-  "totalDataMB": "91.30",
-  "totalVideos": 4,
-  "totalDurationMinutes": "31.5",
->>>>>>> Stashed changes
-  "uniqueUsers": 2,
-  "failedAttempts": 0,
-  "avgProcessingTimeSec": "48.6",
-  "avgVideoSizeMB": "22.82",
-  "avgVideoDurationMin": "7.9",
-  "queueLength": 0,
-  "currentProxy": "vless://8dc7722c-2767-4eea-a28b-2f8daacc",
-  "proxies": [
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@8.6.112.71:2096",
-      "avgSpeedMBps": "3.44",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-11T19:58:02.075Z"
-<<<<<<< Updated upstream
-=======
-  "totalDataMB": "13256.60",
-  "totalVideos": 206,
-  "totalDurationMinutes": "3504.9",
-=======
-  "totalDataMB": "13276.85",
-  "totalVideos": 207,
-  "totalDurationMinutes": "3519.3",
->>>>>>> Stashed changes
+  "totalDataMB": "13295.52",
+  "totalVideos": 208,
+  "totalDurationMinutes": "3522.4",
   "uniqueUsers": 95,
   "failedAttempts": 3,
   "avgProcessingTimeSec": "53.4",
-  "avgVideoSizeMB": "64.14",
-  "avgVideoDurationMin": "17.0",
-  "queueLength": 1,
+  "avgVideoSizeMB": "63.92",
+  "avgVideoDurationMin": "16.9",
+  "queueLength": 0,
   "currentProxy": "vless://8dc7722c-2767-4eea-a28b-2f8daacc",
   "proxies": [
     {
@@ -177,10 +145,10 @@
     },
     {
       "proxy": "vless://8dc7722c-2767-4eea-a28b-2f8daacc07e3@45.82.251.116:8",
-      "avgSpeedMBps": "6.15",
+      "avgSpeedMBps": "5.54",
       "samples": 5,
       "failures": 0,
-      "lastUsed": "2026-05-11T19:59:06.144Z"
+      "lastUsed": "2026-05-11T19:59:26.612Z"
     },
     {
       "proxy": "vless://ce069292-c8bf-40dd-a6b1-87818a1e64e9@202.144.192.37:",
@@ -363,19 +331,6 @@
       "samples": 5,
       "failures": 0,
       "lastUsed": "2026-05-11T19:57:43.929Z"
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
-    },
-    {
-      "proxy": "vless://8dc7722c-2767-4eea-a28b-2f8daacc07e3@yesok42v2.ip4ex",
-      "avgSpeedMBps": "2.67",
-      "samples": 1,
-      "failures": 0,
-      "lastUsed": "2026-05-11T19:59:01.143Z"
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     }
   ]
 }
