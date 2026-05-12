@@ -1,4 +1,5 @@
 {
+<<<<<<< Updated upstream
   "totalDataMB": "10895.35",
   "totalVideos": 185,
   "totalDurationMinutes": "2962.4",
@@ -9,54 +10,25 @@
   "avgVideoDurationMin": "16.0",
   "queueLength": 8,
   "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
+=======
+  "totalDataMB": "35.37",
+  "totalVideos": 1,
+  "totalDurationMinutes": "27.9",
+  "uniqueUsers": 1,
+  "failedAttempts": 0,
+  "avgProcessingTimeSec": "30.9",
+  "avgVideoSizeMB": "35.37",
+  "avgVideoDurationMin": "27.9",
+  "queueLength": 1,
+  "currentProxy": "vless://394f6981-a782-4779-9a85-e6cf2293",
+>>>>>>> Stashed changes
   "proxies": [
     {
-      "proxy": "trojan://humanity@104.18.32.47:443?security=tls&type=ws&sni=",
-      "avgSpeedMBps": "3.15",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-12T03:34:06.344Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@14.102.228.238:",
-      "avgSpeedMBps": "4.02",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-12T03:40:10.762Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@92.53.188.238:2",
-      "avgSpeedMBps": "4.78",
-      "samples": 5,
-      "failures": 0,
-      "lastUsed": "2026-05-12T07:42:52.277Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.128.183.108:",
-      "avgSpeedMBps": "1.52",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-12T03:53:56.373Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.13.149:2",
-      "avgSpeedMBps": "0.53",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-12T03:56:41.863Z"
-    },
-    {
-      "proxy": "vless://a01daac7-1e65-4645-854d-b47d226f6b08@auth.vercel.com",
-      "avgSpeedMBps": "7.82",
-      "samples": 5,
-      "failures": 0,
-      "lastUsed": "2026-05-12T07:40:44.936Z"
-    },
-    {
       "proxy": "vless://394f6981-a782-4779-9a85-e6cf22935d93@152.233.28.198:",
-      "avgSpeedMBps": "2.81",
-      "samples": 5,
+      "avgSpeedMBps": "3.50",
+      "samples": 1,
       "failures": 0,
+<<<<<<< Updated upstream
       "lastUsed": "2026-05-12T05:36:16.031Z"
     },
     {
@@ -324,6 +296,9 @@
       "samples": 2,
       "failures": 0,
       "lastUsed": "2026-05-12T08:46:24.438Z"
+=======
+      "lastUsed": "2026-05-12T08:51:15.945Z"
+>>>>>>> Stashed changes
     }
   ]
 }
