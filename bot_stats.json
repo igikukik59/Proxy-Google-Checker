@@ -1,12 +1,12 @@
 {
-  "totalDataMB": "1609.02",
-  "totalVideos": 23,
-  "totalDurationMinutes": "413.4",
+  "totalDataMB": "1625.41",
+  "totalVideos": 24,
+  "totalDurationMinutes": "416.4",
   "uniqueUsers": 16,
   "failedAttempts": 0,
-  "avgProcessingTimeSec": "47.2",
-  "avgVideoSizeMB": "69.96",
-  "avgVideoDurationMin": "18.0",
+  "avgProcessingTimeSec": "42.5",
+  "avgVideoSizeMB": "67.73",
+  "avgVideoDurationMin": "17.3",
   "queueLength": 4,
   "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
   "proxies": [
@@ -72,6 +72,13 @@
       "samples": 3,
       "failures": 0,
       "lastUsed": "2026-05-12T20:43:28.974Z"
+    },
+    {
+      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@156.243.246.238",
+      "avgSpeedMBps": "6.00",
+      "samples": 1,
+      "failures": 0,
+      "lastUsed": "2026-05-12T20:44:03.148Z"
     }
   ]
 }
