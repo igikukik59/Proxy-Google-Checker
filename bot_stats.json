@@ -1,14 +1,14 @@
 {
-  "totalDataMB": "4979.89",
-  "totalVideos": 98,
-  "totalDurationMinutes": "1496.2",
+  "totalDataMB": "4994.28",
+  "totalVideos": 99,
+  "totalDurationMinutes": "1500.6",
   "uniqueUsers": 43,
   "failedAttempts": 0,
-  "avgProcessingTimeSec": "46.7",
-  "avgVideoSizeMB": "50.82",
-  "avgVideoDurationMin": "15.3",
-  "queueLength": 0,
-  "currentProxy": "vless://d342d11e-d424-4583-b36e-524ab1f0",
+  "avgProcessingTimeSec": "47.0",
+  "avgVideoSizeMB": "50.45",
+  "avgVideoDurationMin": "15.2",
+  "queueLength": 3,
+  "currentProxy": "trojan://humanity@www.multiplydose.com:4",
   "proxies": [
     {
       "proxy": "trojan://humanity@104.18.32.47:443?security=tls&type=ws&sni=",
@@ -198,6 +198,13 @@
       "samples": 3,
       "failures": 0,
       "lastUsed": "2026-05-12T06:26:57.965Z"
+    },
+    {
+      "proxy": "trojan://humanity@www.multiplydose.com:443?security=tls&type",
+      "avgSpeedMBps": "1.83",
+      "samples": 1,
+      "failures": 0,
+      "lastUsed": "2026-05-12T06:28:31.083Z"
     }
   ]
 }
