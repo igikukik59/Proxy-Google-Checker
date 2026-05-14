@@ -1,39 +1,13 @@
 {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  "totalDataMB": "48.84",
-  "totalVideos": 5,
-  "totalDurationMinutes": "37.7",
-  "uniqueUsers": 4,
-=======
-  "totalDataMB": "67.58",
-  "totalVideos": 6,
-  "totalDurationMinutes": "43.3",
-  "uniqueUsers": 5,
->>>>>>> Stashed changes
-  "failedAttempts": 0,
-  "avgProcessingTimeSec": "46.8",
-  "avgVideoSizeMB": "11.26",
-  "avgVideoDurationMin": "7.2",
-  "queueLength": 5,
-  "currentProxy": "vless://ce069292-c8bf-40dd-a6b1-87818a1e",
-=======
-  "totalDataMB": "10715.66",
-  "totalVideos": 200,
-  "totalDurationMinutes": "3244.5",
-  "uniqueUsers": 87,
-=======
-  "totalDataMB": "10831.60",
-  "totalVideos": 201,
-  "totalDurationMinutes": "3275.9",
+  "totalDataMB": "10835.17",
+  "totalVideos": 202,
+  "totalDurationMinutes": "3277.9",
   "uniqueUsers": 88,
->>>>>>> Stashed changes
   "failedAttempts": 2,
-  "avgProcessingTimeSec": "43.0",
-  "avgVideoSizeMB": "53.89",
-  "avgVideoDurationMin": "16.3",
-  "queueLength": 4,
+  "avgProcessingTimeSec": "43.4",
+  "avgVideoSizeMB": "53.64",
+  "avgVideoDurationMin": "16.2",
+  "queueLength": 3,
   "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
   "proxies": [
     {
@@ -199,12 +173,6 @@
     },
     {
       "proxy": "vless://ce069292-c8bf-40dd-a6b1-87818a1e64e9@38.180.11.15:44",
-<<<<<<< Updated upstream
-      "avgSpeedMBps": "0.29",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-14T08:53:39.111Z"
-=======
       "avgSpeedMBps": "0.52",
       "samples": 2,
       "failures": 0,
@@ -380,10 +348,10 @@
     },
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@57.128.183.108:",
-      "avgSpeedMBps": "2.03",
-      "samples": 3,
+      "avgSpeedMBps": "1.67",
+      "samples": 4,
       "failures": 0,
-      "lastUsed": "2026-05-14T07:31:53.790Z"
+      "lastUsed": "2026-05-14T08:54:51.040Z"
     },
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@198.71.233.55:4",
@@ -454,7 +422,6 @@
       "samples": 3,
       "failures": 0,
       "lastUsed": "2026-05-14T08:51:11.396Z"
->>>>>>> Stashed changes
     }
   ]
 }
