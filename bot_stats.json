@@ -1,39 +1,13 @@
 {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  "totalDataMB": "8755.56",
-  "totalVideos": 198,
-  "totalDurationMinutes": "2481.1",
-  "uniqueUsers": 80,
-=======
   "totalDataMB": "8975.48",
   "totalVideos": 200,
   "totalDurationMinutes": "2526.8",
   "uniqueUsers": 81,
->>>>>>> Stashed changes
   "failedAttempts": 0,
   "avgProcessingTimeSec": "30.9",
   "avgVideoSizeMB": "44.88",
   "avgVideoDurationMin": "12.6",
-<<<<<<< Updated upstream
   "queueLength": 1,
->>>>>>> Stashed changes
-=======
-  "totalDataMB": "125.26",
-  "totalVideos": 2,
-  "totalDurationMinutes": "27.5",
-  "uniqueUsers": 2,
-  "failedAttempts": 0,
-  "avgProcessingTimeSec": "47.1",
-  "avgVideoSizeMB": "62.63",
-  "avgVideoDurationMin": "13.8",
-  "queueLength": 1,
->>>>>>> Stashed changes
-=======
-  "queueLength": 2,
->>>>>>> Stashed changes
   "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
   "proxies": [
     {
@@ -241,9 +215,6 @@
     },
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@51.210.151.193:",
-<<<<<<< Updated upstream
-      "avgSpeedMBps": "2.84",
-=======
       "avgSpeedMBps": "1.66",
       "samples": 5,
       "failures": 0,
@@ -273,10 +244,8 @@
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.18.12.149:2",
       "avgSpeedMBps": "14.69",
->>>>>>> Stashed changes
       "samples": 2,
       "failures": 0,
-<<<<<<< Updated upstream
       "lastUsed": "2026-05-16T10:32:03.528Z"
     },
     {
@@ -452,21 +421,7 @@
       "avgSpeedMBps": "8.70",
       "samples": 3,
       "failures": 0,
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-      "lastUsed": "2026-05-16T13:31:13.894Z"
-=======
-      "lastUsed": "2026-05-16T13:31:25.531Z"
->>>>>>> Stashed changes
-=======
-      "lastUsed": "2026-05-16T13:32:21.795Z"
->>>>>>> Stashed changes
-=======
-      "lastUsed": "2026-05-16T13:32:39.765Z"
->>>>>>> Stashed changes
-=======
       "lastUsed": "2026-05-16T13:33:17.508Z"
->>>>>>> Stashed changes
     }
   ]
 }
