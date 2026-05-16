@@ -1,12 +1,12 @@
 {
-  "totalDataMB": "2661.96",
-  "totalVideos": 65,
-  "totalDurationMinutes": "791.1",
-  "uniqueUsers": 30,
+  "totalDataMB": "2721.83",
+  "totalVideos": 66,
+  "totalDurationMinutes": "813.5",
+  "uniqueUsers": 31,
   "failedAttempts": 0,
-  "avgProcessingTimeSec": "31.7",
-  "avgVideoSizeMB": "40.95",
-  "avgVideoDurationMin": "12.2",
+  "avgProcessingTimeSec": "33.1",
+  "avgVideoSizeMB": "41.24",
+  "avgVideoDurationMin": "12.3",
   "queueLength": 0,
   "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
   "proxies": [
@@ -166,10 +166,10 @@
     },
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@www.wto.org:443",
-      "avgSpeedMBps": "3.67",
-      "samples": 2,
+      "avgSpeedMBps": "5.76",
+      "samples": 3,
       "failures": 0,
-      "lastUsed": "2026-05-16T17:23:20.869Z"
+      "lastUsed": "2026-05-16T17:26:07.474Z"
     }
   ]
 }
