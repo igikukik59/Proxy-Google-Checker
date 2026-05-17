@@ -1,83 +1,14 @@
 {
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  "totalDataMB": "448.25",
-  "totalVideos": 9,
-  "totalDurationMinutes": "103.5",
-  "uniqueUsers": 6,
-  "failedAttempts": 0,
-  "avgProcessingTimeSec": "55.9",
-  "avgVideoSizeMB": "49.81",
-  "avgVideoDurationMin": "11.5",
-=======
-  "totalDataMB": "4470.37",
-  "totalVideos": 101,
-  "totalDurationMinutes": "1303.9",
-  "uniqueUsers": 48,
-=======
-  "totalDataMB": "4615.63",
-  "totalVideos": 102,
-  "totalDurationMinutes": "1334.1",
-  "uniqueUsers": 49,
->>>>>>> Stashed changes
-=======
-  "totalDataMB": "4676.36",
-  "totalVideos": 103,
-  "totalDurationMinutes": "1347.4",
-  "uniqueUsers": 50,
->>>>>>> Stashed changes
-=======
-  "totalDataMB": "4726.51",
-  "totalVideos": 104,
-  "totalDurationMinutes": "1365.2",
-  "uniqueUsers": 51,
->>>>>>> Stashed changes
+  "totalDataMB": "4775.67",
+  "totalVideos": 105,
+  "totalDurationMinutes": "1401.3",
+  "uniqueUsers": 52,
   "failedAttempts": 1,
-  "avgProcessingTimeSec": "44.3",
-  "avgVideoSizeMB": "45.45",
-  "avgVideoDurationMin": "13.1",
-<<<<<<< Updated upstream
-  "queueLength": 2,
-  "currentProxy": "vless://6202b230-417c-4d8e-b624-0f71afa9",
-<<<<<<< Updated upstream
-=======
-  "totalDataMB": "663.70",
-  "totalVideos": 10,
-  "totalDurationMinutes": "179.7",
-=======
-  "totalDataMB": "724.42",
-  "totalVideos": 11,
-  "totalDurationMinutes": "193.0",
->>>>>>> Stashed changes
-  "uniqueUsers": 7,
-  "failedAttempts": 0,
-  "avgProcessingTimeSec": "46.4",
-  "avgVideoSizeMB": "65.86",
-  "avgVideoDurationMin": "17.5",
-  "queueLength": 3,
-=======
-  "totalDataMB": "869.69",
-  "totalVideos": 12,
-  "totalDurationMinutes": "223.1",
-  "uniqueUsers": 8,
-  "failedAttempts": 0,
-  "avgProcessingTimeSec": "50.5",
-  "avgVideoSizeMB": "72.47",
-  "avgVideoDurationMin": "18.6",
-  "queueLength": 2,
->>>>>>> Stashed changes
-  "currentProxy": "vless://8dc7722c-2767-4eea-a28b-2f8daacc",
-=======
->>>>>>> Stashed changes
-=======
-  "queueLength": 1,
+  "avgProcessingTimeSec": "46.0",
+  "avgVideoSizeMB": "45.48",
+  "avgVideoDurationMin": "13.3",
+  "queueLength": 0,
   "currentProxy": "vless://4fe2b7d6-cdc0-44f3-8093-3a1fc92e",
->>>>>>> Stashed changes
   "proxies": [
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@14.102.228.238:",
@@ -305,10 +236,10 @@
     },
     {
       "proxy": "vless://4fe2b7d6-cdc0-44f3-8093-3a1fc92e8542@95.164.3.121:20",
-      "avgSpeedMBps": "4.27",
-      "samples": 2,
+      "avgSpeedMBps": "4.14",
+      "samples": 3,
       "failures": 0,
-      "lastUsed": "2026-05-17T08:44:06.343Z"
+      "lastUsed": "2026-05-17T08:44:42.615Z"
     },
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@104.17.72.206:2",
@@ -326,37 +257,6 @@
     },
     {
       "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@31.128.32.98:44",
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-      "avgSpeedMBps": "2.19",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-17T08:38:22.181Z"
-    },
-    {
-      "proxy": "vless://6202b230-417c-4d8e-b624-0f71afa9c75d@165.22.18.18:84",
-      "avgSpeedMBps": "2.87",
-      "samples": 3,
-      "failures": 0,
-      "lastUsed": "2026-05-17T08:40:22.610Z"
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
       "avgSpeedMBps": "3.02",
       "samples": 2,
       "failures": 0,
@@ -382,15 +282,12 @@
       "samples": 3,
       "failures": 0,
       "lastUsed": "2026-05-17T07:47:51.136Z"
-=======
->>>>>>> Stashed changes
     },
     {
       "proxy": "vless://8dc7722c-2767-4eea-a28b-2f8daacc07e3@yesok42v2.ip4ex",
-      "avgSpeedMBps": "9.91",
-      "samples": 3,
+      "avgSpeedMBps": "32.16",
+      "samples": 1,
       "failures": 0,
-<<<<<<< Updated upstream
       "lastUsed": "2026-05-17T07:54:08.522Z"
     },
     {
@@ -406,13 +303,6 @@
       "samples": 3,
       "failures": 0,
       "lastUsed": "2026-05-17T08:43:07.067Z"
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
-      "lastUsed": "2026-05-17T08:43:28.180Z"
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
     }
   ]
 }
